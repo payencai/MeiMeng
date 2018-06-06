@@ -32,17 +32,11 @@
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="ljlX9oSuUeIxGcd8GTy81Xp9XvQDOmc2" />
 
-        <activity android:name=".test.BMapTestActivity">
-
-        </activity>
-
+        <activity android:name=".test.BMapTestActivity"></activity>
         <activity
             android:name=".activity.MainActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:screenOrientation="portrait">
-
-        </activity>
-
+            android:screenOrientation="portrait"></activity>
         <activity android:name=".activity.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -51,9 +45,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.WaitSoSActivity" />
-        <activity android:name=".activity.TestActivity">
-
-        </activity>
+        <activity android:name=".activity.TestActivity"></activity>
         <activity android:name=".activity.WaitSalvationActivity" />
         <activity
             android:name=".activity.CityPickerActivity"
@@ -64,6 +56,7 @@
         <activity android:name=".activity.RegisterActivity" />
         <activity android:name=".test.TestLocationActivity" />
         <activity android:name=".test.ForegroundActivity" />
+        <activity android:name=".activity.SettingActivity"></activity>
     </application>
 
 </manifest>

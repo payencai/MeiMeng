@@ -53,5 +53,27 @@
         <item name="android:textColor">@color/text_333</item>
         <item name="android:gravity">center</item>
     </style>
+    <style name="font_10sp_333">
+        <item name="android:textSize">@dimen/text_size_10sp</item>
+        <item name="android:textColor">@color/text_333</item>
+
+    </style>
+    <style name="font_18sp_fff">
+        <item name="android:textSize">@dimen/text_size_18sp</item>
+        <item name="android:textColor">@color/color_white_100</item>
+    </style>
+    <style name="font_14sp_fff">
+        <item name="android:textSize">@dimen/text_size_14sp</item>
+        <item name="android:textColor">@color/color_white_100</item>
+    </style>
+
+    <style name="font_17sp_fff">
+        <item name="android:textSize">@dimen/text_size_17sp</item>
+        <item name="android:textColor">@color/color_white_100</item>
+    </style>
+    <style name="font_14sp_333">
+        <item name="android:textSize">@dimen/text_size_14sp</item>
+        <item name="android:textColor">@color/text_333</item>
+    </style>
 
 </resources>

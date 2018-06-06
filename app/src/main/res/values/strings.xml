@@ -40,5 +40,9 @@
 		4、具体描述：细节描述，可以给出问题发生的频率或者APP名称，sdk版本等，也可以加上附件如日志，贴图等\n
         </string>
     <string name="qa_callback_mail">反馈邮箱:loc-bugs@baidu.com</string>
+    <string name="str_zige_pic">如：医生资格证呢、医师执照证、护士资格证、护士执业证、急救技能证书等任意一张即可。</string>
+    <string name="str_zm_zhengshu">请上传带有清晰姓名/照片的相关培训证书证明</string>
+    <string name="str_gaojirenyuan">高级急救人员</string>
+    <string name="str_wupin">完善信息领取急救站物品</string>
 
 </resources>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:background="@color/bg_f2f2f2"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <include  layout="@layout/toobar_head_layout"></include>
+    <LinearLayout
+        android:orientation="vertical"
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_marginTop="20dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:src="@mipmap/logo"
+                android:layout_width="75dp"
+                android:layout_height="75dp"/>
+            <TextView
+                android:layout_marginTop="10dp"
+                android:textSize="@dimen/text_size_17sp"
+                android:textColor="#1a1a1a"
+                android:text="智能，让救援触手可及"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+        <TextView
+
+            android:lineSpacingExtra="5dp"
+            android:layout_marginRight="@dimen/margin_30dp"
+            android:layout_marginLeft="@dimen/margin_30dp"
+            android:text="          美盟全民救援APP是深圳美盟救援科技有限公司所有，基于公益原则，本程序永久免费。"
+            android:textColor="#1a1a1a"
+            android:textSize="12sp"
+            android:layout_marginTop="25dp"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"/>
+        <TextView
+            android:lineSpacingExtra="5dp"
+            android:layout_marginRight="28dp"
+            android:layout_marginLeft="@dimen/margin_30dp"
+            android:text="          使用者在遇到紧急情况时，点击“一键求救”即可自动通知附近具有急救能力的志愿者前来救援，并同时通知预先设置的紧急联系人，可第一时间通过语音、文字、电话、地图定位等功能为求救者提供及时有效的院前急救，为你的生命安全保驾护航。"
+            android:textColor="#1a1a1a"
+            android:textSize="12sp"
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="95dp"/>
+        <TextView
+
+            android:lineSpacingExtra="5dp"
+            android:layout_marginRight="28dp"
+            android:layout_marginLeft="@dimen/margin_30dp"
+            android:text="          如果你在使用期间遇到任何问题或有相关意见或建议，欢迎联系我们！"
+            android:textColor="#1a1a1a"
+            android:textSize="12sp"
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"/>
+        <TextView
+            android:layout_marginRight="28dp"
+            android:layout_marginLeft="@dimen/margin_30dp"
+            android:text="E-mail:50802832@qq.com"
+            android:textColor="#1a1a1a"
+            android:textSize="12sp"
+            android:layout_marginTop="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:layout_marginRight="28dp"
+            android:layout_marginLeft="@dimen/margin_30dp"
+            android:text="免责声明："
+            android:textColor="#666666"
+            android:textSize="12sp"
+            android:layout_marginTop="30dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:lineSpacingExtra="3dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginLeft="@dimen/margin_30dp"
+            android:text="我们力求本程序内容的准确性及功能完整性，但使用者如因本程序内容错误、遗漏、功能性缺失而造成任何直接、间接损害或财产损失，我司及本程序均不承担任何形式的责任及赔偿。"
+            android:textColor="#666666"
+            android:textSize="12sp"
+            android:layout_marginTop="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+
+</LinearLayout>

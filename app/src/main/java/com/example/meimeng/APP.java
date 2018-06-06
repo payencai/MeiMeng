@@ -21,6 +21,7 @@ public class APP extends Application {
         super.onCreate();
         // SHA1 c01bdf21e1652917fdf29c91898aec5b80fe44db
         // SHA256 3f2a849d046f5948eeae6e243163b051afc940a500bf6db7b07b20c8e489cbd6
+        // SHA256 3f2a849d046f5948eeae6e243163b051afc940a500bf6db7b07b20c8e489cbd6
         //初始化百度地图
         /***
          * 初始化定位sdk，建议在Application中创建

@@ -15,7 +15,7 @@ public class UserCenterFragment extends BaseFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_usercenter, container, false);
+        View view = inflater.inflate(R.layout.show_usermsg_content, container, false);
         return view;
     }
 }

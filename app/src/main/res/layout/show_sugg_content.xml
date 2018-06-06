@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:background="@color/bg_f2f2f2"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include  layout="@layout/toobar_head_layout"></include>
+    
+    
+    <LinearLayout
+        android:layout_marginTop="@dimen/margin_10dp"
+        android:layout_marginRight="@dimen/margin_10dp"
+        android:layout_marginLeft="@dimen/margin_15dp"
+        android:background="@drawable/unchecked_bg"
+        android:layout_width="match_parent"
+        android:layout_height="145dp">
+        <EditText
+            android:layout_margin="@dimen/margin_10dp"
+            android:background="@color/color_white_100"
+            android:textSize="14sp"
+            android:hint="请输入你的意见或者建议"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+</LinearLayout>

@@ -36,6 +36,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/margin_60dp">
             <TextView
+                android:id="@+id/tv_logout"
                 android:textSize="@dimen/text_size_14sp"
                 android:textColor="#e63030"
                 android:text="退出登录"

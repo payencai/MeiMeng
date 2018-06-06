@@ -8,10 +8,13 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.example.meimeng.R;
+import com.example.meimeng.custom.KyLoadingBuilder;
 import com.example.meimeng.manager.ActivityManager;
 
 public abstract class BaseActivity extends AppCompatActivity {
@@ -115,6 +118,29 @@ public abstract class BaseActivity extends AppCompatActivity {
 
 
         return view;
+    }
+
+    /**
+     * 打开loading
+     */
+    protected KyLoadingBuilder openLoadView(String showText) {
+        KyLoadingBuilder mLoadingBuilder = new KyLoadingBuilder(this);
+        mLoadingBuilder.setIcon(R.mipmap.loading_32dp);
+        if (TextUtils.isEmpty(showText)) {
+            mLoadingBuilder.setText("正在加载中...");
+        } else {
+            mLoadingBuilder.setText(showText);
+        }
+        //builder.setOutsideTouchable(false);
+        //builder.setBackTouchable(true);
+        mLoadingBuilder.show();
+        return mLoadingBuilder;
+    }
+
+    protected void closeLoadView( KyLoadingBuilder mLoadingBuilder) {
+        if (mLoadingBuilder != null) {
+            mLoadingBuilder.dismiss();
+        }
     }
 
 }

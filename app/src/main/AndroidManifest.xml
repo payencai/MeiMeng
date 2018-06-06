@@ -32,7 +32,9 @@
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="ljlX9oSuUeIxGcd8GTy81Xp9XvQDOmc2" />
 
-        <activity android:name=".test.BMapTestActivity"></activity>
+        <activity android:name=".test.BMapTestActivity">
+
+        </activity>
         <activity
             android:name=".activity.MainActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"

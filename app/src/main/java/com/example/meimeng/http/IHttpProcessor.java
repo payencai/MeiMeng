@@ -19,4 +19,5 @@ public interface IHttpProcessor {
 
     void get(String url, Map<String, Object> headParams, String tokenMap, ICallBack callBack);
 
+
 }

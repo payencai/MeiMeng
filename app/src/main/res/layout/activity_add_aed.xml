@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".activity.AddAEDActivity">
+
+    <include layout="@layout/toobar_head_layout" />
+
+    <ScrollView
+        android:id="@+id/scrollview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/color_white_100"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:orientation="vertical"
+            android:paddingLeft="@dimen/margin_15dp"
+            android:paddingRight="@dimen/margin_15dp">
+
+            <RelativeLayout
+                android:id="@+id/option1"
+                android:layout_width="match_parent"
+                android:layout_height="55dp">
+
+                <TextView
+                    style="@style/common_font"
+                    android:layout_height="match_parent"
+                    android:text="AED品牌" />
+
+                <TextView
+                    android:id="@+id/AEDBrand"
+                    style="@style/common_font"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="10dp"
+                    android:layout_toLeftOf="@id/imgArrowsRight1"
+                    android:maxLines="1"
+                    android:text="请选择AED品牌"
+                    android:textColor="@color/text_9" />
+
+                <ImageView
+                    android:id="@+id/imgArrowsRight1"
+                    android:layout_width="8dp"
+                    android:layout_height="15dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:src="@mipmap/ic_arrows_right" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/option2"
+                android:layout_width="match_parent"
+                android:layout_height="55dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        style="@style/common_font"
+                        android:layout_height="match_parent"
+                        android:text="有效期限" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/deadline"
+                    style="@style/common_font"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="10dp"
+                    android:layout_toLeftOf="@id/imgArrowsRight2"
+                    android:maxLines="1"
+                    android:text="请填写AED电池有效期限"
+                    android:textColor="@color/text_9" />
+
+                <ImageView
+                    android:id="@+id/imgArrowsRight2"
+                    android:layout_width="8dp"
+                    android:layout_height="15dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:src="@mipmap/ic_arrows_right" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/option3"
+                android:layout_width="match_parent"
+                android:layout_height="55dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="*"
+                        android:textColor="@color/text_red"
+                        android:visibility="visible" />
+
+                    <TextView
+                        style="@style/common_font"
+                        android:layout_height="match_parent"
+                        android:text="存放地址" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/consignSite"
+                    style="@style/common_font"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="10dp"
+                    android:layout_toLeftOf="@id/imgArrowsRight3"
+                    android:maxLines="1"
+                    android:text="存放详细地址"
+                    android:textColor="@color/text_9" />
+
+                <ImageView
+                    android:id="@+id/imgArrowsRight3"
+                    android:layout_width="8dp"
+                    android:layout_height="15dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:src="@mipmap/ic_arrows_right" />
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:orientation="vertical"
+                android:paddingLeft="@dimen/margin_15dp"
+                android:paddingRight="@dimen/margin_15dp">
+
+                <LinearLayout
+                    android:id="@+id/layout1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="46dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="*"
+                        android:textColor="@color/text_red" />
+
+                    <TextView
+                        style="@style/common_font"
+                        android:layout_height="match_parent"
+                        android:text="详细位置信息" />
+                </LinearLayout>
+
+                <com.example.meimeng.custom.Notepad
+                    android:layout_width="match_parent"
+                    android:layout_height="88dp"
+                    android:background="@drawable/shape_annulus_edittext_rectangle_bg"
+                    android:hint="为了快速找到AED，请输入附近标志性物体..."
+                    android:textColorHint="@color/text_9"
+                    android:textCursorDrawable="@null"
+                    android:textSize="@dimen/text_size_14sp" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="46dp"
+                    android:layout_marginTop="6dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="*"
+                        android:textColor="@color/text_red" />
+
+                    <TextView
+                        android:id="@+id/optionName"
+                        style="@style/common_font"
+                        android:layout_height="match_parent"
+                        android:text="图片位置" />
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:scaleType="fitXY"
+                    android:src="@mipmap/camera" />
+
+                <GridView
+                    android:id="@+id/imgShowGridView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:horizontalSpacing="4dp"
+                    android:numColumns="3"
+                    android:verticalSpacing="4dp"
+                    android:visibility="visible"></GridView>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/aed_img_explain"
+                    android:textColor="@color/text_333"
+                    android:textSize="10sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="62dp"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:ellipsize="end"
+                        android:gravity="center"
+                        android:maxLines="2"
+                        android:text="@string/case_explain"
+                        android:textColor="@color/text_333"
+                        android:textSize="10sp" />
+
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:paddingBottom="8dp"
+                        android:paddingLeft="12dp"
+                        android:paddingRight="12dp"
+                        android:paddingTop="8dp"
+                        android:scaleType="fitXY"
+                        android:src="@mipmap/case_img" />
+
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:paddingBottom="8dp"
+                        android:paddingLeft="12dp"
+                        android:paddingRight="12dp"
+                        android:paddingTop="8dp"
+                        android:scaleType="fitXY"
+                        android:src="@mipmap/case_img" />
+
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:paddingBottom="8dp"
+                        android:paddingLeft="12dp"
+                        android:paddingRight="12dp"
+                        android:paddingTop="8dp"
+                        android:scaleType="fitXY"
+                        android:src="@mipmap/case_img" />
+
+
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/submit"
+                    android:layout_width="match_parent"
+                    android:layout_height="49dp"
+                    android:layout_marginBottom="56dp"
+                    android:layout_marginLeft="24dp"
+                    android:layout_marginRight="24dp"
+                    android:layout_marginTop="24dp"
+                    android:background="@drawable/shape_circular_red_bg"
+                    android:text="提交审核"
+                    android:textColor="@color/color_white_100"
+                    android:textSize="17sp" />
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+
+</LinearLayout>

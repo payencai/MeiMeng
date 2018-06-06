@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".activity.MainActivity">
+
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/tab_menu"
+        android:layout_below="@id/head"></FrameLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/tab_menu"
+        android:layout_width="match_parent"
+        android:layout_height="51dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/color_white_100"
+        android:orientation="horizontal">
+
+        <android.support.constraint.Guideline
+            android:id="@+id/guideline_w_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.2" />
+
+        <android.support.constraint.Guideline
+            android:id="@+id/guideline_w_4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.4" />
+
+        <android.support.constraint.Guideline
+            android:id="@+id/guideline_w_6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.6" />
+
+        <android.support.constraint.Guideline
+            android:id="@+id/guideline_w_8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.8" />
+
+
+        <LinearLayout
+            android:id="@+id/home"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="@id/guideline_w_2"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/homeImg"
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:padding="@dimen/margin_2dp"
+                android:src="@drawable/bottom_bar_home_deal" />
+
+            <TextView
+                android:id="@+id/homeText"
+                android:layout_width="wrap_content"
+                android:layout_height="17dp"
+                android:gravity="center"
+                android:text="首页"
+                android:textColor="@drawable/bottom_bar_deal_text"
+                android:textSize="@dimen/text_size_12sp" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/firstAid"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="@id/guideline_w_2"
+            app:layout_constraintRight_toRightOf="@id/guideline_w_4"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/firstAidImg"
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:padding="@dimen/margin_2dp"
+                android:src="@drawable/bottom_bar_first_aid_deal" />
+
+            <TextView
+                android:id="@+id/firstAidText"
+                android:layout_width="wrap_content"
+                android:layout_height="17dp"
+                android:gravity="center"
+                android:text="急救知识"
+                android:textColor="@drawable/bottom_bar_deal_text"
+                android:textSize="@dimen/text_size_12sp" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/aboutUs"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="@id/guideline_w_6"
+            app:layout_constraintRight_toRightOf="@id/guideline_w_8"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/aboutUsImg"
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:padding="@dimen/margin_2dp"
+                android:src="@drawable/bottom_bar_me_deal" />
+
+            <TextView
+                android:id="@+id/aboutUsText"
+                android:layout_width="wrap_content"
+                android:layout_height="17dp"
+                android:gravity="center"
+                android:text="设备信息"
+                android:textColor="@drawable/bottom_bar_deal_text"
+                android:textSize="@dimen/text_size_12sp" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/userCenter"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="@id/guideline_w_8"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/userCenterImg"
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:padding="@dimen/margin_2dp"
+                android:src="@drawable/bottom_bar_user_deal" />
+
+
+            <TextView
+                android:id="@+id/userCenterText"
+                android:layout_width="wrap_content"
+                android:layout_height="17dp"
+                android:gravity="center"
+                android:text="个人中心"
+                android:textColor="@drawable/bottom_bar_deal_text"
+                android:textSize="@dimen/text_size_12sp" />
+
+
+        </LinearLayout>
+    </android.support.constraint.ConstraintLayout>
+
+    <ImageView
+        android:id="@+id/imgSos"
+        android:layout_width="@dimen/length_view_75dp"
+        android:layout_height="@dimen/length_view_75dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/margin_12dp"
+        android:src="@mipmap/ic_sos" />
+
+</RelativeLayout>

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activity.WaitSalvationActivity">
+
+
+    <RelativeLayout
+        android:id="@+id/head"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="#e63030">
+
+        <TextView
+            android:id="@+id/showRescueCondition"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:text="等待救援"
+            android:textColor="#ffffff"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/margin_15dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/margin_5dp"
+            android:text="取消求助"
+            android:textColor="#ffffff"
+            android:textSize="@dimen/text_size_14sp" />
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/showRescueState"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/length_view_30dp"
+        android:layout_below="@id/head"
+        android:background="#ffffff"
+        android:gravity="center"
+        android:text="0名用户正在赶来，等待时间00:00:10"
+        android:textColor="#333333"
+        android:textSize="14sp" />
+
+
+    <RelativeLayout
+        android:id="@+id/bottomBar"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:background="#f7f7f9">
+
+        <ImageView
+            android:id="@+id/msgTypeBtn"
+            android:layout_width="33dp"
+            android:layout_height="33dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="16dp"
+            android:src="@mipmap/ic_speak_btn" />
+
+        <ImageView
+            android:id="@+id/photoBtn"
+            android:layout_width="33dp"
+            android:layout_height="33dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="16dp"
+            android:src="@mipmap/ic_photo_btn" />
+
+        <EditText
+            android:id="@+id/rescueEdit"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/margin_6dp"
+            android:layout_toLeftOf="@+id/photoBtn"
+            android:layout_toRightOf="@+id/msgTypeBtn"
+            android:background="@drawable/shape_annulus_edittext_bg"
+            android:hint="sdfsdfsfsdfsffsdf"
+            android:padding="@dimen/margin_7dp"
+            android:textColor="#333333"
+            android:textCursorDrawable="@null"
+            android:textSize="@dimen/text_size_14sp"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/voiceBtn"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/margin_6dp"
+            android:layout_toLeftOf="@+id/photoBtn"
+            android:layout_toRightOf="@+id/msgTypeBtn"
+            android:background="@drawable/shape_annulus_edittext_bg"
+            android:gravity="center"
+            android:hint="按住   说话"
+            android:padding="@dimen/margin_7dp"
+            android:textColor="@color/color_white_100"
+            android:textSize="@dimen/text_size_14sp" />
+    </RelativeLayout>
+
+
+    <FrameLayout
+        android:id="@+id/rescueContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/bottomBar"
+        android:layout_below="@+id/showRescueState"
+        android:background="#ddd"
+        android:orientation="horizontal"></FrameLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/chatRv"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:layout_above="@id/bottomBar"
+        android:layout_alignParentRight="true"
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="24dp"
+        android:background="#00ffffff"></android.support.v7.widget.RecyclerView>
+
+</RelativeLayout>

@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <!--<com.baidu.mapapi.map.MapView-->
+    <!--android:id="@+id/bmapView"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:clickable="true"></com.baidu.mapapi.map.MapView>-->
+    <RelativeLayout
+        android:id="@+id/head"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="#e63030">
+
+        <TextView
+            android:id="@+id/actionBarAreaName"
+            style="@style/mmTextViewStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingLeft="12dp"
+            android:text="广州市" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:layout_marginBottom="6dp"
+            android:layout_marginLeft="24dp"
+            android:layout_marginRight="56dp"
+            android:layout_marginTop="6dp"
+            android:layout_toLeftOf="@id/ring"
+            android:layout_toRightOf="@id/actionBarAreaName"
+            android:background="@drawable/search_column_bg"
+            android:drawableLeft="@mipmap/ic_search"
+            android:gravity="center"
+            android:paddingLeft="@dimen/margin_12dp"
+            android:text="请输入城市名"
+            android:textColor="#999999"
+            android:textSize="@dimen/text_size_14sp"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="@dimen/margin_5dp"
+            android:layout_marginLeft="@dimen/margin_15dp"
+            android:layout_marginRight="@dimen/margin_30dp"
+            android:layout_marginTop="@dimen/margin_5dp"
+            android:layout_toLeftOf="@id/ring"
+            android:layout_toRightOf="@id/actionBarAreaName"
+            android:background="@drawable/shape_circular_bead_while"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/searchTypeSelect"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@mipmap/ic_home_type_select_bg"
+                android:orientation="horizontal"
+                android:paddingLeft="6dp"
+                android:paddingRight="6dp">
+
+                <TextView
+                    android:id="@+id/selectorText"
+                    style="@style/common_font"
+                    android:layout_height="match_parent"
+                    android:text="城市" />
+
+                <ImageView
+                    android:layout_width="8dp"
+                    android:layout_height="6dp"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="4dp"
+                    android:scaleType="fitXY"
+                    android:src="@mipmap/ic_triangle_down" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginRight="5dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginRight="6dp"
+                    android:src="@mipmap/ic_search" />
+
+                <TextView
+                    android:id="@+id/searchHint"
+                    style="@style/common_font"
+                    android:layout_height="match_parent"
+                    android:text="输入城市名"
+                    android:textColor="@color/text_9" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/ring"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/margin_12dp"
+            android:src="@mipmap/ic_common_nav_normal_messag" />
+
+
+    </RelativeLayout>
+
+    <com.baidu.mapapi.map.MapView
+        android:id="@+id/bmapView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/head"
+        android:clickable="true"></com.baidu.mapapi.map.MapView>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/head"
+        android:gravity="center"
+        android:text="Home界面"
+        android:textSize="32sp"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:layout_width="51dp"
+        android:layout_height="170dp"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/head"
+        android:layout_marginRight="@dimen/margin_15dp"
+        android:layout_marginTop="@dimen/margin_12dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/addAED"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@drawable/shape_circular_bead_bg"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:padding="@dimen/margin_3dp"
+                android:src="@mipmap/ic_home_add" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:singleLine="true"
+                android:text="添加AED"
+                android:textColor="#fefefe"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/firstAidSite"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginBottom="@dimen/margin_10dp"
+            android:layout_marginTop="@dimen/margin_10dp"
+            android:layout_weight="1"
+            android:background="@drawable/shape_circular_bead_bg"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:padding="@dimen/margin_3dp"
+                android:src="@mipmap/ic_first_aid_site" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:singleLine="true"
+                android:text="急救站"
+                android:textColor="#fefefe"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/positioning"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@drawable/shape_circular_bead_bg"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:padding="@dimen/margin_3dp"
+                android:src="@mipmap/ic_positioning" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:singleLine="true"
+                android:text="定位"
+                android:textColor="#fefefe"
+                android:textSize="12sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>

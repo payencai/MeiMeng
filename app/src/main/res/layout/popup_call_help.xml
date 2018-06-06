@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/unchecked_bg">
+
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_h_6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.6" />
+
+    <RelativeLayout
+        android:layout_width="146dp"
+        android:layout_height="146dp"
+        android:layout_marginTop="@dimen/margin_12dp"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_h_6"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+
+        <ImageView
+            android:id="@+id/callFirstAidImg"
+            android:layout_width="@dimen/margin_85dp"
+            android:layout_height="@dimen/margin_85dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="22dp"
+            android:src="@mipmap/ic_firstaid" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="16dp"
+            android:layout_below="@id/callFirstAidImg"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:text="呼叫急救人员"
+            android:textColor="#333333"
+            android:textSize="@dimen/text_size_14sp" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="@dimen/length_view_35dp"
+        android:layout_marginLeft="34dp"
+        android:layout_marginRight="34dp"
+        android:layout_marginTop="@dimen/margin_20dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/guideline_h_6">
+
+        <LinearLayout
+            android:id="@+id/call120"
+            android:layout_width="135dp"
+            android:layout_height="match_parent"
+            android:layout_marginRight="8dp"
+            android:background="@drawable/shape_annulus_callpopup_bg"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="@dimen/length_view_35dp"
+                android:layout_height="match_parent"
+                android:padding="6dp"
+                android:src="@mipmap/ic_ambulance" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginRight="@dimen/margin_12dp"
+                android:gravity="center_vertical"
+                android:text="救护车直联"
+                android:textColor="#333333"
+                android:textSize="@dimen/text_size_12sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/callEmergencyContact"
+            android:layout_width="135dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="8dp"
+            android:background="@drawable/shape_annulus_callpopup_bg"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="@dimen/length_view_35dp"
+                android:layout_height="match_parent"
+                android:padding="7dp"
+                android:src="@mipmap/ic_phone" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginRight="@dimen/margin_12dp"
+                android:gravity="center_vertical"
+                android:text="呼叫紧急联系人"
+                android:textColor="#333333"
+                android:textSize="@dimen/text_size_12sp" />
+        </LinearLayout>
+    </LinearLayout>
+</android.support.constraint.ConstraintLayout>

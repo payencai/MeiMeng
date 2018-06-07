@@ -25,6 +25,12 @@ public abstract class RVBaseAdapter<C extends RVBaseCell> extends RecyclerView.A
         notifyDataSetChanged();
     }
 
+    public void reset(List<C> data) {
+        mData.clear();
+        setData(data);
+    }
+
+
     public List<C> getData() {
         return mData;
     }

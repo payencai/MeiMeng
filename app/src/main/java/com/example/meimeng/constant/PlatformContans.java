@@ -12,10 +12,9 @@ import java.util.Map;
 public class PlatformContans {
 
     public static String root = "http://47.106.164.34:8080/";//正式地址
-
     public static String rootUrl = root + "memen/";//
-//    public static String root = "http://192.168.43.47:9999/";//诗安测试地址
-//    public static String rootUrl = root + "MiCai/";//
+//    public static String root = "http://192.168.1.18:8080/";//诗安测试地址
+//    public static String rootUrl = root + "memen/";//
 
     public static class UseUser {
         public static final String sHead = rootUrl + "useuser/";
@@ -23,11 +22,17 @@ public class PlatformContans {
         public static final String sUseUserRegister = sHead + "useUserRegister";//注册
         public static final String sUpdateUserpwd = sHead + "updateUserpwd";//修改密码
         public static final String sLogin = sHead + "login";//用户登录
+        public static final String sAuth=sHead+"updateRealNameAuthentication";//用户实名认证
+        public static final String sUpdateRealNameAuthentication=sHead+"updateRealNameAuthentication";//用户实名认证
 
     }
 
     public static class Serveruser {
         public static final String sHead = rootUrl + "serveruser/";
         public static final String ServerUserLogin = sHead + "ServerUserLogin";//志愿者登录
+    }
+    public static class UserAdvice{
+        public static final String sHead=rootUrl+"userAdvice/";
+        public static final String sAddAdvice=sHead+"addUserAdvice";//反馈意见
     }
 }

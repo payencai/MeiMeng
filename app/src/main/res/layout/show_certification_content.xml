@@ -27,6 +27,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
             <EditText
+                android:gravity="right|center_vertical"
+                android:id="@+id/et_realname"
                 android:maxLength="10"
                 android:layout_marginRight="@dimen/margin_20dp"
                 android:background="@color/color_white_100"
@@ -56,7 +58,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
             <EditText
-                android:inputType="number"
+                android:id="@+id/et_certnumber"
                 android:maxLength="20"
                 android:layout_marginRight="@dimen/margin_20dp"
                 android:background="@color/color_white_100"
@@ -84,28 +86,39 @@
                 android:text="性别"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
-            <RadioButton
-                android:drawablePadding="8dp"
-                android:layout_marginRight="@dimen/margin_20dp"
-                android:drawableLeft="@drawable/sex_selector"
-                android:button="@null"
-                android:text="男"
+            <RadioGroup
+                android:id="@+id/rg_sex"
+                android:orientation="horizontal"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content">
 
-            <RadioButton
-                android:drawablePadding="8dp"
-                android:drawableLeft="@drawable/sex_selector"
-                android:button="@null"
-                android:checked="true"
-                android:layout_marginRight="@dimen/margin_20dp"
-                android:text="女"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                <RadioButton
+                    android:id="@+id/rb_nan"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="@dimen/margin_20dp"
+                    android:button="@null"
+                    android:drawableLeft="@drawable/sex_selector"
+                    android:drawablePadding="8dp"
+                    android:text="男"/>
+
+                <RadioButton
+                    android:id="@+id/rb_nv"
+                    android:drawablePadding="8dp"
+                    android:drawableLeft="@drawable/sex_selector"
+                    android:button="@null"
+                    android:checked="true"
+                    android:layout_marginRight="@dimen/margin_20dp"
+                    android:text="女"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </RadioGroup>
+
         </LinearLayout>
 
     </LinearLayout>
     <Button
+        android:id="@+id/btn_renzhen"
         android:textSize="18sp"
         android:textColor="@color/color_white_100"
         android:layout_marginTop="@dimen/margin_50dp"

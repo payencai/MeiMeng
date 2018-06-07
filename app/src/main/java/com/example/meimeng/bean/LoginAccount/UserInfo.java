@@ -1,10 +1,12 @@
 package com.example.meimeng.bean.LoginAccount;
 
+import com.example.meimeng.common.rv.base.RVBaseCell;
+
 /**
  * 作者：凌涛 on 2018/6/6 17:45
  * 邮箱：771548229@qq..com
  */
-public class UserInfo {
+public class UserInfo  {
 
 
     /**

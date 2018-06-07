@@ -1,5 +1,6 @@
 package com.example.meimeng.bean;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +33,11 @@ public class SystemMsgBean extends RVBaseCell {
 
     @Override
     public void onBindViewHolder(RVBaseViewHolder holder, int position) {
+
+//        holder.getTextView(R.id.userTel)
+//        holder.setText(R.id.userTel,"dsfdsfsdfdf");
+//        Context context = holder.getItemView().getContext();
+
 
     }
 }

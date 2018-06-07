@@ -2,6 +2,8 @@ package com.example.meimeng.http;
 
 import android.util.Log;
 
+import org.json.JSONObject;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -47,8 +49,14 @@ public class HttpProxy implements IHttpProcessor {
 
     @Override
     public void post(String url, String tokenMap, Map<String, Object> bodyParams, ICallBack callBack) {
-
+        mIHttpProcessor.post(url, tokenMap, bodyParams, callBack);
     }
+
+    @Override
+    public void post(String url, String tokenMap, String jsonString, ICallBack callBack) {
+        mIHttpProcessor.post(url, tokenMap, jsonString, callBack);
+    }
+
 
     @Override
     public void get(String url, Map<String, Object> headParams, ICallBack callBack) {

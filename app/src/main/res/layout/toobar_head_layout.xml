@@ -19,7 +19,7 @@
 
 
     <TextView
-        android:id="@+id/title"
+        android:id="@+id/tv_title"
         style="@style/common_font"
         android:layout_height="42dp"
         android:layout_centerInParent="true"

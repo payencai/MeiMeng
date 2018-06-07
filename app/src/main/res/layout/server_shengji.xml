@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+    <include  layout="@layout/toobar_head_layout"></include>
+    <LinearLayout
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_marginTop="@dimen/margin_50dp"
+        android:layout_marginRight="@dimen/margin_15dp"
+        android:layout_marginLeft="@dimen/margin_15dp"
+        android:background="@drawable/shape_yellow_radius"
+        android:layout_width="match_parent"
+        android:layout_height="115dp">
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:src="@mipmap/ic_gaoji"
+                android:layout_width="55dp"
+                android:layout_height="@dimen/margin_40dp"/>
+            <LinearLayout
+                android:layout_marginLeft="@dimen/length_view_20dp"
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    style="@style/font_18sp_fff"
+                    android:text="@string/str_gaojirenyuan"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    style="@style/font_14sp_fff"
+                    android:text="@string/str_wupin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+</LinearLayout>

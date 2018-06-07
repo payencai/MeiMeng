@@ -19,4 +19,6 @@
     <color name="bg_fff">#ffffff</color>
     <color name="bg_e5e5e5">#e5e5e5</color>
     <color name="bg_activity">#f3f3f3</color>
+    <color name="bg_f2f2f2">#f2f2f2</color>
+    <color name="bg_yellow">#ffa938</color>
 </resources>

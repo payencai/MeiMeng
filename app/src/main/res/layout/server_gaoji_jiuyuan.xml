@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:background="@color/bg_f2f2f2"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <include layout="@layout/toobar_head_layout">
+
+    </include>\
+    <LinearLayout
+        android:orientation="vertical"
+        android:background="@color/color_white_100"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_marginTop="@dimen/margin_15dp"
+            android:layout_marginLeft="@dimen/margin_15dp"
+            style="@style/common_font"
+            android:text="@string/str_zm_zhengshu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:layout_marginRight="@dimen/margin_30dp"
+            style="@style/font_10sp_333"
+            android:layout_marginTop="@dimen/margin_15dp"
+            android:layout_marginLeft="@dimen/margin_15dp"
+            android:text="@string/str_zige_pic"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <ImageView
+            android:layout_marginBottom="@dimen/margin_30dp"
+            android:layout_marginTop="@dimen/margin_20dp"
+            android:layout_marginLeft="@dimen/margin_15dp"
+            android:src="@mipmap/ic_me_add"
+            android:layout_width="165dp"
+            android:layout_height="110dp"/>
+    </LinearLayout>
+
+
+    <Button
+        android:textColor="@color/color_white_100"
+        android:textSize="@dimen/text_size_17sp"
+        android:text="提交审核"
+        android:layout_marginRight="@dimen/margin_20dp"
+        android:layout_marginLeft="@dimen/margin_20dp"
+        android:layout_marginTop="50dp"
+        android:background="@drawable/shape_renzhen_btn"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"/>
+</LinearLayout>

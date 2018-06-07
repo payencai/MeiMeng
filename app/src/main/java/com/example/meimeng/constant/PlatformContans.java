@@ -32,7 +32,7 @@ public class PlatformContans {
         public static final String ServerUserLogin = sHead + "ServerUserLogin";//志愿者登录
     }
     public static class UserAdvice{
-        public static final String sHead=rootUrl+"userAdvice/";
+        public static final String sHead=rootUrl+"useradvice/";
         public static final String sAddAdvice=sHead+"addUserAdvice";//反馈意见
     }
 }

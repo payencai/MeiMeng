@@ -13,6 +13,8 @@ import com.example.meimeng.base.BaseActivity;
 import com.example.meimeng.constant.PlatformContans;
 import com.example.meimeng.http.HttpProxy;
 import com.example.meimeng.http.ICallBack;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,11 +27,18 @@ public class RebackActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+    }
+
+    @Override
+    protected void initView() {
+
         tv_save=findViewById(R.id.saveText);
         et_input=findViewById(R.id.reback_text);
         tittle=findViewById(R.id.title);
-        et_input.setVisibility(View.VISIBLE);
+        tv_save.setVisibility(View.VISIBLE);
         tittle.setText("意见反馈");
+
         tv_save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -38,30 +47,30 @@ public class RebackActivity extends BaseActivity {
             }
         });
     }
-
-    @Override
-    protected void initView() {
-
-    }
     private void summitMsg(String input){
-        Map<String,Object> params=new HashMap<>();
-        params.put("data",input);
+        Map<String, Object> p = new HashMap<>();
+        p.put("content",input );
+        String data=null;
         String token=null;
+        Gson gson = new GsonBuilder().enableComplexMapKeySerialization().create();
         if(APP.sUserType==0){
             token=APP.getInstance().getUserInfo().getToken();
-
+            p.put("userType",0);
+            data = gson.toJson(p);
         }else{
             token=APP.getInstance().getServerUserInfo().getToken();
+            p.put("userType",1);
+            data = gson.toJson(p);
         }
-        HttpProxy.obtain().post(PlatformContans.UserAdvice.sAddAdvice, token, input, new ICallBack() {
+        HttpProxy.obtain().post(PlatformContans.UserAdvice.sAddAdvice, token, data, new ICallBack() {
             @Override
             public void OnSuccess(String result) {
-                Log.e("advice",result);
+                Log.e("TAG",result);
             }
 
             @Override
             public void onFailure(String error) {
-
+                Log.e("TAG",error);
             }
         });
     }

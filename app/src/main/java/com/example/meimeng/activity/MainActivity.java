@@ -1,10 +1,17 @@
 package com.example.meimeng.activity;
 
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -14,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.meimeng.R;
 import com.example.meimeng.base.BaseActivity;
@@ -52,12 +60,49 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     private PopupWindow mSoSPw;
     private PopupWindow mTypeSelectPw;
+    private static final int MY_PERMISSIONS_REQUEST_CALL_PHONE = 1;
 
     private List<Fragment> fragments;
     private FragmentManager fm;
+    //当前打电话的号码
+    private String curCallTel = "";
     //当前显示的Fragment
 
+    private void checkPower() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.CALL_PHONE)
+                != PackageManager.PERMISSION_GRANTED) {
 
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.CALL_PHONE},
+                    MY_PERMISSIONS_REQUEST_CALL_PHONE);
+        } else {
+            callPhone();
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    public void callPhone() {
+        Intent intent = new Intent(Intent.ACTION_CALL);
+        Uri data = Uri.parse("tel:" + curCallTel);
+        intent.setData(data);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == MY_PERMISSIONS_REQUEST_CALL_PHONE) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                callPhone();
+            } else {
+                // Permission Denied
+                Toast.makeText(MainActivity.this, "权限拒绝", Toast.LENGTH_SHORT).show();
+            }
+            return;
+        }
+
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
 
     private void initFragment() {
         fm = getSupportFragmentManager();
@@ -81,6 +126,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         hideAllFragment();
         showFragment(0);
     }
+
     @Override
     protected void initView() {
 
@@ -204,10 +250,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 startActivity(new Intent(this, com.example.meimeng.activity.WaitSoSActivity.class));
                 break;
             case R.id.call120:
-                ToaskUtil.showToast(this, "打120");
+//                ToaskUtil.showToast(this, "打120");
+                curCallTel = "10086";
+                checkPower();
                 break;
             case R.id.callEmergencyContact:
-                ToaskUtil.showToast(this, "打紧急联系人");
+                curCallTel = "10010";
+                checkPower();
                 break;
 
         }

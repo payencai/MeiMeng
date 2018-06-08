@@ -4,6 +4,7 @@
     <color name="color_gray_100">#b3b3b3</color>
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
+    <color name="background">#FFFFFF</color>
 
     <color name="line_gray">#bfbfbf</color>
     <color name="colorAccent">#3F51B5</color>
@@ -19,4 +20,7 @@
     <color name="bg_fff">#ffffff</color>
     <color name="bg_e5e5e5">#e5e5e5</color>
     <color name="bg_activity">#f3f3f3</color>
+    <color name="bg_f2f2f2">#f2f2f2</color>
+    <color name="bg_yellow">#ffa938</color>
+    <color name="pw_cancel_text_color">#008cdd</color>
 </resources>

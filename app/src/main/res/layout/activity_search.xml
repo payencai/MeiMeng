@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".activity.SearchActivity">
+
+    <RelativeLayout
+        android:id="@+id/head"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="#e63030"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
+
+        <ImageView
+            android:id="@+id/back"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:paddingBottom="9dp"
+            android:paddingLeft="11dp"
+            android:paddingRight="11dp"
+            android:paddingTop="9dp"
+            android:scaleType="centerInside"
+            android:src="@mipmap/ic_back" />
+
+
+        <EditText
+            android:id="@+id/searchEdit"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="@dimen/margin_5dp"
+            android:layout_marginLeft="@dimen/margin_15dp"
+            android:layout_marginRight="@dimen/margin_30dp"
+            android:layout_marginTop="@dimen/margin_5dp"
+            android:layout_toLeftOf="@id/searchBtn"
+            android:layout_toRightOf="@id/back"
+            android:background="@drawable/shape_circular_bead_while"
+            android:hint="请输入药品"
+            android:maxLines="1"
+            android:paddingLeft="10dp"
+            android:text=""
+            android:textSize="@dimen/text_size_14sp">
+        </EditText>
+
+        <ImageView
+            android:id="@+id/searchBtn"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:padding="12dp"
+            android:src="@mipmap/ic_search_while" />
+
+
+    </RelativeLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/drugRv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"></android.support.v7.widget.RecyclerView>
+
+</LinearLayout>

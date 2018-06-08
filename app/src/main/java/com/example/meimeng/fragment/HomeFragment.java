@@ -35,6 +35,7 @@ import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.utils.CoordinateConverter;
 import com.example.meimeng.R;
 import com.example.meimeng.activity.AddAEDActivity;
+import com.example.meimeng.activity.SearchActivity;
 import com.example.meimeng.activity.SystemMsgActivity;
 import com.example.meimeng.base.BaseFragment;
 import com.example.meimeng.util.ToaskUtil;
@@ -55,6 +56,7 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener, 
     private MapView mMapView = null;
     private BaiduMap mBaiduMap;
     private static final int BAIDU_READ_PHONE_STATE = 100;
+    private int searchType = 0;//搜索类型，0为城市搜索，1为药品搜索
 
     @Nullable
     @Override
@@ -69,6 +71,7 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener, 
 
     private void initView(View view) {
         addAED = (LinearLayout) view.findViewById(R.id.addAED);
+        view.findViewById(R.id.searchBar).setOnClickListener(this);
         firstAidSite = (LinearLayout) view.findViewById(R.id.firstAidSite);
         positioning = (LinearLayout) view.findViewById(R.id.positioning);
         searchTypeSelect = (LinearLayout) view.findViewById(R.id.searchTypeSelect);
@@ -123,6 +126,9 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener, 
             case R.id.ring:
                 startActivity(new Intent(getContext(), SystemMsgActivity.class));
                 break;
+            case R.id.searchBar:
+                SearchActivity.startSearchActivity(getContext(), searchType);
+                break;
         }
     }
 
@@ -153,7 +159,7 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener, 
                 mTypeSelectPw.dismiss();
                 selectorText.setText("城市");
                 commonFont.setText("输入城市名");
-
+                searchType = 0;
             }
         });
         view.findViewById(R.id.drugSelect).setOnClickListener(new View.OnClickListener() {
@@ -162,6 +168,7 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener, 
                 mTypeSelectPw.dismiss();
                 selectorText.setText("药品");
                 commonFont.setText("输入药品名");
+                searchType = 1;
             }
         });
 
@@ -239,9 +246,9 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener, 
             Toast.makeText(getContext().getApplicationContext(), "没有权限,请手动开启定位权限", Toast.LENGTH_SHORT).show();
             // 申请一个（或多个）权限，并提供用于回调返回的获取码（用户定义）
             ActivityCompat.requestPermissions(getActivity(), new String[]{
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.READ_PHONE_STATE},
+                            Manifest.permission.ACCESS_COARSE_LOCATION,
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.READ_PHONE_STATE},
                     BAIDU_READ_PHONE_STATE);
         } else {
             location();

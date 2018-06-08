@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.meimeng">
 
+    <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     //获取设备网络状态，禁用后无法获取网络状态
     <uses-permission android:name="android.permission.INTERNET" />
@@ -32,13 +33,11 @@
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="ljlX9oSuUeIxGcd8GTy81Xp9XvQDOmc2" />
 
-        <activity android:name=".test.BMapTestActivity">
-
-        </activity>
+        <activity android:name=".test.BMapTestActivity" />
         <activity
             android:name=".activity.MainActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity android:name=".activity.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -47,7 +46,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.WaitSoSActivity" />
-        <activity android:name=".activity.TestActivity"></activity>
+        <activity android:name=".activity.TestActivity" />
         <activity android:name=".activity.WaitSalvationActivity" />
         <activity
             android:name=".activity.CityPickerActivity"
@@ -58,7 +57,32 @@
         <activity android:name=".activity.RegisterActivity" />
         <activity android:name=".test.TestLocationActivity" />
         <activity android:name=".test.ForegroundActivity" />
-        <activity android:name=".activity.SettingActivity"></activity>
+        <activity android:name=".activity.SettingActivity" />
+        <activity android:name=".activity.SystemMsgDetailedActivity" />
+        <activity android:name=".activity.SearchActivity" />
+        <activity android:name=".activity.AddressSelectionActivity"></activity>
+
+        <!--图片框架地址：https://github.com/donkingliang/ImageSelector-->
+        <!--图片选择Activity-->
+        <!--去掉Activity的ActionBar。-->
+        <!--使用者可以根据自己的项目去配置，不一定要这样写，只要不Activity的ActionBar去掉就可以了。-->
+        <!--横竖屏切换处理。-->
+        <!--如果要支持横竖屏切换，一定要加上这句，否则在切换横竖屏的时候会发生异常。-->
+        <activity
+            android:name="com.donkingliang.imageselector.ImageSelectorActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+        <!--图片预览Activity-->
+        <activity
+            android:name="com.donkingliang.imageselector.PreviewActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+
+        <!--图片剪切Activity-->
+        <activity
+            android:name="com.donkingliang.imageselector.ClipImageActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+
     </application>
 
 </manifest>

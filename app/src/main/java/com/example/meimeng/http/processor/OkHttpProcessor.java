@@ -1,9 +1,13 @@
 package com.example.meimeng.http.processor;
 
 import android.os.Handler;
+import android.util.Log;
 
 import com.example.meimeng.http.ICallBack;
 import com.example.meimeng.http.IHttpProcessor;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -12,8 +16,10 @@ import java.util.Map;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 
@@ -22,7 +28,6 @@ import okhttp3.Response;
  */
 
 public class OkHttpProcessor implements IHttpProcessor {
-
 
     public Handler mHandler = new Handler();
 
@@ -98,6 +103,41 @@ public class OkHttpProcessor implements IHttpProcessor {
         tokenMap.put("token", token);
         this.post(url, tokenMap, bodyParams, callBack);
     }
+
+    @Override
+    public void post(String url, String tokenvalue, String jsonString, final ICallBack callBack) {
+        OkHttpClient client = new OkHttpClient();
+        MediaType jsonType = MediaType.parse("application/json;charset=utf-8");
+        RequestBody body = RequestBody.create(jsonType, jsonString);
+        Map<String, Object> tokenMap = new HashMap<>();
+        tokenMap.put("token", tokenvalue);
+        Request request = addHeaders(tokenMap).post(body).url(url).build();
+        Call call = client.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, final IOException e) {
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        callBack.onFailure(e.getMessage());
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+
+                final String result = response.body().string();
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        callBack.OnSuccess(result);
+                    }
+                });
+            }
+        });
+    }
+
 
     @Override
     public void get(String url, Map<String, Object> headParams, final ICallBack callBack) {

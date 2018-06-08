@@ -19,6 +19,10 @@ allprojects {
     repositories {
         google()
         jcenter()
+        maven { url 'https://jitpack.io' }
+        // 如果你使用的是1.4.0或更早的版本，这句可以不用。
+        maven { url 'https://maven.google.com' }
+
     }
 }
 

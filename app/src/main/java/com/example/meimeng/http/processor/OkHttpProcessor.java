@@ -29,7 +29,6 @@ import okhttp3.Response;
 
 public class OkHttpProcessor implements IHttpProcessor {
 
-
     public Handler mHandler = new Handler();
 
     @Override

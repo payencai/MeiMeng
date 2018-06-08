@@ -2,6 +2,7 @@ package com.example.meimeng.activity;
 
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.TextView;
 
 import com.example.meimeng.R;
 import com.example.meimeng.bean.SystemMsgBean;
@@ -13,9 +14,13 @@ import java.util.List;
 
 public class SystemMsgActivity extends AbsBaseActivity<SystemMsgBean> {
 
+    private TextView mTitle;
+
     @Override
     public void onRecyclerViewInitialized() {
         findViewById(R.id.back).setOnClickListener(this);
+        mTitle = (TextView) findViewById(R.id.tv_title);
+        mTitle.setText("系统信息");
         addDividerItem(0);
         loadData();
 

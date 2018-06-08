@@ -126,7 +126,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                     userLoginState = 0;
                     register.setVisibility(View.VISIBLE);
                 }
-                ToaskUtil.showToast(this, userLoginState + "");
+//                ToaskUtil.showToast(this, userLoginState + "");
                 break;
         }
     }

@@ -79,7 +79,7 @@
            android:layout_width="wrap_content"
            android:layout_height="wrap_content">
            <ImageView
-               android:src="@mipmap/ic_volunteers"
+
                android:layout_width="15dp"
                android:layout_height="15dp"/>
 

@@ -1,9 +1,13 @@
 package com.example.meimeng.bean;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 
+import com.bumptech.glide.Glide;
 import com.example.meimeng.R;
 import com.example.meimeng.common.rv.base.RVBaseCell;
 import com.example.meimeng.common.rv.base.RVBaseViewHolder;
@@ -76,8 +80,14 @@ public class ClientRecordBean extends RVBaseCell {
     }
 
     private void addGroupImg(RVBaseViewHolder holder, int position,List<String> imgList) {
+        LinearLayout linearLayout= (LinearLayout) holder.getView(R.id.addImg);
+
         for (String s:imgList){
-            
+            Context context=holder.getItemView().getContext();
+            ImageView imageView=new ImageView(context);
+            imageView.setLayoutParams(new ViewGroup.LayoutParams(45, 45));
+            Glide.with(context).load(s).into(imageView);
+            linearLayout.addView(imageView);
         }
     }
 }

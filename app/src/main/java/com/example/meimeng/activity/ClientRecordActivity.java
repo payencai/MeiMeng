@@ -43,15 +43,16 @@ public class ClientRecordActivity extends AbsBaseActivity<ClientRecordBean> {
 
     @Override
     public void onPullRefresh() {
-        mRecyclerView.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                setRefreshing(false);
-            }
-        }, 2000);
+
+            mRecyclerView.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    setRefreshing(false);
+                }
+            }, 2000);
+
     }
     public void loadData(){
-
         Map<String,Object> params=new HashMap<>();
         params.put("page",1);
         HttpProxy.obtain().get(PlatformContans.ForHelp.sGetCompleteHelpByUseUser, params ,APP.getInstance().getUserInfo().getToken(),new ICallBack() {
@@ -67,21 +68,21 @@ public class ClientRecordActivity extends AbsBaseActivity<ClientRecordBean> {
                 if(size==0){
                     mBaseAdapter.addAll(list);
                 }else{
-
-                }
-                for(RecordResponse.beanList beanList:beanLists){
-                    ClientRecordBean bean = new ClientRecordBean();
-                    List<RecordResponse.serveruser> serverusers=beanList.getServerusers();
-                    List<String> imgList=new ArrayList<>();
-                    for(RecordResponse.serveruser serveruser:serverusers){
-                        imgList.add(serveruser.getServerImage());
+                    for(RecordResponse.beanList beanList:beanLists){
+                        ClientRecordBean bean = new ClientRecordBean();
+                        List<RecordResponse.serveruser> serverusers=beanList.getServerusers();
+                        List<String> imgList=new ArrayList<>();
+                        for(RecordResponse.serveruser serveruser:serverusers){
+                            imgList.add(serveruser.getServerImage());
+                        }
+                        bean.setCompleteTime(beanList.getCompleteTime());
+                        bean.setAddress(beanList.getUserAddress());
+                        bean.setImgList(imgList);
+                        list.add(bean);
                     }
-                    bean.setCompleteTime(beanList.getCompleteTime());
-                    bean.setAddress(beanList.getUserAddress());
-                    bean.setImgList(imgList);
-                    list.add(bean);
+                    mBaseAdapter.addAll(list);
                 }
-                mBaseAdapter.addAll(list);
+
             }
 
             @Override

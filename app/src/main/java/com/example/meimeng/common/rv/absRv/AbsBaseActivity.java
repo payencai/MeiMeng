@@ -90,18 +90,20 @@ public abstract class AbsBaseActivity<T> extends BaseActivity implements View.On
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 View firstView = recyclerView.getChildAt(0);
-                int top = firstView.getTop();
-                int topEdge = recyclerView.getPaddingTop();
-                //判断RecyclerView 的ItemView是否满屏，如果不满一屏，上拉不会触发加载更多
-                boolean isFullScreen = top < topEdge;
-                RecyclerView.LayoutManager manager = recyclerView.getLayoutManager();
-                int itemCount = manager.getItemCount();
-                //因为LoadMore View  是Adapter的一个Item,显示LoadMore 的时候，Item数量＋1了，导致 mLastVisibalePosition == itemCount-1
-                // 判断两次都成立，因此必须加一个判断条件 !mBaseAdapter.isShowLoadMore()
-                if (newState == RecyclerView.SCROLL_STATE_IDLE && mLastVisiblePosition == itemCount - 1 && isFullScreen && canShowLoadMore()) {
-                    //最后一个Item了
-                    showLoadMore();
-                    onLoadMore();
+                if(firstView!=null) {
+                    int top = firstView.getTop();
+                    int topEdge = recyclerView.getPaddingTop();
+                    //判断RecyclerView 的ItemView是否满屏，如果不满一屏，上拉不会触发加载更多
+                    boolean isFullScreen = top < topEdge;
+                    RecyclerView.LayoutManager manager = recyclerView.getLayoutManager();
+                    int itemCount = manager.getItemCount();
+                    //因为LoadMore View  是Adapter的一个Item,显示LoadMore 的时候，Item数量＋1了，导致 mLastVisibalePosition == itemCount-1
+                    // 判断两次都成立，因此必须加一个判断条件 !mBaseAdapter.isShowLoadMore()
+                    if (newState == RecyclerView.SCROLL_STATE_IDLE && mLastVisiblePosition == itemCount - 1 && isFullScreen && canShowLoadMore()) {
+                        //最后一个Item了
+                        showLoadMore();
+                        onLoadMore();
+                    }
                 }
             }
         });

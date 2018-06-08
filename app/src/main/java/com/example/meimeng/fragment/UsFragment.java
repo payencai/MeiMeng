@@ -32,7 +32,7 @@ public class UsFragment extends BaseFragment implements View.OnClickListener {
 
     private void initView(View view) {
         view.findViewById(R.id.back).setVisibility(View.GONE);
-        ((TextView) view.findViewById(R.id.tv_title)).setText("急救信息");
+        ((TextView) view.findViewById(R.id.title)).setText("急救信息");
         view.findViewById(R.id.deviceLayout).setOnClickListener(this);
         view.findViewById(R.id.firstAidLayout).setOnClickListener(this);
         view1 = view.findViewById(R.id.view1);

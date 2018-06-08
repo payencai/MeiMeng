@@ -44,5 +44,12 @@
     <string name="str_zm_zhengshu">请上传带有清晰姓名/照片的相关培训证书证明</string>
     <string name="str_gaojirenyuan">高级急救人员</string>
     <string name="str_wupin">完善信息领取急救站物品</string>
+    <string name="cancel">取消</string>
+    <string name="commit">确定</string>
+    <string name="year">年</string>
+    <string name="month">月</string>
+    <string name="day">日</string>
+    <string name="hour">时</string>
+    <string name="minute">分</string>
 
 </resources>

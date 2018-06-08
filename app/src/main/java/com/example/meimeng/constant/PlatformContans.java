@@ -24,6 +24,7 @@ public class PlatformContans {
         public static final String sLogin = sHead + "login";//用户登录
         public static final String sAuth=sHead+"updateRealNameAuthentication";//用户实名认证
         public static final String sUpdateRealNameAuthentication=sHead+"updateRealNameAuthentication";//用户实名认证
+        public static final String sUpdateUseUser=sHead+"updateUseUser";//更新用户
 
     }
 
@@ -34,5 +35,9 @@ public class PlatformContans {
     public static class UserAdvice{
         public static final String sHead=rootUrl+"useradvice/";
         public static final String sAddAdvice=sHead+"addUserAdvice";//反馈意见
+    }
+    public static class ForHelp{
+        public static final String sHead=rootUrl+"forhelp/";
+        public static final String sGetCompleteHelpByUseUser=sHead+"getCompleteHelpByUseUser";
     }
 }

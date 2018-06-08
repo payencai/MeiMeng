@@ -94,6 +94,11 @@ public class VolleyProcessor implements IHttpProcessor {
     }
 
     @Override
+    public void get(String url, String tokenValue, String jsonString, ICallBack callBack) {
+
+    }
+
+    @Override
     public void get(String url, Map<String, Object> headParams, String tokenMap, ICallBack callBack) {
 
     }

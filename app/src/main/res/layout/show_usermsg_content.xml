@@ -30,6 +30,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"/>
                 <EditText
+                    android:gravity="right|center_vertical"
+                    android:id="@+id/et_userinfo_name"
                     android:maxLength="6"
                     android:layout_marginRight="@dimen/margin_20dp"
                     android:background="@color/color_white_100"
@@ -58,6 +60,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"/>
                 <EditText
+                    android:gravity="right|center_vertical"
+                    android:id="@+id/et_userinfo_phone"
                     android:inputType="phone"
                     android:maxLength="11"
                     android:layout_marginRight="@dimen/margin_20dp"
@@ -87,6 +91,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"/>
                 <EditText
+                    android:gravity="right|center_vertical"
+                    android:id="@+id/et_userinfo_fixphone"
                     android:inputType="number"
                     android:maxLength="14"
                     android:layout_marginRight="@dimen/margin_20dp"
@@ -116,11 +122,13 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"/>
                 <EditText
+
+                    android:id="@+id/et_userinfo_address"
                     android:layout_marginRight="3dp"
                     android:background="@color/color_white_100"
                     android:textSize="@dimen/text_size_14sp"
                     android:hint="详细家庭住址"
-                    android:gravity="right"
+                    android:gravity="right|center_vertical"
                     android:layout_width="200dp"
                     android:maxLines="2"
                     android:maxLength="25"
@@ -151,26 +159,34 @@
                     android:text="性别"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"/>
-                <RadioButton
-                    style="@style/common_font"
-                    android:drawablePadding="4dp"
-                    android:layout_marginRight="@dimen/margin_10dp"
-                    android:drawableLeft="@drawable/sex_selector"
-                    android:button="@null"
-                    android:text="男"
+                <RadioGroup
+                    android:orientation="horizontal"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content">
+                    <RadioButton
+                        android:id="@+id/rb_userinfo_man"
+                        style="@style/common_font"
+                        android:drawablePadding="4dp"
+                        android:layout_marginRight="@dimen/margin_10dp"
+                        android:drawableLeft="@drawable/sex_selector"
+                        android:button="@null"
+                        android:text="男"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
 
-                <RadioButton
-                    style="@style/common_font"
-                    android:drawablePadding="4dp"
-                    android:drawableLeft="@drawable/sex_selector"
-                    android:button="@null"
-                    android:checked="true"
-                    android:layout_marginRight="@dimen/margin_20dp"
-                    android:text="女"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    <RadioButton
+                        android:id="@+id/rb_userinfo_nv"
+                        style="@style/common_font"
+                        android:drawablePadding="4dp"
+                        android:drawableLeft="@drawable/sex_selector"
+                        android:button="@null"
+                        android:checked="true"
+                        android:layout_marginRight="@dimen/margin_20dp"
+                        android:text="女"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </RadioGroup>
+
             </LinearLayout>
             <View
                 android:layout_marginLeft="@dimen/margin_15dp"
@@ -192,6 +208,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"/>
                 <EditText
+                    android:gravity="right|center_vertical"
+                    android:id="@+id/et_userinfo_age"
                     android:inputType="number"
                     android:maxLength="3"
                     android:layout_marginRight="@dimen/margin_20dp"
@@ -227,6 +245,7 @@
                     android:layout_width="76dp"
                     android:layout_height="@dimen/margin_35dp">
                     <TextView
+                        android:id="@+id/tv_userinfo_bloodType"
                         style="@style/common_font"
                         android:layout_weight="3"
 
@@ -267,7 +286,9 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"/>
                 <EditText
-                    android:gravity="right"
+
+                    android:id="@+id/et_userinfo_sicken"
+                    android:gravity="right|center_vertical"
                     android:maxLength="30"
                     android:layout_marginRight="@dimen/margin_20dp"
                     android:background="@color/color_white_100"
@@ -295,7 +316,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"/>
                 <EditText
-                    android:gravity="right"
+                    android:id="@+id/et_userinfo_othersicken"
+                    android:gravity="right|center_vertical"
                     android:maxLength="30"
                     android:layout_marginRight="@dimen/margin_20dp"
                     android:background="@color/color_white_100"
@@ -328,6 +350,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"/>
                 <EditText
+                    android:gravity="right|center_vertical"
+                    android:id="@+id/et_userinfo_lianxi1"
                     android:maxLength="6"
                     android:layout_marginRight="@dimen/margin_20dp"
                     android:background="@color/color_white_100"
@@ -356,6 +380,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"/>
                 <EditText
+                    android:gravity="right|center_vertical"
+                    android:id="@+id/et_userinfo_lianxi2"
                     android:maxLength="6"
                     android:layout_marginRight="@dimen/margin_20dp"
                     android:background="@color/color_white_100"
@@ -384,6 +410,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"/>
                 <EditText
+                    android:gravity="right|center_vertical"
+                    android:id="@+id/et_userinfo_lianxi3"
                     android:maxLength="6"
                     android:layout_marginRight="@dimen/margin_20dp"
                     android:background="@color/color_white_100"
@@ -395,6 +423,7 @@
 
         </LinearLayout>
         <Button
+            android:id="@+id/btn_userinfo_save"
             android:layout_marginBottom="@dimen/margin_40dp"
             android:layout_marginTop="@dimen/margin_50dp"
             android:layout_marginLeft="10dp"

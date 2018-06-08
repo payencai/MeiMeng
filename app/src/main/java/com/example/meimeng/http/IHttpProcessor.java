@@ -21,6 +21,8 @@ public interface IHttpProcessor {
 
     void get(String url, Map<String, Object> headParams, Map<String, Object> tokenMap, ICallBack callBack);
 
+    void get(String url, String  tokenValue, String jsonString, ICallBack callBack);
+
     void get(String url, Map<String, Object> headParams, String tokenMap, ICallBack callBack);
 
 

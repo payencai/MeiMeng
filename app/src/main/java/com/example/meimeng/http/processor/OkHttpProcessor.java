@@ -202,6 +202,42 @@ public class OkHttpProcessor implements IHttpProcessor {
     }
 
     @Override
+    public void get(String url, String tokenValue, String jsonString, final ICallBack callBack) {
+
+        MediaType jsonType = MediaType.parse("application/json;charset=utf-8");
+        RequestBody body = RequestBody.create(jsonType, jsonString);
+        OkHttpClient okHttpClient = new OkHttpClient();
+        Map<String, Object> map = new HashMap<>();
+        map.put("token", tokenValue);
+        Request request = addHeaders(map).url(url).build();
+        request.url();
+        Call call = okHttpClient.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, final IOException e) {
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        callBack.onFailure(e.getMessage());
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String request = response.body().string();
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        callBack.OnSuccess(request);
+                    }
+                });
+            }
+        });
+
+    }
+
+    @Override
     public void get(String url, Map<String, Object> headParams, String token, ICallBack callBack) {
         Map<String, Object> tokenMap = new HashMap<>();
         tokenMap.put("token", token);

@@ -73,8 +73,15 @@ public class HttpProxy implements IHttpProcessor {
     }
 
     @Override
-    public void get(String url, Map<String, Object> headParams, String tokenMap, ICallBack callBack) {
+    public void get(String url, String tokenValue, String jsonString, ICallBack callBack) {
+        mIHttpProcessor.get(url, tokenValue,jsonString, callBack);
+    }
 
+    @Override
+    public void get(String url, Map<String, Object> headParams, String tokenMap, ICallBack callBack) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("token", tokenMap);
+        this.get(url, headParams, map, callBack);
     }
 
     private static String appendParams(String url, Map<String, Object> params) {

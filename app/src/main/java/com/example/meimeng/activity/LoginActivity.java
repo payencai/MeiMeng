@@ -125,7 +125,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                     userLoginState = 0;
                     register.setVisibility(View.VISIBLE);
                 }
-                ToaskUtil.showToast(this, userLoginState + "");
+//                ToaskUtil.showToast(this, userLoginState + "");
                 break;
         }
     }
@@ -158,7 +158,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     }
 
     private void requestLogin(String url, String tel, final String psw) {
-        Log.d("requestLogin", "requestLogin: " + url);
         Map<String, Object> params = new HashMap<>();
         params.put("telephone", tel);
         params.put("password", psw);

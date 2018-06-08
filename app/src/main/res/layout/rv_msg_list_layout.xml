@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/item"
+    android:layout_width="match_parent"
+    android:layout_height="55dp"
+    android:orientation="horizontal">
+
+    <ImageView
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="16dp"
+        android:src="@mipmap/ic_trumpet" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="15dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/msgTitle"
+            style="@style/common_font"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="系统信息" />
+
+        <TextView
+            android:id="@+id/msgTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/msgTitle"
+            android:layout_marginTop="2dp"
+            android:text="2018-04-05"
+            android:textColor="@color/text_9"
+            android:textSize="10sp" />
+    </RelativeLayout>
+
+
+</LinearLayout>

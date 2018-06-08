@@ -1,5 +1,7 @@
 package com.example.meimeng.http;
 
+import org.json.JSONObject;
+
 import java.util.Map;
 
 /**
@@ -12,6 +14,8 @@ public interface IHttpProcessor {
     void post(String url, Map<String, Object> headParams, Map<String, Object> bodyParams, ICallBack callBack);
 
     void post(String url, String tokenMap, Map<String, Object> bodyParams, ICallBack callBack);
+
+    void post(String url, String tokenMap, String jsonString, ICallBack callBack);
 
     void get(String url, Map<String, Object> headParams, ICallBack callBack);
 

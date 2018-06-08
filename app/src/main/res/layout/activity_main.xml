@@ -134,7 +134,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="17dp"
                 android:gravity="center"
-                android:text="设备信息"
+                android:text="急救信息"
                 android:textColor="@drawable/bottom_bar_deal_text"
                 android:textSize="@dimen/text_size_12sp" />
 

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".activity.AddressSelectionActivity">
+
+    <include
+        android:id="@+id/head"
+        layout="@layout/toobar_head_layout" />
+
+    <LinearLayout
+        android:id="@+id/searchLayout"
+        android:layout_width="match_parent"
+        android:layout_height="49dp"
+        android:layout_below="@id/head"
+        android:orientation="horizontal"
+        android:paddingLeft="10dp">
+
+        <LinearLayout
+            android:id="@+id/searchTypeSelect"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:paddingLeft="6dp"
+            android:paddingRight="6dp">
+
+            <TextView
+                android:id="@+id/cityShowView"
+                style="@style/common_font"
+                android:layout_height="match_parent"
+                android:text="广州市" />
+
+            <ImageView
+                android:layout_width="8dp"
+                android:layout_height="6dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="4dp"
+                android:scaleType="fitXY"
+                android:src="@mipmap/ic_triangle_down" />
+        </LinearLayout>
+
+        <TextView
+            style="@style/common_font"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="8dp"
+            android:background="@drawable/shape_annulus_callpopup_bg"
+            android:hint="查找小区、大厦等"
+            android:padding="4dp" />
+
+    </LinearLayout>
+
+    <com.baidu.mapapi.map.MapView
+        android:id="@+id/locationMapView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/siteRv"
+        android:layout_below="@id/searchLayout"></com.baidu.mapapi.map.MapView>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/siteRv"
+        android:layout_width="match_parent"
+        android:layout_height="269dp"
+        android:layout_alignParentBottom="true"></android.support.v7.widget.RecyclerView>
+</RelativeLayout>

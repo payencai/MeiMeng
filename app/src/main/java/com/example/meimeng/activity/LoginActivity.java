@@ -18,6 +18,7 @@ import com.example.meimeng.bean.LoginAccount.ServerUserInfo;
 import com.example.meimeng.bean.LoginAccount.UserInfo;
 import com.example.meimeng.constant.PlatformContans;
 import com.example.meimeng.custom.KyLoadingBuilder;
+import com.example.meimeng.http.HttpCallback;
 import com.example.meimeng.http.HttpProxy;
 import com.example.meimeng.http.ICallBack;
 import com.example.meimeng.util.MLog;

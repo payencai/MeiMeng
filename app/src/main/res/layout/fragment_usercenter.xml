@@ -12,7 +12,8 @@
         android:layout_height="120dp">
 
         <ImageView
-            android:layout_margin="10dp"
+            android:id="@+id/iv_client_settings"
+            android:layout_margin="@dimen/margin_15dp"
             android:layout_gravity="right"
             android:src="@mipmap/ic_settings"
             android:layout_width="21dp"
@@ -30,6 +31,7 @@
             android:layout_width="match_parent"
             android:layout_height="70dp">
             <TextView
+                android:id="@+id/tv_client_username"
                 android:layout_marginBottom="20dp"
                 android:textSize="@dimen/text_size_17sp"
                 android:textColor="#ffffffff"
@@ -55,7 +57,7 @@
             android:layout_width="match_parent"
             android:layout_height="190dp">
             <LinearLayout
-
+                android:id="@+id/userinfo_client_layout"
                 android:layout_marginLeft="@dimen/margin_15dp"
                 android:layout_marginTop="10dp"
                 android:gravity="center_vertical"
@@ -96,6 +98,7 @@
 
 
             <LinearLayout
+                android:id="@+id/certification_client_layout"
                 android:layout_marginLeft="@dimen/margin_15dp"
                 android:layout_marginTop="10dp"
                 android:gravity="center_vertical"
@@ -136,6 +139,7 @@
 
 
             <LinearLayout
+                android:id="@+id/volunteer_client_layout"
                 android:layout_marginLeft="@dimen/margin_15dp"
                 android:layout_marginTop="10dp"
                 android:gravity="center_vertical"
@@ -175,6 +179,7 @@
 
 
             <LinearLayout
+                android:id="@+id/yaopin_client_layout"
                 android:layout_marginLeft="@dimen/margin_15dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="@dimen/margin_15dp"
@@ -218,6 +223,7 @@
             android:layout_width="match_parent"
             android:layout_height="140dp">
             <LinearLayout
+                android:id="@+id/record_client_layout"
                 android:layout_marginBottom="10dp"
                 android:layout_marginLeft="@dimen/margin_15dp"
                 android:layout_marginTop="10dp"
@@ -257,6 +263,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"></View>
             <LinearLayout
+                android:id="@+id/reback_client_layout"
                 android:layout_marginBottom="10dp"
                 android:layout_marginLeft="@dimen/margin_15dp"
                 android:layout_marginTop="10dp"
@@ -297,6 +304,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"></View>
             <LinearLayout
+                android:id="@+id/aboutus_client_layout"
                 android:layout_marginBottom="10dp"
                 android:layout_marginLeft="@dimen/margin_15dp"
                 android:layout_marginTop="10dp"

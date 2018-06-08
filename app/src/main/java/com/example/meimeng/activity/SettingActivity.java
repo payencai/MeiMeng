@@ -7,17 +7,24 @@ import android.widget.TextView;
 
 import com.example.meimeng.R;
 import com.example.meimeng.base.BaseActivity;
+import com.example.meimeng.bean.LoginAccount.UserInfo;
+import com.example.meimeng.common.rv.base.RVBaseAdapter;
+import com.example.meimeng.common.rv.base.RVBaseViewHolder;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class SettingActivity extends BaseActivity {
-    @BindView(R.id.tv_title)
+    @BindView(R.id.title)
     TextView tv_title;
     @Override
     protected void initView() {
         ButterKnife.bind(this);
+        tv_title.setText("设置");
     }
 
     @Override
@@ -34,5 +41,24 @@ public class SettingActivity extends BaseActivity {
     }
 
     private void logout() {
+    }
+
+    private void initData() {
+
+//        RVBaseAdapter<UserInfo> adapter = new RVBaseAdapter<UserInfo>() {
+//            @Override
+//            protected void onViewHolderBound(RVBaseViewHolder holder, int position) {
+//
+//            }
+//            @Override
+//            protected void onClick(RVBaseViewHolder holder, int position) {
+//
+//            }
+//        };
+//        List<UserInfo> list = new ArrayList<>();//
+////        adapter.setData();
+//        adapter.setData(list);
+
+
     }
 }

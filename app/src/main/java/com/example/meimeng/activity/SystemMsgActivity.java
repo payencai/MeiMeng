@@ -40,6 +40,7 @@ public class SystemMsgActivity extends AbsBaseActivity<SystemMsgBean> {
     @Override
     public void onLoadMore() {
 
+
     }
 
     @Override

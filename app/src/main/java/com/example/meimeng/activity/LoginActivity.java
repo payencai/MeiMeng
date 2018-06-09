@@ -89,11 +89,13 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.submit:
+                String tel;
+                String psw;
                 if (APP.IS_DEBUG) {
                     startActivity(new Intent(this, MainActivity.class));
                 } else {
-                    String tel = userNumberEdit.getEditableText().toString();
-                    String psw = verificationEdit.getEditableText().toString();
+                    tel = userNumberEdit.getEditableText().toString();
+                    psw = verificationEdit.getEditableText().toString();
                     String url;
                     if (userLoginState == 0) {
                         url = PlatformContans.UseUser.sLogin;

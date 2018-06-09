@@ -27,7 +27,7 @@ import com.example.meimeng.activity.YaopinActivity;
 import com.example.meimeng.base.BaseFragment;
 import com.example.meimeng.bean.LoginAccount.UserInfo;
 
-public class UserCenterFragment extends BaseFragment implements View.OnClickListener{
+public class UserCenterFragment extends BaseFragment implements View.OnClickListener {
     private ImageView mClientSetting;
     private TextView mClientUsername;
     private LinearLayout mClientUserinfo;
@@ -98,25 +98,28 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
 
     private void clientInitView(View view) {
 
-        mClientSetting=view.findViewById(R.id.iv_client_settings);
-        mClientUsername=view.findViewById(R.id.tv_client_username);
-        mClientUserinfo=view.findViewById(R.id.userinfo_client_layout);
-        mClientCert=view.findViewById(R.id.certification_client_layout);
-        mClientVolunteer=view.findViewById(R.id.volunteer_client_layout);
-        mClientYaopin=view.findViewById(R.id.yaopin_client_layout);
-        mClientRecord=view.findViewById(R.id.record_client_layout);
-        mClientReback=view.findViewById(R.id.reback_client_layout);
-        mClientAboutus=view.findViewById(R.id.aboutus_client_layout);
-        mClientUsername.setText(APP.getInstance().getUserInfo().getName()+",你好");
+        mClientSetting = view.findViewById(R.id.iv_client_settings);
+        mClientUsername = view.findViewById(R.id.tv_client_username);
+        mClientUserinfo = view.findViewById(R.id.userinfo_client_layout);
+        mClientCert = view.findViewById(R.id.certification_client_layout);
+        mClientVolunteer = view.findViewById(R.id.volunteer_client_layout);
+        mClientYaopin = view.findViewById(R.id.yaopin_client_layout);
+        mClientRecord = view.findViewById(R.id.record_client_layout);
+        mClientReback = view.findViewById(R.id.reback_client_layout);
+        mClientAboutus = view.findViewById(R.id.aboutus_client_layout);
+        UserInfo userInfo = APP.getInstance().getUserInfo();
+        if (userInfo != null) {
+            mClientUsername.setText(userInfo.getName() + ",你好");
+        }
     }
 
     @Override
     public void onClick(View view) {
-        switch(view.getId()){
+        switch (view.getId()) {
             case R.id.record_client_layout:
                 break;
             case R.id.iv_client_settings:
-                startActivity(new Intent(getActivity(),SettingActivity.class));
+                startActivity(new Intent(getActivity(), SettingActivity.class));
                 break;
             case R.id.userinfo_client_layout:
                 startActivity(new Intent(getActivity(), ClientUserInfoActivity.class));

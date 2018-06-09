@@ -12,7 +12,7 @@ import butterknife.ButterKnife;
 
 public class ClientUserInfoActivity extends BaseActivity {
     @BindView(R.id.title)
-    TextView tv_title;
+    TextView title;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -22,7 +22,7 @@ public class ClientUserInfoActivity extends BaseActivity {
     @Override
     protected void initView() {
         ButterKnife.bind(this);
-        tv_title.setText("个人资料");
+        title.setText("个人资料");
     }
 
     @Override

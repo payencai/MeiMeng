@@ -9,12 +9,11 @@ import com.example.meimeng.common.rv.base.RVBaseCell;
 import com.example.meimeng.common.rv.base.RVBaseViewHolder;
 
 /**
- * 作者：凌涛 on 2018/6/7 18:24
+ * 作者：凌涛 on 2018/6/8 17:21
  * 邮箱：771548229@qq..com
  */
-public class TrainBean extends RVBaseCell {
-
-    public TrainBean() {
+public class FirstAidRankBean extends RVBaseCell {
+    public FirstAidRankBean() {
         super(null);
     }
 
@@ -31,7 +30,6 @@ public class TrainBean extends RVBaseCell {
 
     @Override
     public void onBindViewHolder(RVBaseViewHolder holder, int position) {
-        holder.setText(R.id.company, "培训内容培训内容培训内容培训内容培训内容培训内容培培训培训内");
-
+        holder.setText(R.id.company,"某某某科技有限公司");
     }
 }

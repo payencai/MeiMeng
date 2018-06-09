@@ -16,6 +16,7 @@ import com.example.meimeng.R;
 import com.example.meimeng.activity.AboutActivity;
 import com.example.meimeng.activity.AddAEDActivity;
 import com.example.meimeng.activity.CertActivity;
+import com.example.meimeng.activity.ClientRecordActivity;
 import com.example.meimeng.activity.ClientUserInfoActivity;
 import com.example.meimeng.activity.LoginActivity;
 import com.example.meimeng.activity.RebackActivity;
@@ -117,6 +118,7 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.record_client_layout:
+                startActivity(new Intent(getActivity(), ClientRecordActivity.class));
                 break;
             case R.id.iv_client_settings:
                 startActivity(new Intent(getActivity(), SettingActivity.class));

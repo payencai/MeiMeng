@@ -64,6 +64,10 @@ public class RVBaseViewHolder extends RecyclerView.ViewHolder {
     public void setText(int resId, int strId) {
         getTextView(resId).setText(strId);
     }
+    public void setImageView(int resId,int imgId){
+        getImageView(resId);
+
+    }
 
 
 }

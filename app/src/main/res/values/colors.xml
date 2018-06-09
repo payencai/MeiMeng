@@ -14,6 +14,7 @@
     <color name="text_9">#999999</color>
     <color name="text_6">#666666</color>
     <color name="text_red">#ff0000</color>
+    <color name="background">#FFFFFF</color>
 
     <!--bg_color-->
     <color name="bg_toobar_head">#e63030</color>

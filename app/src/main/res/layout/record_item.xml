@@ -12,6 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TextView
+            android:id="@+id/tv_createhelp_time"
             android:layout_weight="8"
             android:textColor="#999999"
             android:textSize="@dimen/text_size_12sp"
@@ -19,6 +20,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"/>
         <TextView
+            android:id="@+id/tv_complete"
             android:layout_marginRight="@dimen/margin_20dp"
             android:textColor="#999999"
             android:textSize="@dimen/text_size_12sp"
@@ -28,6 +30,7 @@
     </LinearLayout>
 
     <TextView
+        android:id="@+id/tv_sendhelp"
         android:layout_marginLeft="@dimen/margin_10dp"
         android:layout_marginTop="@dimen/margin_5dp"
         style="@style/common_font"
@@ -41,11 +44,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <ImageView
+            android:id="@+id/iv_record_location"
             android:layout_marginLeft="@dimen/margin_10dp"
             android:src="@mipmap/ic_location"
             android:layout_width="14dp"
             android:layout_height="14dp"/>
         <TextView
+            android:id="@+id/tv_help_address"
             android:layout_marginLeft="@dimen/margin_2dp"
             android:textSize="@dimen/text_size_12sp"
             android:textColor="#666666"
@@ -60,19 +65,25 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TextView
+            android:id="@+id/tv_canjia"
             android:layout_weight="8"
             android:textColor="#666666"
             android:textSize="@dimen/text_size_12sp"
             android:text="参与本次救助人员"
             android:layout_width="0dp"
             android:layout_height="wrap_content"/>
-        <TextView
-            android:layout_marginRight="@dimen/margin_20dp"
-            android:textColor="#666666"
-            android:textSize="@dimen/text_size_12sp"
-            android:text="李四，战三"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+       <LinearLayout
+           android:layout_marginRight="20dp"
+           android:id="@+id/addImg"
+           android:orientation="horizontal"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content">
+           <ImageView
+
+               android:layout_width="15dp"
+               android:layout_height="15dp"/>
+
+       </LinearLayout>
     </LinearLayout>
 
 </LinearLayout>

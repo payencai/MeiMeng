@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.meimeng.APP;
 import com.example.meimeng.R;
@@ -15,6 +16,9 @@ import com.example.meimeng.http.HttpProxy;
 import com.example.meimeng.http.ICallBack;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -49,23 +53,41 @@ public class RebackActivity extends BaseActivity {
     }
     private void summitMsg(String input){
         Map<String, Object> p = new HashMap<>();
-        p.put("content",input );
+        p.put("content","hello" );
         String data=null;
         String token=null;
         Gson gson = new GsonBuilder().enableComplexMapKeySerialization().create();
         if(APP.sUserType==0){
             token=APP.getInstance().getUserInfo().getToken();
-            p.put("userType",0);
+            p.put("userType",1);
             data = gson.toJson(p);
         }else{
             token=APP.getInstance().getServerUserInfo().getToken();
-            p.put("userType",1);
+            p.put("userType",2);
             data = gson.toJson(p);
         }
+
+
         HttpProxy.obtain().post(PlatformContans.UserAdvice.sAddAdvice, token, data, new ICallBack() {
             @Override
             public void OnSuccess(String result) {
                 Log.e("TAG",result);
+                JSONObject jsonObject= null;
+                try {
+                    jsonObject = new JSONObject(result);
+                    int code=jsonObject.getInt("resultCode");
+
+                    if(code==0){
+                        Toast.makeText(RebackActivity.this,"反馈成功",Toast.LENGTH_LONG).show();
+                        finish();
+                    }
+                    if(code==9999){
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
             }
 
             @Override

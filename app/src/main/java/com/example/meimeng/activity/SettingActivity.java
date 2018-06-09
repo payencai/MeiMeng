@@ -1,5 +1,6 @@
 package com.example.meimeng.activity;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -10,6 +11,7 @@ import com.example.meimeng.base.BaseActivity;
 import com.example.meimeng.bean.LoginAccount.UserInfo;
 import com.example.meimeng.common.rv.base.RVBaseAdapter;
 import com.example.meimeng.common.rv.base.RVBaseViewHolder;
+import com.example.meimeng.manager.ActivityManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +43,9 @@ public class SettingActivity extends BaseActivity {
     }
 
     private void logout() {
+        startActivity(new Intent(this,LoginActivity.class));
+        finish();
+        ActivityManager.getInstance().finishActivity(MainActivity.class);
     }
 
     private void initData() {

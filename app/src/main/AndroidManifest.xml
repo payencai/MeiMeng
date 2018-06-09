@@ -61,7 +61,16 @@
         <activity android:name=".activity.SystemMsgDetailedActivity" />
         <activity android:name=".activity.SearchActivity" />
         <activity android:name=".activity.AddressSelectionActivity"></activity>
-
+        <activity android:name=".activity.ClientRecordActivity"></activity>
+        <activity android:name=".activity.ClientUserInfoActivity"></activity>
+        <activity android:name=".activity.RebackActivity"></activity>
+        <activity android:name=".activity.CertActivity"></activity>
+        <activity android:name=".activity.VolunteerActivity"></activity>
+        <activity android:name=".activity.YaopinActivity"></activity>
+        <activity android:name=".activity.AboutActivity"></activity>
+        <activity android:name=".activity.ShengjiActivity"></activity>
+        <activity android:name=".activity.ServerUserInfoActivity"></activity>
+        <activity android:name=".activity.ServerRecordActivity"></activity>
         <!--图片框架地址：https://github.com/donkingliang/ImageSelector-->
         <!--图片选择Activity-->
         <!--去掉Activity的ActionBar。-->

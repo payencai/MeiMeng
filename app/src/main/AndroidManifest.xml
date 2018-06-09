@@ -66,7 +66,7 @@
         <activity android:name=".activity.RebackActivity"></activity>
         <activity android:name=".activity.CertActivity"></activity>
         <activity android:name=".activity.VolunteerActivity"></activity>
-        <activity android:name=".activity.YaopinActivity"></activity>
+        <activity android:name=".activity.MedicineActivity"></activity>
         <activity android:name=".activity.AboutActivity"></activity>
         <activity android:name=".activity.ShengjiActivity"></activity>
         <activity android:name=".activity.ServerUserInfoActivity"></activity>

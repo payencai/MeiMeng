@@ -45,7 +45,7 @@ public class SettingActivity extends BaseActivity {
     private void logout() {
         startActivity(new Intent(this,LoginActivity.class));
         finish();
-        ActivityManager.getInstance().finishActivity(MainActivity.class);
+        ActivityManager.getInstance().finishActivity(ActivityManager.getInstance().getActivity(MainActivity.class));
     }
 
     private void initData() {

@@ -20,13 +20,13 @@ import com.example.meimeng.activity.ClientRecordActivity;
 import com.example.meimeng.activity.ClientUserInfoActivity;
 import com.example.meimeng.activity.LoginActivity;
 import com.example.meimeng.activity.RebackActivity;
+import com.example.meimeng.activity.ServerRecordActivity;
 import com.example.meimeng.activity.ServerUserInfoActivity;
 import com.example.meimeng.activity.SettingActivity;
 import com.example.meimeng.activity.ShengjiActivity;
 import com.example.meimeng.activity.VolunteerActivity;
-import com.example.meimeng.activity.YaopinActivity;
+import com.example.meimeng.activity.MedicineActivity;
 import com.example.meimeng.base.BaseFragment;
-import com.example.meimeng.bean.LoginAccount.UserInfo;
 
 public class UserCenterFragment extends BaseFragment implements View.OnClickListener{
     private ImageView mClientSetting;
@@ -130,7 +130,7 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
                 startActivity(new Intent(getActivity(), VolunteerActivity.class));
                 break;
             case R.id.yaopin_client_layout:
-                startActivity(new Intent(getActivity(), YaopinActivity.class));
+                startActivity(new Intent(getActivity(), MedicineActivity.class));
                 break;
             case R.id.reback_client_layout:
                 startActivity(new Intent(getActivity(), RebackActivity.class));
@@ -151,6 +151,7 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
                 startActivity(new Intent(getActivity(), ServerUserInfoActivity.class));
                 break;
             case R.id.record_server_layout:
+                startActivity(new Intent(getActivity(), ServerRecordActivity.class));
                 break;
             case R.id.iv_server_settings:
                 startActivity(new Intent(getActivity(), LoginActivity.class));

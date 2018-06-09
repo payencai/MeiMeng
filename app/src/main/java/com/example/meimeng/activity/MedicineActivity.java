@@ -9,10 +9,11 @@ import android.widget.TextView;
 
 import com.example.meimeng.APP;
 import com.example.meimeng.R;
+import com.example.meimeng.base.BaseActivity;
 import com.example.meimeng.bean.ClientRecordBean;
+import com.example.meimeng.bean.MedicineBean;
+import com.example.meimeng.bean.MedicineResponse;
 import com.example.meimeng.bean.RecordResponse;
-import com.example.meimeng.bean.ServerRecordBean;
-import com.example.meimeng.bean.ServerRespnse;
 import com.example.meimeng.common.rv.absRv.AbsBaseActivity;
 import com.example.meimeng.common.rv.base.Cell;
 import com.example.meimeng.constant.PlatformContans;
@@ -25,12 +26,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ServerRecordActivity extends AbsBaseActivity<ServerRecordBean> {
+public class MedicineActivity extends AbsBaseActivity<MedicineBean> {
     TextView title;
+    TextView save;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
+
+
+
     @Override
     public void onRecyclerViewInitialized() {
         addDividerItem(0);
@@ -39,26 +44,26 @@ public class ServerRecordActivity extends AbsBaseActivity<ServerRecordBean> {
 
     private void loadData() {
         Map<String,Object> params=new HashMap<>();
-        params.put("page",1);
-        HttpProxy.obtain().get(PlatformContans.ForHelp.sGetCompleteHelpByServerUser, params , APP.getInstance().getUserInfo().getToken(),new ICallBack() {
+        params.put("type",2);
+        HttpProxy.obtain().get(PlatformContans.Medicine.sGetMedicineByUserId, params , APP.getInstance().getUserInfo().getToken(),new ICallBack() {
             @Override
             public void OnSuccess(String result) {
                 Log.e("TAG",result);
-                List<ServerRecordBean> list = new ArrayList<>();
+                List<MedicineBean> list = new ArrayList<>();
                 Gson gson=new Gson();
-                ServerRespnse recordResponse=(ServerRespnse)gson.fromJson(result, ServerRespnse.class);
-                List<ServerRespnse.BeanList> beanLists=new ArrayList<>();
-                beanLists=recordResponse.getData().getBeanLists();
-                int size=beanLists.size();
+                MedicineResponse medicineResponse=(MedicineResponse) gson.fromJson(result, MedicineResponse.class);
+                List<MedicineResponse.Data> dataList=new ArrayList<>();
+                dataList=medicineResponse.getData();
+                int size=dataList.size();
                 if(size==0){
                     mBaseAdapter.addAll(list);
                 }else{
-                    for(ServerRespnse.BeanList beanList:beanLists){
-                        ServerRecordBean bean = new ServerRecordBean();
-                        bean.setCompleteTime(beanList.getCompleteTime());
-                        bean.setAddress(beanList.getUserAddress());
-                        bean.setName(beanList.getName());
-                        list.add(bean);
+                    for(MedicineResponse.Data data:dataList){
+                        MedicineBean medicineBean=new MedicineBean();
+                        medicineBean.setId(data.getId());
+                        medicineBean.setName(data.getName());
+                        medicineBean.setNum(data.getNum());
+                        list.add(medicineBean);
                     }
                     mBaseAdapter.addAll(list);
                 }
@@ -71,16 +76,9 @@ public class ServerRecordActivity extends AbsBaseActivity<ServerRecordBean> {
             }
         });
     }
-    @Override
-    public View addToolbar() {
-        View view = LayoutInflater.from(this).inflate(R.layout.toobar_head_layout, null);
-        title=view.findViewById(R.id.title);
-        title.setText("救援记录");
-        return view;
-    }
+
     @Override
     public void onPullRefresh() {
-
         mRecyclerView.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -95,10 +93,29 @@ public class ServerRecordActivity extends AbsBaseActivity<ServerRecordBean> {
 
     }
 
+
     @Override
-    protected List<Cell> getCells(List<ServerRecordBean> list) {
+    public View addToolbar() {
+        View view = LayoutInflater.from(this).inflate(R.layout.show_yaopin_content, null);
+        title=view.findViewById(R.id.title);
+        save=view.findViewById(R.id.saveText);
+        save.setVisibility(View.VISIBLE);
+        title.setText("个人药品库");
+        save.setText("确定");
+        save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+        return view;
+    }
+
+    @Override
+    protected List<Cell> getCells(List<MedicineBean> list) {
         return null;
     }
+
 
     @Override
     public void onClick(View view) {

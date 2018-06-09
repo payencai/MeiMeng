@@ -30,7 +30,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"/>
                 <EditText
-                    android:gravity="right|center_vertical"
+                    android:gravity="end"
                     android:id="@+id/et_userinfo_name"
                     android:maxLength="6"
                     android:layout_marginRight="@dimen/margin_20dp"
@@ -160,6 +160,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"/>
                 <RadioGroup
+                    android:id="@+id/rg_userinfo_sex"
                     android:orientation="horizontal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
@@ -168,19 +169,15 @@
                         style="@style/common_font"
                         android:drawablePadding="4dp"
                         android:layout_marginRight="@dimen/margin_10dp"
-                        android:drawableLeft="@drawable/sex_selector"
                         android:button="@null"
                         android:text="男"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
-
                     <RadioButton
                         android:id="@+id/rb_userinfo_nv"
                         style="@style/common_font"
                         android:drawablePadding="4dp"
-                        android:drawableLeft="@drawable/sex_selector"
                         android:button="@null"
-                        android:checked="true"
                         android:layout_marginRight="@dimen/margin_20dp"
                         android:text="女"
                         android:layout_width="wrap_content"

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.meimeng.APP;
@@ -102,6 +103,14 @@ public class MedicineActivity extends AbsBaseActivity<MedicineBean> {
         save.setVisibility(View.VISIBLE);
         title.setText("个人药品库");
         save.setText("确定");
+        ImageView back;
+        back=view.findViewById(R.id.back);
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

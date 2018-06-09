@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.meimeng.APP;
@@ -40,7 +41,7 @@ public class ServerRecordActivity extends AbsBaseActivity<ServerRecordBean> {
     private void loadData() {
         Map<String,Object> params=new HashMap<>();
         params.put("page",1);
-        HttpProxy.obtain().get(PlatformContans.ForHelp.sGetCompleteHelpByServerUser, params , APP.getInstance().getUserInfo().getToken(),new ICallBack() {
+        HttpProxy.obtain().get(PlatformContans.ForHelp.sGetCompleteHelpByServerUser, params , APP.getInstance().getServerUserInfo().getToken(),new ICallBack() {
             @Override
             public void OnSuccess(String result) {
                 Log.e("TAG",result);
@@ -76,6 +77,14 @@ public class ServerRecordActivity extends AbsBaseActivity<ServerRecordBean> {
         View view = LayoutInflater.from(this).inflate(R.layout.toobar_head_layout, null);
         title=view.findViewById(R.id.title);
         title.setText("救援记录");
+        ImageView back;
+        back=view.findViewById(R.id.back);
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
         return view;
     }
     @Override

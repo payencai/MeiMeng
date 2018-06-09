@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.meimeng">
+          package="com.example.meimeng">
 
-    <uses-permission android:name="android.permission.CALL_PHONE" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CALL_PHONE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     //获取设备网络状态，禁用后无法获取网络状态
-    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.INTERNET"/>
     //网络权限，当禁用后，无法进行检索等相关业务
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
     //读取设备硬件信息，统计数据
-    <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS" />
+    <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS"/>
     //读取系统信息，包含系统版本等信息，用作统计
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
     //获取设备的网络状态，鉴权所需网络代理
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     //允许sd卡写权限，需写入地图数据，禁用后无法显示地图
-    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
     //获取统计数据
-    <uses-permission android:name="android.permission.GET_TASKS" />
+    <uses-permission android:name="android.permission.GET_TASKS"/>
     //鉴权所需该权限获取进程列表
-    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.CAMERA"/>
     //使用步行AR导航，配置Camera权限
     <application
         android:name=".APP"
@@ -31,67 +31,75 @@
         android:theme="@style/AppTheme">
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
-            android:value="ljlX9oSuUeIxGcd8GTy81Xp9XvQDOmc2" />
+            android:value="ljlX9oSuUeIxGcd8GTy81Xp9XvQDOmc2"/>
 
-        <activity android:name=".test.BMapTestActivity" />
+        <activity android:name=".test.BMapTestActivity"/>
         <activity
             android:name=".activity.MainActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"/>
         <activity android:name=".activity.LoginActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".activity.WaitSoSActivity" />
-        <activity android:name=".activity.TestActivity" />
-        <activity android:name=".activity.WaitSalvationActivity" />
+        <activity android:name=".activity.WaitSoSActivity"/>
+        <activity android:name=".activity.TestActivity"/>
+        <activity android:name=".activity.WaitSalvationActivity"/>
         <activity
             android:name=".activity.CityPickerActivity"
-            android:theme="@style/DefaultCityPickerTheme" />
-        <activity android:name=".activity.SystemMsgActivity" />
-        <activity android:name=".common.rv.absRv.AbsBaseActivity" />
-        <activity android:name=".activity.AddAEDActivity" />
-        <activity android:name=".activity.RegisterActivity" />
-        <activity android:name=".test.TestLocationActivity" />
-        <activity android:name=".test.ForegroundActivity" />
-        <activity android:name=".activity.SettingActivity" />
-        <activity android:name=".activity.SystemMsgDetailedActivity" />
-        <activity android:name=".activity.SearchActivity" />
-        <activity android:name=".activity.AddressSelectionActivity"></activity>
-        <activity android:name=".activity.ClientRecordActivity"></activity>
-        <activity android:name=".activity.ClientUserInfoActivity"></activity>
-        <activity android:name=".activity.RebackActivity"></activity>
-        <activity android:name=".activity.CertActivity"></activity>
-        <activity android:name=".activity.VolunteerActivity"></activity>
-        <activity android:name=".activity.MedicineActivity"></activity>
-        <activity android:name=".activity.AboutActivity"></activity>
-        <activity android:name=".activity.ShengjiActivity"></activity>
-        <activity android:name=".activity.ServerUserInfoActivity"></activity>
-        <activity android:name=".activity.ServerRecordActivity"></activity>
-        <!--图片框架地址：https://github.com/donkingliang/ImageSelector-->
-        <!--图片选择Activity-->
-        <!--去掉Activity的ActionBar。-->
-        <!--使用者可以根据自己的项目去配置，不一定要这样写，只要不Activity的ActionBar去掉就可以了。-->
-        <!--横竖屏切换处理。-->
-        <!--如果要支持横竖屏切换，一定要加上这句，否则在切换横竖屏的时候会发生异常。-->
+            android:theme="@style/DefaultCityPickerTheme"/>
+        <activity android:name=".activity.SystemMsgActivity"/>
+        <activity android:name=".common.rv.absRv.AbsBaseActivity"/>
+        <activity android:name=".activity.AddAEDActivity"/>
+        <activity android:name=".activity.RegisterActivity"/>
+        <activity android:name=".test.TestLocationActivity"/>
+        <activity android:name=".test.ForegroundActivity"/>
+        <activity android:name=".activity.SettingActivity"/>
+        <activity android:name=".activity.SystemMsgDetailedActivity"/>
+        <activity android:name=".activity.SearchActivity"/>
+        <activity android:name=".activity.AddressSelectionActivity"/>
+        <activity android:name=".activity.ClientRecordActivity"/>
+        <activity android:name=".activity.ClientUserInfoActivity"/>
+        <activity android:name=".activity.RebackActivity"/>
+        <activity android:name=".activity.CertActivity"/>
+        <activity android:name=".activity.VolunteerActivity"/>
+        <activity android:name=".activity.MedicineActivity"/>
+        <activity android:name=".activity.AboutActivity"/>
+        <activity android:name=".activity.ShengjiActivity"/>
+        <activity android:name=".activity.ServerUserInfoActivity"/>
+        <activity android:name=".activity.ServerRecordActivity"/>
+        <activity android:name=".activity.AddGaojiActivity"></activity>
+        <!-- 图片框架地址：https://github.com/donkingliang/ImageSelector -->
+        <!-- 图片选择Activity -->
+        <!-- 去掉Activity的ActionBar。 -->
+        <!-- 使用者可以根据自己的项目去配置，不一定要这样写，只要不Activity的ActionBar去掉就可以了。 -->
+        <!-- 横竖屏切换处理。 -->
+        <!-- 如果要支持横竖屏切换，一定要加上这句，否则在切换横竖屏的时候会发生异常。 -->
         <activity
             android:name="com.donkingliang.imageselector.ImageSelectorActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
-        <!--图片预览Activity-->
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+        <!-- 图片预览Activity -->
         <activity
             android:name="com.donkingliang.imageselector.PreviewActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
 
-        <!--图片剪切Activity-->
+        <!-- 图片剪切Activity -->
         <activity
             android:name="com.donkingliang.imageselector.ClipImageActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
-
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+        <activity android:name=".activity.SelectAddressActivity">
+        </activity>
+        <activity android:name=".activity.AskVolunteerActivity">
+        </activity>
+        <activity android:name=".activity.AskProxyActivity">
+        </activity>
+        <activity android:name=".activity.UpdateNameActivity">
+        </activity>
     </application>
 
 </manifest>

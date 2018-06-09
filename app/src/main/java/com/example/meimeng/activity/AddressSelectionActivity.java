@@ -1,6 +1,7 @@
 package com.example.meimeng.activity;
 
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.meimeng.R;
@@ -14,6 +15,14 @@ public class AddressSelectionActivity extends BaseActivity implements View.OnCli
         title = (TextView) findViewById(R.id.title);
         title.setText("选择地址");
         findViewById(R.id.back).setOnClickListener(this);
+        ImageView back;
+        back=findViewById(R.id.back);
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
     }
 
     @Override

@@ -8,6 +8,7 @@
 
     <include  layout="@layout/toobar_head_layout"></include>
         <LinearLayout
+            android:id="@+id/client_updatename"
             android:background="@color/color_white_100"
             android:layout_marginTop="@dimen/margin_10dp"
             android:orientation="horizontal"

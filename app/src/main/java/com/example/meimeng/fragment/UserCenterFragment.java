@@ -27,6 +27,7 @@ import com.example.meimeng.activity.ShengjiActivity;
 import com.example.meimeng.activity.VolunteerActivity;
 import com.example.meimeng.activity.MedicineActivity;
 import com.example.meimeng.base.BaseFragment;
+import com.example.meimeng.bean.LoginAccount.UserInfo;
 
 public class UserCenterFragment extends BaseFragment implements View.OnClickListener {
     private ImageView mClientSetting;

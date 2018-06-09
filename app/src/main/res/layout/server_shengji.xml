@@ -5,6 +5,7 @@
               android:layout_height="match_parent">
     <include  layout="@layout/toobar_head_layout"></include>
     <LinearLayout
+        android:id="@+id/shengji_layout"
         android:gravity="center"
         android:orientation="horizontal"
         android:layout_marginTop="@dimen/margin_50dp"

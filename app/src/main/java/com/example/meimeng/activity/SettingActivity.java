@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.meimeng.R;
@@ -21,12 +23,28 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class SettingActivity extends BaseActivity {
+    @BindView(R.id.client_updatename)
+    LinearLayout mLinearLayout;
     @BindView(R.id.title)
     TextView tv_title;
     @Override
     protected void initView() {
         ButterKnife.bind(this);
         tv_title.setText("设置");
+        mLinearLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(SettingActivity.this,UpdateNameActivity.class));
+            }
+        });
+        ImageView back;
+        back=findViewById(R.id.back);
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
     }
 
     @Override

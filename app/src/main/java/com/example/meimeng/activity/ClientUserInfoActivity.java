@@ -1,5 +1,6 @@
 package com.example.meimeng.activity;
 
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -7,6 +8,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -32,6 +35,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class ClientUserInfoActivity extends BaseActivity {
+    @BindView(R.id.layout_address)
+    LinearLayout address;
     @BindView(R.id.title)
     TextView tv_title;
     @BindView(R.id.btn_userinfo_save)
@@ -43,7 +48,7 @@ public class ClientUserInfoActivity extends BaseActivity {
     @BindView(R.id.et_userinfo_fixphone)
     EditText et_fixphone;
     @BindView(R.id.et_userinfo_address)
-    EditText et_address;
+    TextView et_address;
     @BindView(R.id.et_userinfo_age)
     EditText et_age;
     @BindView(R.id.tv_userinfo_bloodType)
@@ -79,7 +84,7 @@ public class ClientUserInfoActivity extends BaseActivity {
         drawable2.setBounds(0,0,30,30);//将drawable设置为宽100 高100固定大小
         rb_nv.setCompoundDrawables(drawable2,null,null,null);
         rb_nv.setChecked(true);
-        String sex=APP.getInstance().getUserInfo().getSex();
+        String sex=APP.getInstance().getUserInfo().getSex()+"";
         Log.e("sex",sex);
         if(sex.equals("男")){
             rb_man.setChecked(true);
@@ -95,7 +100,20 @@ public class ClientUserInfoActivity extends BaseActivity {
         et_lianxi1.setText(userInfo.getLinkman1()+"");
         et_lianxi2.setText(userInfo.getLinkman2()+"");
         et_lianxi3.setText(userInfo.getLinkman3()+"");
-
+        ImageView back;
+        back=findViewById(R.id.back);
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+        address.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(ClientUserInfoActivity.this,SelectAddressActivity.class));
+            }
+        });
         mBtnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.meimeng.R;
@@ -26,7 +25,7 @@ public class SystemMsgDetailedActivity extends BaseActivity implements View.OnCl
     protected void initView() {
         textContent = (TextView) findViewById(R.id.textContent);
         findViewById(R.id.back).setOnClickListener(this);
-        tvTitle = (TextView) findViewById(R.id.tv_title);
+        tvTitle = (TextView) findViewById(R.id.title);
         Intent intent = getIntent();
         String content = intent.getStringExtra("content");
         String title = intent.getStringExtra("title");

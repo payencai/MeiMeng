@@ -63,7 +63,7 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
         Intent intent = getIntent();
         mIntoType = intent.getIntExtra("intoType", 0);
         headLayout.setBackgroundColor(Color.parseColor("#00ffffff"));
-        title = (TextView) findViewById(R.id.tv_title);
+        title = (TextView) findViewById(R.id.title);
         if (mIntoType == 0) {
             title.setText("注册");
             register.setText("注册");

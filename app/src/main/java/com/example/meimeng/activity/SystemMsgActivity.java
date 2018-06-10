@@ -19,7 +19,7 @@ public class SystemMsgActivity extends AbsBaseActivity<SystemMsgBean> {
     @Override
     public void onRecyclerViewInitialized() {
         findViewById(R.id.back).setOnClickListener(this);
-        mTitle = (TextView) findViewById(R.id.tv_title);
+        mTitle = (TextView) findViewById(R.id.title);
         mTitle.setText("系统信息");
         addDividerItem(0);
         loadData();

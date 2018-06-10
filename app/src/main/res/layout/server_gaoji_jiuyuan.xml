@@ -7,7 +7,7 @@
     android:layout_height="match_parent">
     <include layout="@layout/toobar_head_layout">
 
-    </include>\
+    </include>
     <LinearLayout
         android:orientation="vertical"
         android:background="@color/color_white_100"

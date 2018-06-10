@@ -60,7 +60,14 @@ public class AddAEDActivity extends BaseActivity implements View.OnClickListener
 
     @Override
     protected void initView() {
-
+        ImageView back;
+        back=findViewById(R.id.back);
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
         title = ((TextView) findViewById(R.id.title));
         AEDBrand = ((TextView) findViewById(R.id.AEDBrand));
         deadline = ((TextView) findViewById(R.id.deadline));

@@ -11,6 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="40dp">
         <EditText
+            android:id="@+id/et_update_nick"
             android:layout_marginLeft="@dimen/margin_15dp"
             android:background="@color/color_white_100"
             android:hint="请输入昵称"

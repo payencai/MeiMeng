@@ -17,7 +17,8 @@
             android:layout_height="385dp">
             <LinearLayout
                 android:gravity="center_vertical"
-
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="55dp">
@@ -47,7 +48,8 @@
                 android:layout_height="1dp"></View>
             <LinearLayout
                 android:gravity="center_vertical"
-
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="55dp">
@@ -78,7 +80,8 @@
                 android:layout_height="1dp"></View>
             <LinearLayout
                 android:gravity="center_vertical"
-
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="55dp">
@@ -147,7 +150,6 @@
                 android:layout_height="1dp"></View>
             <LinearLayout
                 android:gravity="center_vertical"
-
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="55dp">
@@ -192,7 +194,8 @@
                 android:layout_height="1dp"></View>
             <LinearLayout
                 android:gravity="center_vertical"
-
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="55dp">
@@ -223,37 +226,40 @@
                 android:layout_height="1dp"></View>
             <LinearLayout
                 android:gravity="center_vertical"
-                android:layout_marginRight="@dimen/margin_20dp"
+                android:layout_marginRight="@dimen/margin_10dp"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="55dp">
                 <TextView
                     android:layout_marginLeft="@dimen/margin_15dp"
-                    android:layout_weight="7"
+                    android:layout_weight="9"
                     android:textColor="#333333"
                     android:textSize="@dimen/text_size_14sp"
                     android:text="血型"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"/>
                 <LinearLayout
+                    android:paddingRight="5dp"
+                    android:paddingLeft="@dimen/margin_10dp"
                     android:gravity="center_vertical"
                     android:background="@drawable/shape_blood_bg"
                     android:orientation="horizontal"
-                    android:layout_width="76dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="@dimen/margin_35dp">
-                    <TextView
-                        android:id="@+id/tv_userinfo_bloodType"
-                        style="@style/common_font"
-                        android:layout_weight="3"
 
-                        android:text="A"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"/>
-                    <ImageView
-                  android:layout_marginRight="15dp"
-                        android:src="@mipmap/ic_triangle"
-                        android:layout_width="14dp"
-                        android:layout_height="8dp"/>
+                    <!--<TextView-->
+                        <!--android:id="@+id/tv_userinfo_bloodType"-->
+                        <!--style="@style/common_font"-->
+                        <!--android:text=""-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"/>-->
+                    <Spinner
+                        android:overlapAnchor="false"
+                        android:id="@+id/select_blood"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+                    </Spinner>
+
                 </LinearLayout>
 
             </LinearLayout>
@@ -269,7 +275,8 @@
             android:layout_height="110dp">
             <LinearLayout
                 android:gravity="center_vertical"
-
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="55dp">
@@ -300,6 +307,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"></View>
             <LinearLayout
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
@@ -334,7 +343,8 @@
             android:layout_height="165dp">
             <LinearLayout
                 android:gravity="center_vertical"
-
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="55dp">
@@ -364,7 +374,8 @@
                 android:layout_height="1dp"></View>
             <LinearLayout
                 android:gravity="center_vertical"
-
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="55dp">
@@ -394,7 +405,8 @@
                 android:layout_height="1dp"></View>
             <LinearLayout
                 android:gravity="center_vertical"
-
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="55dp">

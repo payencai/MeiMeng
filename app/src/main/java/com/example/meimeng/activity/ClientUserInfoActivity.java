@@ -6,12 +6,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,13 +31,25 @@ import com.google.gson.GsonBuilder;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class ClientUserInfoActivity extends BaseActivity {
+
+
+    //定义一个String类型的List数组作为数据源
+    private List<String> dataList;
+
+    //定义一个ArrayAdapter适配器作为spinner的数据适配器
+    private ArrayAdapter<String> adapter;
+
+    @BindView(R.id.select_blood)
+    Spinner select_blood;
     @BindView(R.id.layout_address)
     LinearLayout address;
     @BindView(R.id.title)
@@ -51,8 +66,8 @@ public class ClientUserInfoActivity extends BaseActivity {
     TextView et_address;
     @BindView(R.id.et_userinfo_age)
     EditText et_age;
-    @BindView(R.id.tv_userinfo_bloodType)
-    TextView tv_bloodType;
+
+   TextView tv_bloodType;
     @BindView(R.id.et_userinfo_sicken)
     EditText et_sicken;
     @BindView(R.id.et_userinfo_othersicken)
@@ -89,17 +104,9 @@ public class ClientUserInfoActivity extends BaseActivity {
         if(sex.equals("男")){
             rb_man.setChecked(true);
         }
-        et_name.setText(userInfo.getName()+"");
-        et_phone.setText(userInfo.getTelephone()+"");
-        et_fixphone.setText(userInfo.getFixedLineTelephone()+"");
-        et_address.setText(""+userInfo.getAddress());
-        et_age.setText(userInfo.getAge()+"");
-        tv_bloodType.setText(userInfo.getBloodType()+"");
-        et_sicken.setText(userInfo.getSickenHistory()+"");
-        et_othersicken.setText(userInfo.getOtherSicken()+"");
-        et_lianxi1.setText(userInfo.getLinkman1()+"");
-        et_lianxi2.setText(userInfo.getLinkman2()+"");
-        et_lianxi3.setText(userInfo.getLinkman3()+"");
+
+        initSpinner();
+        setValue();
         ImageView back;
         back=findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {
@@ -118,17 +125,19 @@ public class ClientUserInfoActivity extends BaseActivity {
             @Override
             public void onClick(View view) {
                 String data=returnJsonString();
-                Log.e("data",data);
                 String token=userInfo.getToken();
                 updateUserInfo(data,token);
             }
         });
+
+
+
     }
     private void updateUserInfo(String data,String token){
         HttpProxy.obtain().post(PlatformContans.UseUser.sUpdateUseUser, token, data, new ICallBack() {
             @Override
             public void OnSuccess(String result) {
-                Log.e("tag",result);
+
                 JSONObject jsonObject= null;
                 try {
                     jsonObject = new JSONObject(result);
@@ -147,7 +156,7 @@ public class ClientUserInfoActivity extends BaseActivity {
 
             @Override
             public void onFailure(String error) {
-                Log.d("tag", ": 失败");
+
             }
         });
     }
@@ -173,11 +182,7 @@ public class ClientUserInfoActivity extends BaseActivity {
         String linkman1 =et_lianxi1.getEditableText().toString();
         String linkman2 =et_lianxi2.getEditableText().toString();
         String linkman3 =et_lianxi3.getEditableText().toString();
-        String geohash=userInfo.getGeohash();
-        String image=userInfo.getImage();
         int age=Integer.parseInt(et_age.getEditableText().toString());
-        int accountType=userInfo.getAccountType();
-        int isCancel =userInfo.getIsCancel();
         String area=userInfo.getArea();
         String city=userInfo.getCity();
         String province=userInfo.getProvince();
@@ -192,29 +197,18 @@ public class ClientUserInfoActivity extends BaseActivity {
             province="";
         }
         if (latitude==null){
-            latitude="";
+            latitude="1";
         }
         if(longitude==null){
-            longitude="";
+            longitude="1";
         }
-        if(geohash==null){
-            geohash="";
-        }
-        //params.put("accountType",1);
-        //params.put("isCancel",isCancel);
+        //params.put("sex",sex);
         params.put("age",age);
-
-
         params.put("bloodType",bloodType);
-
         params.put("fixedLineTelephone",fixedLineTelephone);
-//        params.put("geohash",geohash);
-//        params.put("image","");
-
         params.put("linkman1",linkman1);
         params.put("linkman2",linkman2);
         params.put("linkman3",linkman3);
-
         params.put("nickname",nickname);
         params.put("otherSicken",otherSicken);
         params.put("sickenHistory",sickenHistory);
@@ -226,5 +220,126 @@ public class ClientUserInfoActivity extends BaseActivity {
         params.put("longitude",longitude);
         params.put("latitude",latitude);
         return gson.toJson(params);
+    }
+    public void setValue(){
+        if(userInfo.getName()==null){
+            et_name.setText("");
+        }else{
+            et_name.setText(userInfo.getName()+"");
+        }
+        if(userInfo.getFixedLineTelephone()==null){
+            et_fixphone.setText("");
+        }else{
+            et_fixphone.setText(userInfo.getFixedLineTelephone()+"");
+        }
+//        if(userInfo.getBloodType()==null){
+//            tv_bloodType.setText("A");
+//        }else{
+//            tv_bloodType.setText(userInfo.getBloodType()+"");
+//        }
+        if(userInfo.getAddress()==null){
+            et_address.setText("");
+        }else{
+            et_address.setText(userInfo.getAddress());
+        }
+        et_phone.setText(userInfo.getTelephone()+"");
+        et_age.setText(userInfo.getAge()+"");
+
+        if(userInfo.getSickenHistory()==null){
+            et_sicken.setText("");
+        }else{
+            et_sicken.setText(userInfo.getSickenHistory()+"");
+        }
+        if(userInfo.getOtherSicken()==null){
+            et_othersicken.setText("");
+        }else{
+            et_othersicken.setText(userInfo.getOtherSicken()+"");
+        }
+        if(userInfo.getLinkman1()==null){
+            et_lianxi1.setText("");
+        }else{
+            et_lianxi1.setText(userInfo.getLinkman1()+"");
+        }
+        if(userInfo.getLinkman2()==null){
+            et_lianxi2.setText("");
+        }else{
+            et_lianxi2.setText(userInfo.getLinkman2());
+        }
+        if(userInfo.getLinkman3()==null){
+            et_lianxi3.setText("");
+        }else{
+            et_lianxi3.setText(userInfo.getLinkman3());
+        }
+    }
+    public void initSpinner(){
+        dataList = new ArrayList<String>();
+        String bloodtype=userInfo.getBloodType();
+        Log.e("blood",bloodtype);
+        if(bloodtype.equals("B")){
+            dataList.add("B");
+            dataList.add("A");
+            dataList.add("AB");
+            dataList.add("O");
+            dataList.add("未知");
+        }
+        else if (bloodtype.equals("AB")) {
+            dataList.add("AB");
+            dataList.add("A");
+            dataList.add("B");
+            dataList.add("O");
+            dataList.add("未知");
+        }else if (bloodtype.equals("A")) {
+            dataList.add("A");
+            dataList.add("B");
+            dataList.add("AB");
+            dataList.add("O");
+            dataList.add("未知");
+        }
+        else if (bloodtype.equals("O")) {
+            dataList.add("O");
+            dataList.add("A");
+            dataList.add("B");
+            dataList.add("AB");
+            dataList.add("未知");
+        }else{
+            dataList.add("未知");
+            dataList.add("A");
+            dataList.add("B");
+            dataList.add("AB");
+            dataList.add("O");
+        }
+//        dataList.add("A");
+//        dataList.add("B");
+//        dataList.add("AB");
+//        dataList.add("O");
+//        dataList.add("未知");
+        /*为spinner定义适配器，也就是将数据源存入adapter，这里需要三个参数
+        1. 第一个是Context（当前上下文），这里就是this
+        2. 第二个是spinner的布局样式，这里用android系统提供的一个样式
+        3. 第三个就是spinner的数据源，这里就是dataList*/
+        adapter = new ArrayAdapter<String>(this,R.layout.item_spinner_blood,dataList);
+
+        //为适配器设置下拉列表下拉时的菜单样式。
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        //select_blood.setDropDownWidth(260);
+        //为spinner绑定我们定义好的数据适配器
+        select_blood.setAdapter(adapter);
+
+        //为spinner绑定监听器，这里我们使用匿名内部类的方式实现监听器
+        select_blood.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                 tv_bloodType = (TextView)view;
+                tv_bloodType.setText(adapter.getItem(position));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+
+            }
+        });
+
+
     }
 }

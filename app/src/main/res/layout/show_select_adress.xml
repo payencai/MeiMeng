@@ -6,6 +6,7 @@
               android:layout_height="match_parent">
      <include layout="@layout/toobar_head_layout"></include>
     <LinearLayout
+        android:id="@+id/select_address_layout"
         android:background="@color/color_white_100"
         android:gravity="center_vertical"
         android:orientation="horizontal"
@@ -32,12 +33,15 @@
 
     </View>
     <LinearLayout
+        android:focusable="true"
+        android:focusableInTouchMode="true"
         android:background="@color/color_white_100"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:layout_width="match_parent "
         android:layout_height="50dp">
         <EditText
+            android:id="@+id/et_input_address"
             android:textColor="#999999"
             android:textSize="14sp"
             android:background="@color/color_white_100"

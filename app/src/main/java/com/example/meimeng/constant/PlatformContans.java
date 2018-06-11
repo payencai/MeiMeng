@@ -30,6 +30,7 @@ public class PlatformContans {
     public static class Serveruser {
         public static final String sHead = rootUrl + "serveruser/";
         public static final String ServerUserLogin = sHead + "ServerUserLogin";//志愿者登录
+        public static final String sUpdateServerUser=sHead+"updateServerUser";//修改服务用户个人信息
     }
     public static class UserAdvice{
         public static final String sHead=rootUrl+"useradvice/";

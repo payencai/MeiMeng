@@ -10,7 +10,7 @@
         android:layout_height="match_parent"
         android:background="@color/bg_f2f2f2"
         android:orientation="vertical">
-        -
+
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -18,9 +18,10 @@
             android:layout_marginTop="10dp"
             android:background="@color/color_white_100"
             android:orientation="vertical">
-            -
+
 
             <LinearLayout
+                android:id="@+id/server_updatemname"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
@@ -50,9 +51,10 @@
                 android:layout_marginLeft="15dp"
                 android:layout_marginTop="15dp"
                 android:background="@color/bg_e5e5e5"/>
-            -
+
 
             <LinearLayout
+                android:id="@+id/server_home"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
@@ -82,9 +84,10 @@
                 android:layout_marginLeft="15dp"
                 android:layout_marginTop="15dp"
                 android:background="@color/bg_e5e5e5"/>
-            -
+
 
             <LinearLayout
+                android:id="@+id/server_work"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
@@ -114,9 +117,10 @@
                 android:layout_marginLeft="15dp"
                 android:layout_marginTop="15dp"
                 android:background="@color/bg_e5e5e5"/>
-            -
+
 
             <LinearLayout
+                android:id="@+id/server_time"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
@@ -142,6 +146,7 @@
         </LinearLayout>
 
         <Button
+            android:id="@+id/server_save"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_marginLeft="@dimen/margin_10dp"

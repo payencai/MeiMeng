@@ -107,10 +107,11 @@ public class OkHttpProcessor implements IHttpProcessor {
     @Override
     public void post(String url, String tokenvalue, String jsonString, final ICallBack callBack) {
         OkHttpClient client = new OkHttpClient();
-        MediaType jsonType = MediaType.parse("application/json;charset=utf-8");
+        MediaType jsonType = MediaType.parse("application/json");
         RequestBody body = RequestBody.create(jsonType, jsonString);
         Map<String, Object> tokenMap = new HashMap<>();
         tokenMap.put("token", tokenvalue);
+        Log.e("post",jsonString);
         Request request = addHeaders(tokenMap).post(body).url(url).build();
         Call call = client.newCall(request);
         call.enqueue(new Callback() {
@@ -126,8 +127,8 @@ public class OkHttpProcessor implements IHttpProcessor {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-
                 final String result = response.body().string();
+                Log.d("nei", ": " + result);
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {

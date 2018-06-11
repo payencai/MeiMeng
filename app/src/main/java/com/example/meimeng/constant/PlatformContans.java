@@ -22,7 +22,6 @@ public class PlatformContans {
         public static final String sUseUserRegister = sHead + "useUserRegister";//注册
         public static final String sUpdateUserpwd = sHead + "updateUserpwd";//修改密码
         public static final String sLogin = sHead + "login";//用户登录
-        public static final String sAuth=sHead+"updateRealNameAuthentication";//用户实名认证
         public static final String sUpdateRealNameAuthentication=sHead+"updateRealNameAuthentication";//用户实名认证
         public static final String sUpdateUseUser=sHead+"updateUseUser";//更新用户
 
@@ -38,6 +37,11 @@ public class PlatformContans {
     }
     public static class ForHelp{
         public static final String sHead=rootUrl+"forhelp/";
+        public static final String sGetCompleteHelpByServerUser=sHead+"getCompleteHelpByServerUser";
         public static final String sGetCompleteHelpByUseUser=sHead+"getCompleteHelpByUseUser";
+    }
+    public static class Medicine{
+        public static final String sHead=rootUrl+"medicine/";
+        public static final String sGetMedicineByUserId=sHead+"getMedicineByUserId";
     }
 }

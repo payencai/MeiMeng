@@ -47,11 +47,10 @@ public class ActivityManager {
     }
 
     public void finishActivity(Class<?> cls) {
-        Iterator<Activity> iterator = sActivityStack.iterator();
-        while (iterator.hasNext()) {
-            Activity activity = iterator.next();
+        for(int i=0;i<sActivityStack.size()-1;i++){
+            Activity activity=sActivityStack.get(i);
             if (activity.getClass().equals(cls)) {
-                sActivityStack.remove(activity);
+                sActivityStack.remove(sActivityStack.get(i));
                 activity.finish();
             }
         }

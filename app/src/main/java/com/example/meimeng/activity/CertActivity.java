@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -51,6 +52,14 @@ public class CertActivity extends BaseActivity {
         rb_nv = findViewById(R.id.rb_nv);
         rg_sex = findViewById(R.id.rg_sex);
         title.setText("实名认证");
+        ImageView back;
+        back=findViewById(R.id.back);
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
         if (APP.getInstance().getUserInfo().getSex() == "男") {
             rb_man.setChecked(true);
             rb_nv.setChecked(false);
@@ -82,6 +91,7 @@ public class CertActivity extends BaseActivity {
             @Override
             public void OnSuccess(String result) {
                 try {
+                   // Log.e("post",result);
                     JSONObject jsonObject=new JSONObject(result);
                     int code=jsonObject.getInt("resultCode");
                     if(code==0){

@@ -10,13 +10,14 @@ import android.widget.TextView;
 
 import com.example.meimeng.APP;
 import com.example.meimeng.R;
+import com.example.meimeng.base.BaseActivity;
 import com.example.meimeng.bean.ClientRecordBean;
+import com.example.meimeng.bean.MedicineBean;
+import com.example.meimeng.bean.MedicineResponse;
 import com.example.meimeng.bean.RecordResponse;
-import com.example.meimeng.bean.SystemMsgBean;
 import com.example.meimeng.common.rv.absRv.AbsBaseActivity;
 import com.example.meimeng.common.rv.base.Cell;
 import com.example.meimeng.constant.PlatformContans;
-import com.example.meimeng.http.HttpCallback;
 import com.example.meimeng.http.HttpProxy;
 import com.example.meimeng.http.ICallBack;
 import com.google.gson.Gson;
@@ -26,15 +27,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import butterknife.BindView;
-
-public class ClientRecordActivity extends AbsBaseActivity<ClientRecordBean> {
-
+public class MedicineActivity extends AbsBaseActivity<MedicineBean> {
     TextView title;
+    TextView save;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
+
+
 
     @Override
     public void onRecyclerViewInitialized() {
@@ -42,44 +43,28 @@ public class ClientRecordActivity extends AbsBaseActivity<ClientRecordBean> {
         loadData();
     }
 
-    @Override
-    public void onPullRefresh() {
-
-            mRecyclerView.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    setRefreshing(false);
-                }
-            }, 2000);
-
-    }
-    public void loadData(){
+    private void loadData() {
         Map<String,Object> params=new HashMap<>();
-        params.put("page",1);
-        HttpProxy.obtain().get(PlatformContans.ForHelp.sGetCompleteHelpByUseUser, params ,APP.getInstance().getUserInfo().getToken(),new ICallBack() {
+        params.put("type",2);
+        HttpProxy.obtain().get(PlatformContans.Medicine.sGetMedicineByUserId, params , APP.getInstance().getUserInfo().getToken(),new ICallBack() {
             @Override
             public void OnSuccess(String result) {
                 Log.e("TAG",result);
-                List<ClientRecordBean> list = new ArrayList<>();
+                List<MedicineBean> list = new ArrayList<>();
                 Gson gson=new Gson();
-                RecordResponse recordResponse=(RecordResponse)gson.fromJson(result, RecordResponse.class);
-                List<RecordResponse.beanList> beanLists=new ArrayList<>();
-                beanLists=recordResponse.getData().getBeanLists();
-                int size=beanLists.size();
+                MedicineResponse medicineResponse=(MedicineResponse) gson.fromJson(result, MedicineResponse.class);
+                List<MedicineResponse.Data> dataList=new ArrayList<>();
+                dataList=medicineResponse.getData();
+                int size=dataList.size();
                 if(size==0){
                     mBaseAdapter.addAll(list);
                 }else{
-                    for(RecordResponse.beanList beanList:beanLists){
-                        ClientRecordBean bean = new ClientRecordBean();
-                        List<RecordResponse.serveruser> serverusers=beanList.getServerusers();
-                        List<String> imgList=new ArrayList<>();
-                        for(RecordResponse.serveruser serveruser:serverusers){
-                            imgList.add(serveruser.getServerImage());
-                        }
-                        bean.setCompleteTime(beanList.getCompleteTime());
-                        bean.setAddress(beanList.getUserAddress());
-                        bean.setImgList(imgList);
-                        list.add(bean);
+                    for(MedicineResponse.Data data:dataList){
+                        MedicineBean medicineBean=new MedicineBean();
+                        medicineBean.setId(data.getId());
+                        medicineBean.setName(data.getName());
+                        medicineBean.setNum(data.getNum());
+                        list.add(medicineBean);
                     }
                     mBaseAdapter.addAll(list);
                 }
@@ -91,19 +76,33 @@ public class ClientRecordActivity extends AbsBaseActivity<ClientRecordBean> {
                 Log.e("TAG",error);
             }
         });
+    }
 
+    @Override
+    public void onPullRefresh() {
+        mRecyclerView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                setRefreshing(false);
+            }
+        }, 2000);
 
     }
+
     @Override
     public void onLoadMore() {
 
     }
 
+
     @Override
     public View addToolbar() {
-        View view = LayoutInflater.from(this).inflate(R.layout.toobar_head_layout, null);
+        View view = LayoutInflater.from(this).inflate(R.layout.show_yaopin_content, null);
         title=view.findViewById(R.id.title);
-        title.setText("求救记录");
+        save=view.findViewById(R.id.saveText);
+        save.setVisibility(View.VISIBLE);
+        title.setText("个人药品库");
+        save.setText("确定");
         ImageView back;
         back=view.findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {
@@ -112,12 +111,20 @@ public class ClientRecordActivity extends AbsBaseActivity<ClientRecordBean> {
                 finish();
             }
         });
+        save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
         return view;
     }
+
     @Override
-    protected List<Cell> getCells(List<ClientRecordBean> list) {
+    protected List<Cell> getCells(List<MedicineBean> list) {
         return null;
     }
+
 
     @Override
     public void onClick(View view) {

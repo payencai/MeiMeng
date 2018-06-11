@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,7 +43,14 @@ public class RebackActivity extends BaseActivity {
         tittle=findViewById(R.id.title);
         tv_save.setVisibility(View.VISIBLE);
         tittle.setText("意见反馈");
-
+        ImageView back;
+        back=findViewById(R.id.back);
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
         tv_save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -137,7 +137,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         return mLoadingBuilder;
     }
 
-    protected void closeLoadView( KyLoadingBuilder mLoadingBuilder) {
+    protected void closeLoadView(KyLoadingBuilder mLoadingBuilder) {
         if (mLoadingBuilder != null) {
             mLoadingBuilder.dismiss();
         }

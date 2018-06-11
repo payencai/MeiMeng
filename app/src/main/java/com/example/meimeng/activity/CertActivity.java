@@ -91,6 +91,7 @@ public class CertActivity extends BaseActivity {
             @Override
             public void OnSuccess(String result) {
                 try {
+                   // Log.e("post",result);
                     JSONObject jsonObject=new JSONObject(result);
                     int code=jsonObject.getInt("resultCode");
                     if(code==0){

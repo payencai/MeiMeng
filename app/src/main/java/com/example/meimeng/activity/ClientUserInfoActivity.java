@@ -47,7 +47,7 @@ public class ClientUserInfoActivity extends BaseActivity {
     EditText et_phone;
     @BindView(R.id.et_userinfo_fixphone)
     EditText et_fixphone;
-    @BindView(R.id.et_userinfo_address)
+    @BindView(R.id.et_user_address)
     TextView et_address;
     @BindView(R.id.et_userinfo_age)
     EditText et_age;
@@ -120,18 +120,15 @@ public class ClientUserInfoActivity extends BaseActivity {
                 String data=returnJsonString();
                 Log.e("data",data);
                 String token=userInfo.getToken();
-                Log.d("caihuaqing", ":" + token);
                 updateUserInfo(data,token);
             }
         });
     }
     private void updateUserInfo(String data,String token){
-        Log.d("caihuaqing", ": 进入1");
         HttpProxy.obtain().post(PlatformContans.UseUser.sUpdateUseUser, token, data, new ICallBack() {
             @Override
             public void OnSuccess(String result) {
-                Log.d("caihuaqing", ": 进入2");
-                Log.d("caihuaqing", "" + result);
+                Log.e("tag",result);
                 JSONObject jsonObject= null;
                 try {
                     jsonObject = new JSONObject(result);
@@ -150,7 +147,7 @@ public class ClientUserInfoActivity extends BaseActivity {
 
             @Override
             public void onFailure(String error) {
-                Log.d("caihuaqing", ": 失败");
+                Log.d("tag", ": 失败");
             }
         });
     }
@@ -165,7 +162,7 @@ public class ClientUserInfoActivity extends BaseActivity {
         String nickname=et_name.getEditableText().toString();
         String telephone =et_phone.getEditableText().toString();
         String fixedLineTelephone =et_fixphone.getEditableText().toString();
-        String address=et_address.getEditableText().toString();
+        String address=et_address.getText().toString();
         String sex="女";
         if(rb_man.isChecked()){
              sex="男";
@@ -203,27 +200,31 @@ public class ClientUserInfoActivity extends BaseActivity {
         if(geohash==null){
             geohash="";
         }
-        params.put("accountType",accountType);
-        params.put("isCancel",isCancel);
-        params.put("address",address);
+        //params.put("accountType",1);
+        //params.put("isCancel",isCancel);
         params.put("age",age);
-        params.put("province",province);
-        params.put("area",area);
+
+
         params.put("bloodType",bloodType);
-        params.put("city",city);
+
         params.put("fixedLineTelephone",fixedLineTelephone);
-        params.put("geohash",geohash);
-        params.put("image","");
-        params.put("latitude",latitude);
+//        params.put("geohash",geohash);
+//        params.put("image","");
+
         params.put("linkman1",linkman1);
         params.put("linkman2",linkman2);
         params.put("linkman3",linkman3);
-        params.put("longitude",longitude);
+
         params.put("nickname",nickname);
         params.put("otherSicken",otherSicken);
         params.put("sickenHistory",sickenHistory);
         params.put("telephone",telephone);
-        params.put("sex",sex);
+        params.put("province",province);
+        params.put("area",area);
+        params.put("city",city);
+        params.put("address",address);
+        params.put("longitude",longitude);
+        params.put("latitude",latitude);
         return gson.toJson(params);
     }
 }

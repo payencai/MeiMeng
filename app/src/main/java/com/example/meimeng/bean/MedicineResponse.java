@@ -36,9 +36,27 @@ public class MedicineResponse {
 
     public static  class Data{
         private String id;
+
+        public int getIsCancel() {
+            return isCancel;
+        }
+
+        public void setIsCancel(int isCancel) {
+            this.isCancel = isCancel;
+        }
+
+        public String getCreateTime() {
+            return createTime;
+        }
+
+        public void setCreateTime(String createTime) {
+            this.createTime = createTime;
+        }
+
         private String name;
         private int num;
-
+        private int isCancel;
+        private String createTime;
         public String getId() {
             return id;
         }

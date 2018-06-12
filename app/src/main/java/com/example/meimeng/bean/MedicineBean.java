@@ -22,6 +22,15 @@ public class MedicineBean extends RVBaseCell {
 
     private String name;
     private int num;
+    private int isCancel;
+
+    public int getIsCancel() {
+        return isCancel;
+    }
+
+    public void setIsCancel(int isCancel) {
+        this.isCancel = isCancel;
+    }
 
     public String getName() {
         return name;
@@ -63,7 +72,7 @@ public class MedicineBean extends RVBaseCell {
     @Override
     public void onBindViewHolder(RVBaseViewHolder holder, int position) {
         CheckBox checkBox= (CheckBox) holder.getView(R.id.cb_medicine);
-         if(num>0){
+         if(isCancel==1){
              checkBox.setChecked(true);
          }else{
              checkBox.setChecked(false);

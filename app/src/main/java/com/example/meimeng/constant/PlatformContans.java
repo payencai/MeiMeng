@@ -31,6 +31,7 @@ public class PlatformContans {
         public static final String sHead = rootUrl + "serveruser/";
         public static final String ServerUserLogin = sHead + "ServerUserLogin";//志愿者登录
         public static final String sUpdateServerUser=sHead+"updateServerUser";//修改服务用户个人信息
+        public static final String sServerUserUpgrade=sHead+"serverUserUpgrade";//升级高级急救人员
     }
     public static class UserAdvice{
         public static final String sHead=rootUrl+"useradvice/";
@@ -44,5 +45,9 @@ public class PlatformContans {
     public static class Medicine{
         public static final String sHead=rootUrl+"medicine/";
         public static final String sGetMedicineByUserId=sHead+"getMedicineByUserId";
+    }
+    public static class Image{
+        public static final String sHead=rootUrl+"image/";
+        public static final String sUpdateImage=sHead+"uploadImage";
     }
 }

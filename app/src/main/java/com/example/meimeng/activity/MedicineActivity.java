@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.meimeng.APP;
 import com.example.meimeng.R;
@@ -36,7 +37,6 @@ public class MedicineActivity extends AbsBaseActivity<MedicineBean> {
     }
 
 
-
     @Override
     public void onRecyclerViewInitialized() {
         addDividerItem(0);
@@ -64,6 +64,7 @@ public class MedicineActivity extends AbsBaseActivity<MedicineBean> {
                         medicineBean.setId(data.getId());
                         medicineBean.setName(data.getName());
                         medicineBean.setNum(data.getNum());
+                        medicineBean.setIsCancel(data.getIsCancel());
                         list.add(medicineBean);
                     }
                     mBaseAdapter.addAll(list);
@@ -94,6 +95,10 @@ public class MedicineActivity extends AbsBaseActivity<MedicineBean> {
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
 
     @Override
     public View addToolbar() {
@@ -128,6 +133,12 @@ public class MedicineActivity extends AbsBaseActivity<MedicineBean> {
 
     @Override
     public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.cb_medicine:
+                Toast.makeText(MedicineActivity.this,"去掉",Toast.LENGTH_LONG);
+                break;
 
+
+        }
     }
 }

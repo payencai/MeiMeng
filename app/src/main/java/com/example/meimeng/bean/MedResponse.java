@@ -4,17 +4,17 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class MedicineResponse {
+public class MedResponse {
     @SerializedName("data")
-    private List<Data> data;
+    private Data data;
     private int resultCode;
     private String message;
 
-    public List<Data> getData() {
+    public Data getData() {
         return data;
     }
 
-    public void setData(List<Data> data) {
+    public void setData(Data data) {
         this.data = data;
     }
 
@@ -35,6 +35,19 @@ public class MedicineResponse {
     }
 
     public static  class Data{
+        public List<BeanList> getBeanLists() {
+            return mBeanLists;
+        }
+
+        public void setBeanLists(List<BeanList> beanLists) {
+            mBeanLists = beanLists;
+        }
+
+        @SerializedName("beanList")
+
+        private List<BeanList> mBeanLists;
+    }
+    public static class BeanList{
         private String id;
 
         public int getIsCancel() {

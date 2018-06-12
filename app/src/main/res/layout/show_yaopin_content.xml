@@ -10,6 +10,7 @@
     <LinearLayout
     android:gravity="center_vertical"
     android:orientation="horizontal"
+    android:id="@+id/noSelect"
     android:layout_marginTop="10dp"
     android:background="@color/color_white_100"
     android:layout_width="match_parent"
@@ -17,6 +18,7 @@
     <CheckBox
         android:drawableLeft="@drawable/yaopin_selector"
         android:button="@null"
+        android:id="@+id/noSelectCheck"
         android:layout_marginLeft="15dp"
         android:layout_width="@dimen/margin_20dp"
         android:layout_height="@dimen/margin_20dp"/>

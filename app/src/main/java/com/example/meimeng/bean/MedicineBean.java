@@ -4,10 +4,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.LinearLayout;
 
 import com.example.meimeng.R;
 import com.example.meimeng.common.rv.base.RVBaseCell;
 import com.example.meimeng.common.rv.base.RVBaseViewHolder;
+
+import org.greenrobot.eventbus.EventBus;
 
 public class MedicineBean extends RVBaseCell {
     private String id;
@@ -23,6 +27,15 @@ public class MedicineBean extends RVBaseCell {
     private String name;
     private int num;
     private int isCancel;
+    private boolean isCheck;
+
+    public boolean isCheck() {
+        return isCheck;
+    }
+
+    public void setCheck(boolean check) {
+        isCheck = check;
+    }
 
     public int getIsCancel() {
         return isCancel;
@@ -36,7 +49,7 @@ public class MedicineBean extends RVBaseCell {
         return name;
     }
 
-    public MedicineBean( String name, int num) {
+    public MedicineBean(String name, int num) {
         super(null);
         this.name = name;
         this.num = num;
@@ -66,17 +79,53 @@ public class MedicineBean extends RVBaseCell {
     @Override
     public RVBaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_medicine, parent, false);
+
         return new RVBaseViewHolder(view);
+    }
+
+    public interface OnItemCheckboxClickListener {
+        void checkboxClick(boolean flag);
+    }
+
+    public OnItemCheckboxClickListener mOnItemCheckboxClickListener;
+
+    public void setOnItemCheckboxClickListener(OnItemCheckboxClickListener mOnItemCheckboxClickListener) {
+        this.mOnItemCheckboxClickListener = mOnItemCheckboxClickListener;
     }
 
     @Override
     public void onBindViewHolder(RVBaseViewHolder holder, int position) {
-        CheckBox checkBox= (CheckBox) holder.getView(R.id.cb_medicine);
-         if(isCancel==1){
-             checkBox.setChecked(true);
-         }else{
-             checkBox.setChecked(false);
-         }
-         holder.setText(R.id.tv_medicine_name,name);
+        final CheckBox checkBox = (CheckBox) holder.getView(R.id.cb_medicine);
+        if (isCheck) {
+            checkBox.setChecked(true);
+        } else {
+            checkBox.setChecked(false);
+        }
+
+        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                checkBox.setChecked(b);
+                //EventBus.getDefault().post(new MessageEvent(b,1));
+            }
+        });
+
+        holder.setText(R.id.tv_medicine_name, name);
+        LinearLayout layout = (LinearLayout) holder.getView(R.id.item);
+        layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (isCheck) {
+                    isCheck = false;
+                    checkBox.setChecked(false);
+                    //EventBus.getDefault().post(new MessageEvent(false,1));
+                } else {
+                    isCheck = true;
+                    checkBox.setChecked(true);
+                   // EventBus.getDefault().post(new MessageEvent(true,1));
+                }
+            }
+        });
+
     }
 }

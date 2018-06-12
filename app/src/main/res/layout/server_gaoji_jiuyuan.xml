@@ -28,18 +28,37 @@
             android:text="@string/str_zige_pic"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="160dp">
+            <ImageView
+                android:id="@+id/iv_gaoji_add"
+                android:layout_marginBottom="@dimen/margin_30dp"
+                android:layout_marginTop="@dimen/margin_20dp"
+                android:layout_marginLeft="@dimen/margin_15dp"
+                android:src="@mipmap/ic_me_add"
+                android:layout_width="165dp"
+                android:layout_height="110dp"/>
+            <GridView
+                android:layout_marginBottom="@dimen/margin_30dp"
+                android:layout_marginRight="@dimen/margin_10dp"
+                android:layout_marginLeft="@dimen/margin_10dp"
+                android:id="@+id/gaoji_show_pic"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:horizontalSpacing="4dp"
+                android:numColumns="1"
+                android:verticalSpacing="4dp"
+                android:visibility="visible"></GridView>
+        </LinearLayout>
 
-        <ImageView
-            android:layout_marginBottom="@dimen/margin_30dp"
-            android:layout_marginTop="@dimen/margin_20dp"
-            android:layout_marginLeft="@dimen/margin_15dp"
-            android:src="@mipmap/ic_me_add"
-            android:layout_width="165dp"
-            android:layout_height="110dp"/>
     </LinearLayout>
 
 
     <Button
+        android:id="@+id/btn_commit"
         android:textColor="@color/color_white_100"
         android:textSize="@dimen/text_size_17sp"
         android:text="提交审核"

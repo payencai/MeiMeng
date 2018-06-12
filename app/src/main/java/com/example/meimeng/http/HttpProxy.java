@@ -1,15 +1,28 @@
 package com.example.meimeng.http;
 
 import android.util.Log;
+import android.widget.Toast;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 /**
  * Created by Administrator on 2017/9/29.
@@ -142,4 +155,11 @@ public class HttpProxy implements IHttpProcessor {
         }
         return sb.toString();
     }
+
+
+
+
+
+
+
 }

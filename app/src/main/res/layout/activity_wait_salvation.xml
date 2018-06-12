@@ -26,12 +26,12 @@
         <TextView
             android:id="@+id/cancel"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/margin_15dp"
+            android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginRight="@dimen/margin_5dp"
             android:text="取消求助"
-            android:textColor="#ffffff"
+            android:textColor="@color/color_white_100"
             android:textSize="@dimen/text_size_14sp" />
     </RelativeLayout>
 
@@ -52,7 +52,9 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_alignParentBottom="true"
-        android:background="#f7f7f9">
+        android:background="#f7f7f9"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
 
         <ImageView
             android:id="@+id/msgTypeBtn"

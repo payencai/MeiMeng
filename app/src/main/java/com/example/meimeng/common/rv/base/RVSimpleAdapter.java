@@ -46,6 +46,12 @@ public class RVSimpleAdapter extends RVBaseAdapter {
 
     private boolean mIsShowEmpty = false;
 
+    public void setListen(onSimpleItemClickListen listen) {
+        mListen = listen;
+    }
+
+    private onSimpleItemClickListen mListen;
+
     public RVSimpleAdapter() {
         mEmptyCell = new EmptyCell(null);
         mErrorCell = new ErrorCell(null);
@@ -120,6 +126,17 @@ public class RVSimpleAdapter extends RVBaseAdapter {
         clear();
         mIsShowLoading = true;
         add(mLoadingCell);
+    }
+
+    public interface onSimpleItemClickListen {
+        void onItemListen(RVBaseViewHolder holder, int position);
+    }
+
+    @Override
+    protected void onClick(RVBaseViewHolder holder, int position) {
+        if (mListen != null) {
+            mListen.onItemListen(holder, position);
+        }
     }
 
     /**

@@ -5,46 +5,22 @@
     android:background="@color/background"
     android:orientation="vertical">
 
-    <TextView
-        style="@style/common_font"
+
+    <include layout="@layout/toobar_head_layout" />
+
+    <FrameLayout
+        android:id="@+id/skillRvFrameLayout"
         android:layout_width="match_parent"
-        android:layout_height="86dp"
-        android:background="@color/color_white_100"
-        android:gravity="start"
-        android:padding="12dp"
-        android:text="《中华人民共和国民法总则》将于2017年10月1日正式实施，其中被俗称为“好人法”的第184条规定“因自愿实施紧急救助行为造成受助人损害的，救助人不承担民事责任”。"
-        android:textSize="12sp" />
+        android:layout_height="match_parent"
+        android:background="@color/background"></FrameLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0.75dp"
-        android:background="@color/line_gray" />
 
-    <RelativeLayout
-        android:id="@+id/CPROption"
-        android:layout_width="match_parent"
-        android:layout_height="46dp"
-        android:background="@color/color_white_100"
-        android:paddingLeft="12dp"
-        android:paddingRight="12dp">
+    <!--<android.support.v7.widget.RecyclerView-->
+    <!--android:id="@+id/firstAidOptionRv"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_marginTop="10dp"-->
+    <!--android:background="@color/color_white_100"></android.support.v7.widget.RecyclerView>-->
 
-        <TextView
-            style="@style/common_font"
-            android:layout_height="match_parent"
-            android:text="CPR节拍器" />
 
-        <ImageView
-            android:layout_width="8dp"
-            android:layout_height="15dp"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:src="@mipmap/ic_arrows_right" />
-    </RelativeLayout>
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/firstAidOptionRv"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:background="@color/color_white_100"></android.support.v7.widget.RecyclerView>
 </LinearLayout>

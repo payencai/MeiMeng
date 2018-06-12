@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_white_100"
+    android:orientation="vertical"
+    tools:context=".activity.FirstAidDetailsWebActivity">
+
+
+    <include layout="@layout/toobar_head_layout" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="@dimen/margin_6dp">
+
+            <TextView
+                android:id="@+id/aidTitle"
+                style="@style/common_font"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:gravity="center"
+                android:text="急救"
+                android:textSize="@dimen/text_size_17sp"
+                android:textStyle="bold" />
+
+            <FrameLayout
+                android:id="@+id/webViewFrameLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"></FrameLayout>
+        </LinearLayout>
+    </ScrollView>
+
+
+</LinearLayout>

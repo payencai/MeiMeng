@@ -89,24 +89,32 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.submit:
+                //用户账号：13202908144   12345678
+                //服务账号：13480197692   123456
                 String tel;
                 String psw;
+                String url;
+                if (userLoginState == 0) {
+                    url = PlatformContans.UseUser.sLogin;
+                } else {
+                    url = PlatformContans.Serveruser.ServerUserLogin;
+                }
                 if (APP.IS_DEBUG) {
-                    startActivity(new Intent(this, MainActivity.class));
+                    if (userLoginState == 0) {
+                        tel = "13202908144";
+                        psw = "12345678";
+                    } else {
+                        tel = "13480197692";
+                        psw = "123456";
+                    }
                 } else {
                     tel = userNumberEdit.getEditableText().toString();
                     psw = verificationEdit.getEditableText().toString();
-                    String url;
-                    if (userLoginState == 0) {
-                        url = PlatformContans.UseUser.sLogin;
-                    } else {
-                        url = PlatformContans.Serveruser.ServerUserLogin;
-                    }
-                    if (checkForm(tel, psw)) {
-                        submit.setEnabled(false);
-                        mLoginLoadView = openLoadView("");
-                        requestLogin(url, tel, psw);
-                    }
+                }
+                if (checkForm(tel, psw)) {
+                    submit.setEnabled(false);
+                    mLoginLoadView = openLoadView("");
+                    requestLogin(url, tel, psw);
                 }
                 break;
             case R.id.register:

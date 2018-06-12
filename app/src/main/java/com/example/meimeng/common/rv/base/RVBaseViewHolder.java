@@ -7,6 +7,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.Serializable;
+
 /**
  * Created by HIAPAD on 2017/12/2.
  */

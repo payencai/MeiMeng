@@ -22,10 +22,11 @@ public class PlatformContans {
         public static final String sUseUserRegister = sHead + "useUserRegister";//注册
         public static final String sUpdateUserpwd = sHead + "updateUserpwd";//修改密码
         public static final String sLogin = sHead + "login";//用户登录
-        public static final String sUpdateRealNameAuthentication=sHead+"updateRealNameAuthentication";//用户实名认证
-        public static final String sUpdateUseUser=sHead+"updateUseUser";//更新用户
+        public static final String sUpdateRealNameAuthentication = sHead + "updateRealNameAuthentication";//用户实名认证
+        public static final String sUpdateUseUser = sHead + "updateUseUser";//更新用户
 
     }
+
 
     public static class Serveruser {
         public static final String sHead = rootUrl + "serveruser/";
@@ -33,18 +34,26 @@ public class PlatformContans {
         public static final String sUpdateServerUser=sHead+"updateServerUser";//修改服务用户个人信息
         public static final String sServerUserUpgrade=sHead+"serverUserUpgrade";//升级高级急救人员
     }
-    public static class UserAdvice{
-        public static final String sHead=rootUrl+"useradvice/";
-        public static final String sAddAdvice=sHead+"addUserAdvice";//反馈意见
+
+    public static class AidKnowController {
+        public static final String sHead = rootUrl + "aidKnowController/";
+        public static final String sGetAidKnowByManage = sHead + "getAidKnowByManage ";//志愿者登录
     }
-    public static class ForHelp{
-        public static final String sHead=rootUrl+"forhelp/";
-        public static final String sGetCompleteHelpByServerUser=sHead+"getCompleteHelpByServerUser";
-        public static final String sGetCompleteHelpByUseUser=sHead+"getCompleteHelpByUseUser";
+
+    public static class UserAdvice {
+        public static final String sHead = rootUrl + "useradvice/";
+        public static final String sAddAdvice = sHead + "addUserAdvice";//反馈意见
     }
-    public static class Medicine{
-        public static final String sHead=rootUrl+"medicine/";
-        public static final String sGetMedicineByUserId=sHead+"getMedicineByUserId";
+
+    public static class ForHelp {
+        public static final String sHead = rootUrl + "forhelp/";
+        public static final String sGetCompleteHelpByServerUser = sHead + "getCompleteHelpByServerUser";
+        public static final String sGetCompleteHelpByUseUser = sHead + "getCompleteHelpByUseUser";
+    }
+
+    public static class Medicine {
+        public static final String sHead = rootUrl + "medicine/";
+        public static final String sGetMedicineByUserId = sHead + "getMedicineByUserId";
     }
     public static class Image{
         public static final String sHead=rootUrl+"image/";

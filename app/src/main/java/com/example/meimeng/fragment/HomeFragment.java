@@ -58,16 +58,21 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener, 
     private static final int BAIDU_READ_PHONE_STATE = 100;
     private int searchType = 0;//搜索类型，0为城市搜索，1为药品搜索
 
+    public LocationClient mLocationClient = null;
+//    private MyLocationListener myListener = new MyLocationListener();
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         initView(view);
         //在使用SDK各组件之前初始化context信息，传入ApplicationContext
         //注意该方法要再setContentView方法之前实现
+        mLocationClient = new LocationClient(getContext().getApplicationContext());
+//        mLocationClient.registerLocationListener();
         return view;
     }
+
 
     private void initView(View view) {
         addAED = (LinearLayout) view.findViewById(R.id.addAED);

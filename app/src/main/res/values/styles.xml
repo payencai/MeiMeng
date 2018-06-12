@@ -82,7 +82,13 @@
     <item name="android:windowContentOverlay">@null</item>
     <item name="android:windowBackground">@color/background</item>
 </style>
+    <style name="mypopwindow_anim_style">
+        <item name="android:windowEnterAnimation">@anim/push_bottom_in</item>
+        <!-- 指定显示的动画xml -->
 
+        <item name="android:windowExitAnimation">@anim/push_buttom_out</item>
+        <!-- 指定消失的动画xml -->
+    </style>
     <!--<style name="time_dialog" parent="android:style/Theme.Dialog">-->
         <!--<item name="android:windowFrame">@null</item>-->
         <!--<item name="android:windowNoTitle">true</item>-->

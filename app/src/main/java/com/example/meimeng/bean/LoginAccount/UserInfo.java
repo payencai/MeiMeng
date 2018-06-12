@@ -3,6 +3,8 @@ package com.example.meimeng.bean.LoginAccount;
 import com.example.meimeng.common.rv.base.RVBaseCell;
 
 /**
+ * 用户账号：13202908144，密码：12345678
+ * 服务账号：13480197692，密码：123456
  * 作者：凌涛 on 2018/6/6 17:45
  * 邮箱：771548229@qq..com
  */

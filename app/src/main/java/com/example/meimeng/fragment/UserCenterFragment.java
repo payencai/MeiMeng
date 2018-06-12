@@ -84,7 +84,11 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
         mServerRecord=view.findViewById(R.id.record_server_layout);
         mServerShengji=view.findViewById(R.id.shengji_server_layout);
         mServerUserinfo=view.findViewById(R.id.userinfo_server_layout);
-        mServerUsername.setText(APP.getInstance().getServerUserInfo().getName()+",你好");
+        if(APP.getInstance().getServerUserInfo().getNickname()==null){
+            mServerUsername.setText("朵雪花,你好");
+        }else{
+            mServerUsername.setText(APP.getInstance().getServerUserInfo().getName()+",你好");
+        }
     }
 
     private void clientInitEvent() {
@@ -111,7 +115,11 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
         mClientAboutus = view.findViewById(R.id.aboutus_client_layout);
         UserInfo userInfo = APP.getInstance().getUserInfo();
         if (userInfo != null) {
-            mClientUsername.setText(userInfo.getName() + ",你好");
+            if (userInfo.getNickname()!=null)
+            mClientUsername.setText(userInfo.getNickname() + ",你好");
+            else{
+                mClientUsername.setText("朵雪花，你好");
+            }
         }
     }
 

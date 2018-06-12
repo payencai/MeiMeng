@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
+              android:id="@+id/server_main"
               android:layout_height="match_parent"
               android:orientation="vertical">
     <include layout="@layout/toobar_head_layout"></include>
@@ -37,7 +38,14 @@
                     android:layout_weight="8"
                     android:text="修改昵称"
                     style="@style/font_14sp_333"/>
-
+                <TextView
+                    android:id="@+id/tv_server_nick"
+                    android:layout_marginRight="@dimen/margin_10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:text=""
+                    style="@style/font_14sp_333"/>
                 <ImageView
                     android:layout_width="8dp"
                     android:layout_height="15dp"
@@ -70,7 +78,14 @@
                     android:layout_weight="8"
                     android:text="家庭住址"
                     style="@style/font_14sp_333"/>
-
+                <TextView
+                    android:id="@+id/tv_server_home"
+                    android:layout_marginRight="@dimen/margin_10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:text=""
+                    style="@style/font_14sp_333"/>
                 <ImageView
                     android:layout_width="8dp"
                     android:layout_height="15dp"
@@ -103,7 +118,14 @@
                     android:layout_weight="8"
                     android:text="工作住址"
                     style="@style/font_14sp_333"/>
-
+                <TextView
+                    android:id="@+id/tv_server_work"
+                    android:layout_marginRight="@dimen/margin_10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:text=""
+                    style="@style/font_14sp_333"/>
                 <ImageView
                     android:layout_width="8dp"
                     android:layout_height="15dp"
@@ -136,7 +158,14 @@
                     android:layout_weight="8"
                     android:text="工作时间"
                     style="@style/font_14sp_333"/>
-
+                <TextView
+                    android:id="@+id/tv_server_time"
+                    android:layout_marginRight="@dimen/margin_10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:text=""
+                    style="@style/font_14sp_333"/>
                 <ImageView
                     android:layout_width="8dp"
                     android:layout_height="15dp"

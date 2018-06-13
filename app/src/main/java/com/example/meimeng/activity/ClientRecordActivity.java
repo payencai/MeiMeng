@@ -43,7 +43,6 @@ public class ClientRecordActivity extends AbsBaseActivity<ClientRecordBean> {
     public void onRecyclerViewInitialized() {
         addDividerItem(0);
         loadData();
-
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.example.meimeng;
 
 import android.app.Application;
+import android.app.Service;
 import android.os.Vibrator;
 
 import com.baidu.mapapi.SDKInitializer;
@@ -24,8 +25,8 @@ public class APP extends Application {
     private static APP sInstance;
     public static int sUserType = 0;//用户类型，0为用户，1为志愿者
 
-    //志愿者测试账号 账号 13480197926  密码 123456
 
+    //志愿者测试账号 账号 13480197926  密码 123456
     public UserInfo getUserInfo() {
         return mUserInfo;
     }
@@ -56,9 +57,8 @@ public class APP extends Application {
         // SHA256 3f2a849d046f5948eeae6e243163b051afc940a500bf6db7b07b20c8e489cbd6
         //初始化百度地图
 
-//        locationService = new LocationService(this);
-//        mVibrator =(Vibrator)getApplicationContext().getSystemService(Service.VIBRATOR_SERVICE);
-//        SDKInitializer.initialize(getApplicationContext());
+        locationService = new LocationService(this);
+        mVibrator = (Vibrator) getApplicationContext().getSystemService(Service.VIBRATOR_SERVICE);
         //初始化定位sdk，建议在Application中创建
         SDKInitializer.initialize(this);
         //初始化网络请求

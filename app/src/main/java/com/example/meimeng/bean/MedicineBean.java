@@ -11,7 +11,6 @@ import com.example.meimeng.R;
 import com.example.meimeng.common.rv.base.RVBaseCell;
 import com.example.meimeng.common.rv.base.RVBaseViewHolder;
 
-import org.greenrobot.eventbus.EventBus;
 
 public class MedicineBean extends RVBaseCell {
     private String id;

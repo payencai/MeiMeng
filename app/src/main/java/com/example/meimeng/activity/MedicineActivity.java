@@ -32,9 +32,7 @@ import com.example.meimeng.http.ICallBack;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -47,40 +45,40 @@ import java.util.Map;
 public class MedicineActivity extends AbsBaseActivity<MedicineBean> {
     TextView title;
     TextView save;
-    boolean isEnter =true;
-    boolean isEmpty=false;
-    boolean isClick=true;
+    boolean isEnter = true;
+    boolean isEmpty = false;
+    boolean isClick = true;
     private int page = 1;
     private boolean isRefresh = false;
     //  CheckBox itemcheckbox;
     private CheckBox mCheckBox;
-
+    RVSimpleAdapter myAdapter=null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EventBus.getDefault().register(this);
+        // EventBus.getDefault().register(this);
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageReceived(MessageEvent event) {
-        switch (event.getType()) {
-            case 1:
-                if (event.getMsg()) {
-                    if (mCheckBox.isChecked()) {
-                        //isSelect(true);
-                        mCheckBox.setChecked(false);
-                        Toast.makeText(MedicineActivity.this,"click",Toast.LENGTH_LONG).show();
-
-                    }
-                }
-                break;
-        }
-    }
+//    @Subscribe(threadMode = ThreadMode.MAIN)
+//    public void onMessageReceived(MessageEvent event) {
+//        switch (event.getType()) {
+//            case 1:
+//                if (event.getMsg()) {
+//                    if (mCheckBox.isChecked()) {
+//                        //isSelect(true);
+//                        mCheckBox.setChecked(false);
+//                        Toast.makeText(MedicineActivity.this,"click",Toast.LENGTH_LONG).show();
+//
+//                    }
+//                }
+//                break;
+//        }
+//    }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        EventBus.getDefault().unregister(this); //取消注册
+        // EventBus.getDefault().unregister(this); //取消注册
     }
 
     @Override
@@ -103,21 +101,23 @@ public class MedicineActivity extends AbsBaseActivity<MedicineBean> {
     private List<String> listid = new ArrayList<>();
     private List<MedicineBean> list = new ArrayList<>();
 
-    private void getMedicineByManage(int page, final List<String> listid) {
-        Map<String, Object> params = new HashMap<>();
+    private void getMedicineByManage(final List<String> listid) {
+        final Map<String, Object> params = new HashMap<>();
         params.put("page", 2);
         HttpProxy.obtain().get(PlatformContans.Medicine.sGetMedicineByManage, params, APP.getInstance().getUserInfo().getToken(), new ICallBack() {
             @Override
             public void OnSuccess(String result) {
-                //Log.e("TAG", result);
+                Log.e("Manage", result);
                 Gson gson = new Gson();
+                ++page;
                 MedResponse medResponse = (MedResponse) gson.fromJson(result, MedResponse.class);
                 MedResponse.Data data = medResponse.getData();
                 List<MedResponse.BeanList> beanLists = data.getBeanLists();
-               // List<MedicineBean> list = new ArrayList<>();
+                // List<MedicineBean> list = new ArrayList<>();
                 int size = beanLists.size();
                 if (size == 0) {
                     mBaseAdapter.addAll(list);
+                     myAdapter=mBaseAdapter;
                 } else {
                     for (MedResponse.BeanList beanList : beanLists) {
                         MedicineBean medicineBean = new MedicineBean();
@@ -137,6 +137,7 @@ public class MedicineActivity extends AbsBaseActivity<MedicineBean> {
                         list.add(medicineBean);
                     }
                     mBaseAdapter.addAll(list);
+
                 }
 
             }
@@ -160,28 +161,9 @@ public class MedicineActivity extends AbsBaseActivity<MedicineBean> {
                 MedResponse medResponse = (MedResponse) gson.fromJson(result, MedResponse.class);
                 MedResponse.Data data = medResponse.getData();
                 List<MedResponse.BeanList> beanLists = data.getBeanLists();
-                //List<MedicineBean> list = new ArrayList<>();
-//                try {
-//                    JSONObject object = new JSONObject(result);
-//                    int resultCode = object.getInt("resultCode");
-//                    if (resultCode == 0) {
-//                        JSONArray beanList = object.getJSONObject("data").getJSONArray("beanList");
-//                        int len = beanList.length();
-//                        ArrayList<NedicineBean2> list = new ArrayList<>();
-//                        for (int i = 0; i < len; i++) {
-//                            JSONObject item = beanList.getJSONObject(i);
-//                            NedicineBean2 bean2 = gson.fromJson(item.toString(), NedicineBean2.class);
-//                            list.add(bean2);
-//                        }
-//                        mBaseAdapter.addAll(list);
-//                    }
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-
                 int size = beanLists.size();
                 if (size == 0) {
-                    isEmpty=true;
+                    isEmpty = true;
                     mBaseAdapter.clear();
                     mBaseAdapter.addAll(list);
                 } else {
@@ -204,19 +186,12 @@ public class MedicineActivity extends AbsBaseActivity<MedicineBean> {
                         }
                         list.add(medicineBean);
                     }
-                    if(isEnter){
-                        isEnter=false;
-                        getMedicineByManage(2,listid);
-                    }else{
-                        if (isRefresh) {
-                            isRefresh = false;
-                            mBaseAdapter.clear();
-                            mBaseAdapter.addAll(list);
-
-                        } else {
-                            mBaseAdapter.clear();
-                            mBaseAdapter.addAll(list);
-                        }
+                    if (isEnter) {
+                        getMedicineByManage(listid);
+                        isEnter = false;
+                    } else {
+                        //mBaseAdapter.clear();
+                        mBaseAdapter.addAll(list);
                     }
 
                 }
@@ -322,18 +297,13 @@ public class MedicineActivity extends AbsBaseActivity<MedicineBean> {
 
     @Override
     public void onLoadMore() {
-        if(!isEmpty){
+
+        if (!isEmpty) {
             page++;
             Log.e("page", String.valueOf(page));
+            mBaseAdapter.showLoadMore();
             getMedicineByServer(listid);
         }
-        mRecyclerView.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                setRefreshing(false);
-                //getMedicineByServer(listid);
-            }
-        }, 2000);
         //queryMedicicneBack(++currentPage);
 
         //mBaseAdapter.notifyDataSetChanged();
@@ -356,8 +326,7 @@ public class MedicineActivity extends AbsBaseActivity<MedicineBean> {
         mCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-
-                 isSelect(b);
+                isSelect(b);
             }
         });
         //itemcheckbox.setOnClickListener(this);
@@ -370,30 +339,6 @@ public class MedicineActivity extends AbsBaseActivity<MedicineBean> {
         return view;
     }
 
-    private void isSelect(boolean b) {
-        List data = mBaseAdapter.getData();
-        for (Object datum : data) {
-            MedicineBean medicineBean = (MedicineBean) datum;
-            if (b==true) {
-                medicineBean.setCheck(false);//将所有的itemtcheck改成未选
-            } else {
-                medicineBean.setCheck(false);//先全部设置成为未选
-                if (listid.contains(medicineBean.getId())==true) {
-                   // Log.e("size",listid.size()+"");
-                    Toast.makeText(MedicineActivity.this,"aaa",Toast.LENGTH_LONG).show();
-                    medicineBean.setCheck(true);
-                }
-            }
-        }
-        mBaseAdapter.notifyDataSetChanged();
-    }
-
-    @Override
-    protected List<Cell> getCells(List<MedicineBean> list) {
-        return null;
-    }
-
-
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -403,16 +348,13 @@ public class MedicineActivity extends AbsBaseActivity<MedicineBean> {
             case R.id.noSelect:
                 if (mCheckBox.isChecked()) {
                     mCheckBox.setChecked(false);
-                    isSelect(false);
-
                 } else {
                     mCheckBox.setChecked(true);
-                    isSelect(true);
+
                 }
 
                 break;
             case R.id.saveText:
-
                 List data = mBaseAdapter.getData();
                 String ids = "";
                 for (Object datum : data) {
@@ -428,6 +370,37 @@ public class MedicineActivity extends AbsBaseActivity<MedicineBean> {
 
         }
     }
+
+    private void isSelect(boolean b) {
+        List data = mBaseAdapter.getData();
+        int len=data.size();
+        if (len != 0) {
+            for (int i=0;i<len; i++) {
+                Object object=data.get(i);
+                if(object instanceof MedicineBean){
+                    MedicineBean medicineBean = (MedicineBean) object;
+                    if (b == true) {
+                        medicineBean.setCheck(false);//将所有的itemtcheck改成未选
+                    } else {
+                        medicineBean.setCheck(false);//先全部设置成为未选
+                        if (listid.contains(medicineBean.getId()) == true) {
+                            // Log.e("size",listid.size()+"");
+                            //Toast.makeText(MedicineActivity.this, "aaa", Toast.LENGTH_LONG).show();
+                            medicineBean.setCheck(true);
+                        }
+                    }
+                }
+
+            }
+            mBaseAdapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    protected List<Cell> getCells(List<MedicineBean> list) {
+        return null;
+    }
+
 
     private void addMedicicne(List<String> ids) {
         Map<String, Object> params = new HashMap<>();

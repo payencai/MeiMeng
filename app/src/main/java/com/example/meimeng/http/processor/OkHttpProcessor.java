@@ -111,7 +111,6 @@ public class OkHttpProcessor implements IHttpProcessor {
         RequestBody body = RequestBody.create(jsonType, jsonString);
         Map<String, Object> tokenMap = new HashMap<>();
         tokenMap.put("token", tokenvalue);
-        Log.e("post",jsonString);
         Request request = addHeaders(tokenMap).post(body).url(url).build();
         Call call = client.newCall(request);
         call.enqueue(new Callback() {

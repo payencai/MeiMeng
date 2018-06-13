@@ -58,6 +58,7 @@ public class PlatformContans {
         public static final String sAddMedicineByManage=sHead+"addMedicineByManage";
         public static final String sAddMedicineRelation=sHead+"addMedicineRelation";
         public static final String sGetMedicineByManage=sHead+"getMedicineByManage";
+        public static final String sGetMedicineByServer=sHead+"getMedicineByServer";
     }
     public static class Image{
         public static final String sHead=rootUrl+"image/";

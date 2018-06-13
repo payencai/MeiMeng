@@ -2,6 +2,7 @@ package com.example.meimeng.activity;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,7 @@ import com.example.meimeng.bean.MedResponse;
 import com.example.meimeng.bean.MedicineBean;
 import com.example.meimeng.bean.MedicineResponse;
 import com.example.meimeng.bean.MessageEvent;
+import com.example.meimeng.bean.NedicineBean2;
 import com.example.meimeng.bean.RecordResponse;
 import com.example.meimeng.common.rv.absRv.AbsBaseActivity;
 import com.example.meimeng.common.rv.base.Cell;
@@ -33,6 +35,7 @@ import com.google.gson.GsonBuilder;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -44,7 +47,12 @@ import java.util.Map;
 public class MedicineActivity extends AbsBaseActivity<MedicineBean> {
     TextView title;
     TextView save;
-  //  CheckBox itemcheckbox;
+    boolean isEnter =true;
+    boolean isEmpty=false;
+    boolean isClick=true;
+    private int page = 1;
+    private boolean isRefresh = false;
+    //  CheckBox itemcheckbox;
     private CheckBox mCheckBox;
 
     @Override
@@ -52,13 +60,17 @@ public class MedicineActivity extends AbsBaseActivity<MedicineBean> {
         super.onCreate(savedInstanceState);
         EventBus.getDefault().register(this);
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageReceived(MessageEvent event) {
-        switch(event.getType()){
+        switch (event.getType()) {
             case 1:
-                if(event.getMsg()){
-                    if(mCheckBox.isChecked()){
+                if (event.getMsg()) {
+                    if (mCheckBox.isChecked()) {
+                        //isSelect(true);
                         mCheckBox.setChecked(false);
+                        Toast.makeText(MedicineActivity.this,"click",Toast.LENGTH_LONG).show();
+
                     }
                 }
                 break;
@@ -74,86 +86,52 @@ public class MedicineActivity extends AbsBaseActivity<MedicineBean> {
     @Override
     public void onRecyclerViewInitialized() {
         addDividerItem(0);
-        loadDataAdv();
+        loadData();
         mBaseAdapter.setListen(new RVSimpleAdapter.onSimpleItemClickListen() {
             @Override
             public void onItemListen(RVBaseViewHolder holder, int position) {
-                 CheckBox checkBox= (CheckBox) holder.getView(R.id.cb_medicine);
-                 if (checkBox.isChecked()){
-                 }
+                CheckBox checkBox = (CheckBox) holder.getView(R.id.cb_medicine);
+//                if (checkBox.isChecked()) {
+//                    Toast.makeText(MedicineActivity.this, "click", Toast.LENGTH_LONG);
+//                    checkBox.setChecked(true);
+//                }
             }
         });
 
-
     }
-   private void loadDataAdv(){
-       Map<String, Object> params = new HashMap<>();
-       params.put("page", 1);
-       HttpProxy.obtain().get(PlatformContans.Medicine.sGetMedicineByManage, params, APP.getInstance().getUserInfo().getToken(), new ICallBack() {
-           @Override
-           public void OnSuccess(String result) {
-               //Log.e("TAG", result);
-               List<MedicineBean> list = new ArrayList<>();
-               Gson gson = new Gson();
-               MedResponse medResponse = (MedResponse) gson.fromJson(result, MedResponse.class);
-               MedResponse.Data data = medResponse.getData();
-               List<MedResponse.BeanList> beanLists=data.getBeanLists();
-               int size = beanLists.size();
-               if (size == 0) {
-                   mBaseAdapter.addAll(list);
-               } else {
-                   for (MedResponse.BeanList beanList : beanLists) {
-                       MedicineBean medicineBean = new MedicineBean();
-                       medicineBean.setId(beanList.getId());
-                       medicineBean.setName(beanList.getName());
-                       medicineBean.setNum(beanList.getNum());
-                       medicineBean.setIsCancel(beanList.getIsCancel());
-                       Log.e("name",medicineBean.getName());
-                       if (beanList.getIsCancel()==1)
-                           medicineBean.setCheck(true);
-                       else{
-                           medicineBean.setCheck(false);
-                       }
-                       list.add(medicineBean);
-                   }
-                   mBaseAdapter.addAll(list);
-               }
 
-           }
+    private List<String> listid = new ArrayList<>();
+    private List<MedicineBean> list = new ArrayList<>();
 
-           @Override
-           public void onFailure(String error) {
-               Log.e("TAG", error);
-           }
-       });
-   }
-
-    private void loadData() {
+    private void getMedicineByManage(int page, final List<String> listid) {
         Map<String, Object> params = new HashMap<>();
-        params.put("type", 2);
-        HttpProxy.obtain().get(PlatformContans.Medicine.sGetMedicineByUserId, params, APP.getInstance().getUserInfo().getToken(), new ICallBack() {
+        params.put("page", 2);
+        HttpProxy.obtain().get(PlatformContans.Medicine.sGetMedicineByManage, params, APP.getInstance().getUserInfo().getToken(), new ICallBack() {
             @Override
             public void OnSuccess(String result) {
                 //Log.e("TAG", result);
-                List<MedicineBean> list = new ArrayList<>();
                 Gson gson = new Gson();
-                MedicineResponse medicineResponse = (MedicineResponse) gson.fromJson(result, MedicineResponse.class);
-                List<MedicineResponse.Data> dataList = new ArrayList<>();
-                dataList = medicineResponse.getData();
-                int size = dataList.size();
+                MedResponse medResponse = (MedResponse) gson.fromJson(result, MedResponse.class);
+                MedResponse.Data data = medResponse.getData();
+                List<MedResponse.BeanList> beanLists = data.getBeanLists();
+               // List<MedicineBean> list = new ArrayList<>();
+                int size = beanLists.size();
                 if (size == 0) {
                     mBaseAdapter.addAll(list);
                 } else {
-
-                    for (MedicineResponse.Data data : dataList) {
+                    for (MedResponse.BeanList beanList : beanLists) {
                         MedicineBean medicineBean = new MedicineBean();
-                        medicineBean.setId(data.getId());
-                        medicineBean.setName(data.getName());
-                        medicineBean.setNum(data.getNum());
-                        medicineBean.setIsCancel(data.getIsCancel());
-                        if (data.getIsCancel()==1)
-                           medicineBean.setCheck(true);
-                        else{
+                        medicineBean.setId(beanList.getId());
+                        medicineBean.setName(beanList.getName());
+                        medicineBean.setNum(beanList.getNum());
+                        medicineBean.setIsCancel(beanList.getIsCancel());
+                        //Log.e("name",medicineBean.getName());
+                        if (listid.size() == 0) {
+                            medicineBean.setCheck(false);
+                        }
+                        if (listid.contains(beanList.getId())) {
+                            medicineBean.setCheck(true);
+                        } else {
                             medicineBean.setCheck(false);
                         }
                         list.add(medicineBean);
@@ -170,12 +148,173 @@ public class MedicineActivity extends AbsBaseActivity<MedicineBean> {
         });
     }
 
+    private void getMedicineByServer(final List<String> listid) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("page", page);
+        HttpProxy.obtain().get(PlatformContans.Medicine.sGetMedicineByServer, params, APP.getInstance().getUserInfo().getToken(), new ICallBack() {
+            @Override
+            public void OnSuccess(String result) {
+                mBaseAdapter.hideLoadMore();
+                Log.e("123456", result);
+                Gson gson = new Gson();
+                MedResponse medResponse = (MedResponse) gson.fromJson(result, MedResponse.class);
+                MedResponse.Data data = medResponse.getData();
+                List<MedResponse.BeanList> beanLists = data.getBeanLists();
+                //List<MedicineBean> list = new ArrayList<>();
+//                try {
+//                    JSONObject object = new JSONObject(result);
+//                    int resultCode = object.getInt("resultCode");
+//                    if (resultCode == 0) {
+//                        JSONArray beanList = object.getJSONObject("data").getJSONArray("beanList");
+//                        int len = beanList.length();
+//                        ArrayList<NedicineBean2> list = new ArrayList<>();
+//                        for (int i = 0; i < len; i++) {
+//                            JSONObject item = beanList.getJSONObject(i);
+//                            NedicineBean2 bean2 = gson.fromJson(item.toString(), NedicineBean2.class);
+//                            list.add(bean2);
+//                        }
+//                        mBaseAdapter.addAll(list);
+//                    }
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+
+                int size = beanLists.size();
+                if (size == 0) {
+                    isEmpty=true;
+                    mBaseAdapter.clear();
+                    mBaseAdapter.addAll(list);
+                } else {
+                    int i = 0;
+                    for (MedResponse.BeanList beanList : beanLists) {
+                        i++;
+                        MedicineBean medicineBean = new MedicineBean();
+                        medicineBean.setId(beanList.getId());
+                        medicineBean.setName(beanList.getName());
+                        medicineBean.setNum(beanList.getNum());
+                        medicineBean.setIsCancel(beanList.getIsCancel());
+                        //Log.e("name",medicineBean.getName());
+                        if (listid.size() == 0) {
+                            medicineBean.setCheck(false);
+                        }
+                        if (listid.contains(beanList.getId())) {
+                            medicineBean.setCheck(true);
+                        } else {
+                            medicineBean.setCheck(false);
+                        }
+                        list.add(medicineBean);
+                    }
+                    if(isEnter){
+                        isEnter=false;
+                        getMedicineByManage(2,listid);
+                    }else{
+                        if (isRefresh) {
+                            isRefresh = false;
+                            mBaseAdapter.clear();
+                            mBaseAdapter.addAll(list);
+
+                        } else {
+                            mBaseAdapter.clear();
+                            mBaseAdapter.addAll(list);
+                        }
+                    }
+
+                }
+                //getMedicineByManage(2, listid);
+                //mBaseAdapter.addAll(list);
+            }
+
+
+            @Override
+            public void onFailure(String error) {
+                Log.e("TAG", error);
+            }
+        });
+    }
+
+    private void queryMedicine() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("type", 2);
+        HttpProxy.obtain().get(PlatformContans.Medicine.sGetMedicineByUserId, params, APP.getInstance().getUserInfo().getToken(), new ICallBack() {
+            @Override
+            public void OnSuccess(String result) {
+                //Log.e("getbyuserid", result);
+                listid = new ArrayList<>();
+                Gson gson = new Gson();
+                MedicineResponse medicineResponse = (MedicineResponse) gson.fromJson(result, MedicineResponse.class);
+                List<MedicineResponse.Data> dataList = new ArrayList<>();
+                dataList = medicineResponse.getData();
+                int size = dataList.size();
+                if (size == 0) {
+                    getMedicineByServer(listid);
+                } else {
+                    for (MedicineResponse.Data data : dataList) {
+                        listid.add(data.getId());
+                    }
+                    getMedicineByServer(listid);
+
+                }
+
+            }
+
+            @Override
+            public void onFailure(String error) {
+                Log.e("TAG", error);
+            }
+        });
+    }
+
+    private void addMedicicneLib(String ids) {
+        String id = "";
+        Map<String, Object> params = new HashMap<>();
+        if (!TextUtils.isEmpty(ids)) {
+            id = ids.substring(0, ids.length() - 1);
+        }
+        //Log.e("shuzu",id);
+        params.put("mids", id);
+        params.put("type", 2);
+        Gson gson = new GsonBuilder().enableComplexMapKeySerialization().create();
+        /// String data = gson.toJson(params);
+        HttpProxy.obtain().get(PlatformContans.Medicine.sAddMedicineRelation, params, APP.getInstance().getUserInfo().getToken(), new ICallBack() {
+            @Override
+            public void OnSuccess(String result) {
+                try {
+                    JSONObject object = new JSONObject(result);
+                    int resultCode = object.getInt("resultCode");
+                    //Log.e("tag",result);
+                    if (resultCode == 0) {
+                        Toast.makeText(MedicineActivity.this, "保存成功", Toast.LENGTH_SHORT).show();
+                        finish();
+                    } else {
+                        Toast.makeText(MedicineActivity.this, "保存失败", Toast.LENGTH_SHORT).show();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(String error) {
+
+            }
+        });
+
+    }
+
+    private void loadData() {
+        queryMedicine();
+
+    }
+
     @Override
     public void onPullRefresh() {
+        //page = 1;
+        //isRefresh = true;
         mRecyclerView.postDelayed(new Runnable() {
             @Override
             public void run() {
                 setRefreshing(false);
+                //getMedicineByServer(listid);
             }
         }, 2000);
 
@@ -183,12 +322,27 @@ public class MedicineActivity extends AbsBaseActivity<MedicineBean> {
 
     @Override
     public void onLoadMore() {
+        if(!isEmpty){
+            page++;
+            Log.e("page", String.valueOf(page));
+            getMedicineByServer(listid);
+        }
+        mRecyclerView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                setRefreshing(false);
+                //getMedicineByServer(listid);
+            }
+        }, 2000);
+        //queryMedicicneBack(++currentPage);
 
+        //mBaseAdapter.notifyDataSetChanged();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+
     }
 
     @Override
@@ -198,14 +352,12 @@ public class MedicineActivity extends AbsBaseActivity<MedicineBean> {
         view.findViewById(R.id.noSelect).setOnClickListener(this);
         view.findViewById(R.id.back).setOnClickListener(this);
         mCheckBox = ((CheckBox) view.findViewById(R.id.noSelectCheck));
-       // itemcheckbox=view.findViewById(R.id.cb_medicine);
+        // itemcheckbox=view.findViewById(R.id.cb_medicine);
         mCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if(b)
-                  isSelect(!b);
-                else
-                  isSelect(b);
+
+                 isSelect(b);
             }
         });
         //itemcheckbox.setOnClickListener(this);
@@ -216,6 +368,24 @@ public class MedicineActivity extends AbsBaseActivity<MedicineBean> {
         save.setText("确定");
         save.setOnClickListener(this);
         return view;
+    }
+
+    private void isSelect(boolean b) {
+        List data = mBaseAdapter.getData();
+        for (Object datum : data) {
+            MedicineBean medicineBean = (MedicineBean) datum;
+            if (b==true) {
+                medicineBean.setCheck(false);//将所有的itemtcheck改成未选
+            } else {
+                medicineBean.setCheck(false);//先全部设置成为未选
+                if (listid.contains(medicineBean.getId())==true) {
+                   // Log.e("size",listid.size()+"");
+                    Toast.makeText(MedicineActivity.this,"aaa",Toast.LENGTH_LONG).show();
+                    medicineBean.setCheck(true);
+                }
+            }
+        }
+        mBaseAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -233,51 +403,36 @@ public class MedicineActivity extends AbsBaseActivity<MedicineBean> {
             case R.id.noSelect:
                 if (mCheckBox.isChecked()) {
                     mCheckBox.setChecked(false);
-                    isSelect(true);
+                    isSelect(false);
 
                 } else {
                     mCheckBox.setChecked(true);
-                    isSelect(false);
+                    isSelect(true);
                 }
 
                 break;
             case R.id.saveText:
-                List<String> dellist=new ArrayList<>();
-                List<String> addlist=new ArrayList<>();
+
                 List data = mBaseAdapter.getData();
+                String ids = "";
                 for (Object datum : data) {
                     if (datum instanceof MedicineBean) {
                         MedicineBean medicineBean = (MedicineBean) datum;
-                        if(medicineBean.getIsCancel()==1){
-                            if (!medicineBean.isCheck()) {
-                                dellist.add(medicineBean.getId());
-                            }
+                        if (medicineBean.isCheck()) {
+                            ids = ids + medicineBean.getId() + ",";
                         }
-                     else{
-                            if(medicineBean.isCheck()){
-                                addlist.add(medicineBean.getId());
-                            }
-                        }
-
                     }
                 }
-                for (String id:dellist){
-                    deleteMedicine(id,2);
-                }
-                String []ids=new String[addlist.size()];
-                for (int i=0;i<addlist.size();i++){
-                   ids[i]=addlist.get(i);
-                }
-                //addMedicicne(ids);
+                addMedicicneLib(ids);
                 break;
 
         }
     }
 
-    private void addMedicicne(String[] ids) {
-        Map<String,Object> params=new HashMap<>();
-        params.put("mids",ids);
-        params.put("type",2);
+    private void addMedicicne(List<String> ids) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("mids", ids);
+        params.put("type", 2);
         Gson gson = new GsonBuilder().enableComplexMapKeySerialization().create();
         String data = gson.toJson(params);
         HttpProxy.obtain().get(PlatformContans.Medicine.sAddMedicineRelation, params, APP.getInstance().getUserInfo().getToken(), new ICallBack() {
@@ -286,16 +441,14 @@ public class MedicineActivity extends AbsBaseActivity<MedicineBean> {
                 try {
                     JSONObject object = new JSONObject(result);
                     int resultCode = object.getInt("resultCode");
-                    Log.e("tag",result);
+                    Log.e("tag", result);
                     if (resultCode == 0) {
                         Toast.makeText(MedicineActivity.this, "保存成功", Toast.LENGTH_SHORT).show();
                         finish();
-                    }
-                    else{
+                    } else {
                         Toast.makeText(MedicineActivity.this, "保存失败", Toast.LENGTH_SHORT).show();
                     }
-                }
-                catch (JSONException e) {
+                } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
@@ -308,38 +461,28 @@ public class MedicineActivity extends AbsBaseActivity<MedicineBean> {
 
     }
 
-    private void isSelect(boolean b) {
-        List data = mBaseAdapter.getData();
-        for (Object datum : data) {
-            MedicineBean medicineBean = (MedicineBean) datum;
-            medicineBean.setCheck(b);
-        }
-        mBaseAdapter.notifyDataSetChanged();
-    }
-    private void deleteMedicine(String id,int isCancel){
-        Map<String,Object> params=new HashMap<>();
-        Log.e("id",id);
-        params.put("id",id);
-        params.put("isCancel",isCancel);
+
+    private void deleteMedicine(String id, int isCancel) {
+        Map<String, Object> params = new HashMap<>();
+        Log.e("id", id);
+        params.put("id", id);
+        params.put("isCancel", isCancel);
         Gson gson = new GsonBuilder().enableComplexMapKeySerialization().create();
         String data = gson.toJson(params);
         HttpProxy.obtain().post(PlatformContans.Medicine.sUpdateMedicineByManage, APP.getInstance().getUserInfo().getToken(), data, new ICallBack() {
             @Override
-            public void OnSuccess(String result)
-            {
+            public void OnSuccess(String result) {
                 try {
                     JSONObject object = new JSONObject(result);
                     int resultCode = object.getInt("resultCode");
-                    Log.e("tag",result);
+                    Log.e("111", result);
                     if (resultCode == 0) {
                         Toast.makeText(MedicineActivity.this, "保存成功", Toast.LENGTH_SHORT).show();
                         finish();
-                    }
-                    else{
+                    } else {
                         Toast.makeText(MedicineActivity.this, "保存失败", Toast.LENGTH_SHORT).show();
                     }
-                }
-                catch (JSONException e) {
+                } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }

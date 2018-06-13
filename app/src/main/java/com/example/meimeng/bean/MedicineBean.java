@@ -95,6 +95,7 @@ public class MedicineBean extends RVBaseCell {
 
     @Override
     public void onBindViewHolder(RVBaseViewHolder holder, int position) {
+        holder.setIsRecyclable(false);
         final CheckBox checkBox = (CheckBox) holder.getView(R.id.cb_medicine);
         if (isCheck) {
             checkBox.setChecked(true);
@@ -105,6 +106,7 @@ public class MedicineBean extends RVBaseCell {
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                isCheck=b;
                 checkBox.setChecked(b);
                 //EventBus.getDefault().post(new MessageEvent(b,1));
             }

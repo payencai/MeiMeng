@@ -41,6 +41,9 @@ public abstract class BaseActivity extends AppCompatActivity {
                 getWindow().setStatusBarColor(Color.TRANSPARENT);
             }
         }
+        if (windowActionBar()) {
+            supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
+        }
         int contentId = getContentId();
         setContentView(contentId);
         ActivityManager.getInstance().pushActivity(this);
@@ -81,6 +84,10 @@ public abstract class BaseActivity extends AppCompatActivity {
      * @return 是否全屏显示
      */
     protected boolean isFullShow() {
+        return false;
+    }
+
+    protected boolean windowActionBar() {
         return false;
     }
 

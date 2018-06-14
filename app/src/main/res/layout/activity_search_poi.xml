@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginBottom="16dp"
+    android:layout_marginLeft="16dp"
+    android:layout_marginRight="16dp"
+    android:layout_marginTop="@dimen/margin_10dp"
+    android:orientation="vertical"
+    tools:context=".activity.SearchPOIActivity">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:background="@drawable/shape_annulus_edittext_bg">
+
+        <ImageView
+            android:id="@+id/back"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:paddingBottom="9dp"
+            android:paddingLeft="11dp"
+            android:paddingRight="11dp"
+            android:paddingTop="9dp"
+            android:scaleType="centerInside"
+            android:src="@mipmap/ic_back_gray" />
+
+        <EditText
+            android:id="@+id/keywordEdit"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@id/back"
+            android:background="@null"
+            android:textColor="@color/text_333"
+            android:textSize="@dimen/text_size_18sp" />
+    </RelativeLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/poiSugRv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/shape_circular_bead_while"></android.support.v7.widget.RecyclerView>
+
+</LinearLayout>

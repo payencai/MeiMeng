@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/item"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/color_white_100"
     android:orientation="vertical"
-    android:padding="12dp">
+    android:paddingLeft="@dimen/margin_12dp"
+    android:paddingRight="12dp"
+    android:paddingTop="@dimen/margin_12dp">
 
     <TextView
         android:id="@+id/addressTitle"
@@ -30,6 +33,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="0.75dp"
+        android:layout_marginTop="@dimen/margin_12dp"
         android:background="@color/background" />
 
 </LinearLayout>

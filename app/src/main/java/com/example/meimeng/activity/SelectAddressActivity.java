@@ -1,7 +1,9 @@
 package com.example.meimeng.activity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -10,6 +12,7 @@ import android.widget.TextView;
 
 import com.example.meimeng.R;
 import com.example.meimeng.base.BaseActivity;
+import com.example.meimeng.util.ToaskUtil;
 
 import butterknife.OnClick;
 
@@ -18,16 +21,40 @@ public class SelectAddressActivity extends BaseActivity implements View.OnClickL
     TextView title;
     EditText et_input_address;
     LinearLayout select_address;
+    private String mTag;
+    private String consignSite;
+    private int responseCode;
+    public static final int REQUEST_CODE_FROM_SELECTADDRESSACTIVITY = 1 << 8;
 
+    public static void startSelectAddressActivity(Activity activity, String tag, int responseCode, String consignSite) {
+        Intent intent = new Intent(activity, SelectAddressActivity.class);
+        intent.putExtra("tag", tag);
+        intent.putExtra("responseCode", responseCode);
+        intent.putExtra("consignSite", consignSite);
+        activity.startActivityForResult(intent, responseCode);
+    }
 
     @Override
     protected void initView() {
+        Intent intent = getIntent();
+        mTag = intent.getStringExtra("tag");
+        consignSite = intent.getStringExtra("consignSite");
+
+        responseCode = intent.getIntExtra("responseCode", -1);
+        if (TextUtils.isEmpty(mTag)) {
+            ToaskUtil.showToast(this, "tag 为空");
+            finish();
+            return;
+        }
         select_address = findViewById(R.id.select_address_layout);
         save = findViewById(R.id.saveText);
         title = findViewById(R.id.title);
         et_input_address = findViewById(R.id.et_input_address);
         title.setText("选择地址");
         save.setVisibility(View.VISIBLE);
+        if (!TextUtils.isEmpty(consignSite)) {
+            et_input_address.setText(consignSite);
+        }
 
         findViewById(R.id.back).setOnClickListener(this);
         select_address.setOnClickListener(this);
@@ -47,15 +74,28 @@ public class SelectAddressActivity extends BaseActivity implements View.OnClickL
                 finish();
                 break;
             case R.id.select_address_layout:
-                startActivity(new Intent(this, AddressSelectionActivity.class));
+                AddressSelectionActivity.startAddressSelectionActivity(this, REQUEST_CODE_FROM_SELECTADDRESSACTIVITY);
                 break;
             case R.id.saveText:
-                String address = et_input_address.getEditableText().toString() + "";
-                Bundle bundle = new Bundle();
-                bundle.putString("address", address);
-                setResult(RESULT_OK, new Intent().putExtras(bundle));
+                String address = et_input_address.getEditableText().toString().replace(" ", "");
+                Intent intent = new Intent();
+                intent.putExtra(mTag, address);
+                setResult(responseCode, intent);
                 finish();
                 break;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (data != null) {
+            if (requestCode == REQUEST_CODE_FROM_SELECTADDRESSACTIVITY) {
+                String address = data.getStringExtra("address");
+                if (!TextUtils.isEmpty(address)) {
+                    et_input_address.setText(address);
+                }
+            }
         }
     }
 }

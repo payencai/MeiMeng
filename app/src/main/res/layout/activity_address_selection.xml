@@ -30,7 +30,9 @@
                 android:id="@+id/cityShowView"
                 style="@style/common_font"
                 android:layout_height="match_parent"
-                android:text="广州市" />
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="" />
 
             <ImageView
                 android:layout_width="8dp"
@@ -38,7 +40,8 @@
                 android:layout_gravity="center"
                 android:layout_marginLeft="4dp"
                 android:scaleType="fitXY"
-                android:src="@mipmap/ic_triangle_down" />
+                android:src="@mipmap/ic_triangle_down"
+                android:visibility="gone" />
         </LinearLayout>
 
         <TextView

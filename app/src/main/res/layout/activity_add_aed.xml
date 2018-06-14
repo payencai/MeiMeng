@@ -97,6 +97,7 @@
                 android:layout_height="55dp">
 
                 <LinearLayout
+                    android:id="@+id/layout2"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:orientation="horizontal">
@@ -121,8 +122,12 @@
                     android:layout_height="match_parent"
                     android:layout_marginRight="10dp"
                     android:layout_toLeftOf="@id/imgArrowsRight3"
+                    android:layout_toRightOf="@+id/layout2"
+                    android:ellipsize="end"
+                    android:gravity="end|center"
                     android:maxLines="1"
-                    android:text="存放详细地址"
+                    android:paddingLeft="6dp"
+                    android:text=""
                     android:textColor="@color/text_9" />
 
                 <ImageView

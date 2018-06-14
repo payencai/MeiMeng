@@ -49,6 +49,7 @@ public class AddAEDActivity extends BaseActivity implements View.OnClickListener
     private TextView title;
     private TextView AEDBrand;
     private TextView deadline;
+    private TextView consignSite;
     private ImageView pictureSelector;
     private CustomDatePicker customDatePicker;
     private static final int PERMISSION_REQUEST_CODE = 0;
@@ -57,6 +58,7 @@ public class AddAEDActivity extends BaseActivity implements View.OnClickListener
 //    private ArrayList<Image> mSelectImages = new ArrayList<>();
     private GridView imgShowGridView;
     private PictureAdapter mAdapter;
+    private static final int RQUEST_ADDRESS_CODE = 2;
 
     @Override
     protected void initView() {
@@ -71,6 +73,7 @@ public class AddAEDActivity extends BaseActivity implements View.OnClickListener
         title = ((TextView) findViewById(R.id.title));
         AEDBrand = ((TextView) findViewById(R.id.AEDBrand));
         deadline = ((TextView) findViewById(R.id.deadline));
+        consignSite = ((TextView) findViewById(R.id.consignSite));
         pictureSelector = ((ImageView) findViewById(R.id.pictureSelector));
         imgShowGridView = (GridView) findViewById(R.id.imgShowGridView);
 
@@ -138,7 +141,7 @@ public class AddAEDActivity extends BaseActivity implements View.OnClickListener
                 customDatePicker.show(deadline.getText().toString());
                 break;
             case R.id.option3://存放地址
-                startActivity(new Intent(this, SelectAddressActivity.class));
+                SelectAddressActivity.startSelectAddressActivity(this, "address", RQUEST_ADDRESS_CODE, consignSite.getText().toString());
                 break;
             case R.id.pictureSelector://图片选择器
                 //限数量的多选(比喻最多9张)
@@ -157,6 +160,14 @@ public class AddAEDActivity extends BaseActivity implements View.OnClickListener
             selected.clear();
             selected.addAll(images);
             mAdapter.updata(images);
+        }
+        if (data != null) {
+            if (requestCode == RQUEST_ADDRESS_CODE) {
+                String address = data.getStringExtra("address");
+                if (!TextUtils.isEmpty(address)) {
+                    consignSite.setText(address);
+                }
+            }
         }
     }
 

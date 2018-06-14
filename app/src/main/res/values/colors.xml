@@ -23,4 +23,5 @@
     <color name="bg_f2f2f2">#f2f2f2</color>
     <color name="bg_yellow">#ffa938</color>
     <color name="pw_cancel_text_color">#008cdd</color>
+    <color name="translucence">#c6ffffff</color>
 </resources>

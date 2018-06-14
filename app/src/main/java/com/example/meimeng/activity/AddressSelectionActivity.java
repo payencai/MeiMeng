@@ -224,7 +224,7 @@ public class AddressSelectionActivity extends BaseActivity implements View.OnCli
                     public void onClick(View v) {
                         AddressBean addressBean = mData.get(position);
                         Intent intent = new Intent();
-                        intent.putExtra("address", addressBean.getAddress());
+                        intent.putExtra("address", addressBean);
                         setResult(SelectAddressActivity.REQUEST_CODE_FROM_SELECTADDRESSACTIVITY, intent);
                         finish();
                     }
@@ -508,6 +508,9 @@ public class AddressSelectionActivity extends BaseActivity implements View.OnCli
                 for (PoiInfo poiInfo : poiList) {
                     String address = poiInfo.address;
                     String name = poiInfo.name;
+                    LatLng location = poiInfo.location;
+                    double longitude = location.longitude;//经度
+                    double latitude = location.latitude;//维度
                     String uid = poiInfo.uid;
                     String province = poiInfo.province;
                     String city = poiInfo.city;
@@ -515,7 +518,18 @@ public class AddressSelectionActivity extends BaseActivity implements View.OnCli
                     String street_id = poiInfo.street_id;
                     String phoneNum = poiInfo.phoneNum;
                     String postCode = poiInfo.postCode;
-                    AddressBean bean = new AddressBean(name, address);
+                    AddressBean bean = new AddressBean();
+                    bean.setLon(longitude);//经度
+                    bean.setLat(latitude);//维度
+                    bean.setAddress(address);
+                    bean.setName(name);
+                    bean.setUid(uid);
+                    bean.setProvince(province);
+                    bean.setCity(city);
+                    bean.setArea(area);
+                    bean.setStreet_id(street_id);
+                    bean.setPhoneNum(phoneNum);
+                    bean.setPostCode(postCode);
                     list.add(bean);
                     if (isShowCity) {
                         isShowCity = false;

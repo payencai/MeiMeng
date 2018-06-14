@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -25,6 +26,7 @@ import com.example.meimeng.APP;
 import com.example.meimeng.R;
 import com.example.meimeng.adapter.PictureAdapter;
 import com.example.meimeng.base.BaseActivity;
+import com.example.meimeng.bean.AddressBean;
 import com.example.meimeng.constant.PlatformContans;
 import com.example.meimeng.http.HttpProxy;
 import com.example.meimeng.http.ICallBack;
@@ -122,14 +124,28 @@ public class AskVolunteerActivity extends BaseActivity {
             selected.addAll(images);
             mAdapter.updata(images);
         }
-        if ( requestCode == 4 && data != null){
-            detailhome.setText(data.getExtras().getString("address"));
-            detailhome.setTextColor(ContextCompat.getColor(this,R.color.text_333));
+        if (data != null) {
+            if (requestCode == 4) {
+                AddressBean address = (AddressBean) data.getSerializableExtra("address");
+                String addressStr = address.getAddress();
+                double lon = address.getLon();
+                double lat = address.getLat();
+                Log.d("onActivityResult", "onActivityResult: 经度：" + lon + ",维度:" + lat);
+                if (!TextUtils.isEmpty(addressStr)) {
+                    detailhome.setText(addressStr);
+                }
+            }
+            if (requestCode == 5) {
+                AddressBean address = (AddressBean) data.getSerializableExtra("address");
+                String addressStr = address.getAddress();
+                double lon = address.getLon();
+                double lat = address.getLat();
+                Log.d("onActivityResult", "onActivityResult: 经度：" + lon + ",维度:" + lat);
+                if (!TextUtils.isEmpty(addressStr)) {
+                    detailwork.setText(addressStr);
+                }
+            }
 
-        }
-        if ( requestCode == 5 && data != null){
-            detailwork.setText(data.getExtras().getString("address"));
-            detailwork.setTextColor(ContextCompat.getColor(this,R.color.text_333));
         }
     }
     @Override
@@ -190,10 +206,12 @@ public class AskVolunteerActivity extends BaseActivity {
     public void onClick(View view){
         switch (view.getId()){
             case R.id.et_volunteer_home:
-                startActivityForResult(new Intent(AskVolunteerActivity.this,SelectAddressActivity.class),4);
+                SelectAddressActivity.startSelectAddressActivity(this, "address", 4,"");
+                //startActivityForResult(new Intent(AskVolunteerActivity.this,SelectAddressActivity.class),4);
                 break;
             case R.id.et_volunteer_work:
-                startActivityForResult(new Intent(AskVolunteerActivity.this,SelectAddressActivity.class),5);
+                SelectAddressActivity.startSelectAddressActivity(this, "address", 5,"");
+               // startActivityForResult(new Intent(AskVolunteerActivity.this,SelectAddressActivity.class),5);
                 break;
             case R.id.et_volunteer_time:
                 final Window window=this.getWindow();

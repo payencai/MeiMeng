@@ -3,6 +3,8 @@ package com.example.meimeng.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -17,6 +19,7 @@ import android.widget.Toast;
 import com.example.meimeng.APP;
 import com.example.meimeng.R;
 import com.example.meimeng.base.BaseActivity;
+import com.example.meimeng.bean.AddressBean;
 import com.example.meimeng.bean.LoginAccount.ServerUserInfo;
 import com.example.meimeng.constant.PlatformContans;
 import com.example.meimeng.http.HttpProxy;
@@ -84,22 +87,30 @@ public class ServerUserInfoActivity extends BaseActivity implements View.OnClick
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode==1){
+        if(requestCode==2){
             if (resultCode==RESULT_OK){
-                String name=data.getExtras().getString("name");
-                tv_name.setText(name);
+               tv_name.setText(data.getExtras().getString("name"));
             }
         }
-        if (requestCode == 2) {
-            if (resultCode==RESULT_OK){
-                String home=data.getExtras().getString("address");
-                tv_home.setText(home+"");
+        if (requestCode == 1) {
+            AddressBean address = (AddressBean) data.getSerializableExtra("address");
+            String addressStr = address.getAddress();
+            double lon = address.getLon();
+            double lat = address.getLat();
+            Log.d("onActivityResult", "onActivityResult: 经度：" + lon + ",维度:" + lat);
+            if (!TextUtils.isEmpty(addressStr)) {
+                tv_home.setText(addressStr);
             }
         }
         if (requestCode == 3) {
-            if (resultCode==RESULT_OK){
-                String work=data.getExtras().getString("address");
-                tv_work.setText(work+"");
+
+            AddressBean address = (AddressBean) data.getSerializableExtra("address");
+            String addressStr = address.getAddress();
+            double lon = address.getLon();
+            double lat = address.getLat();
+            Log.d("onActivityResult", "onActivityResult: 经度：" + lon + ",维度:" + lat);
+            if (!TextUtils.isEmpty(addressStr)) {
+                tv_work.setText(addressStr);
             }
         }
 
@@ -109,13 +120,13 @@ public class ServerUserInfoActivity extends BaseActivity implements View.OnClick
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.server_home:
-                startActivityForResult(new Intent(ServerUserInfoActivity.this,SelectAddressActivity.class),2);
+                SelectAddressActivity.startSelectAddressActivity(this, "address", 1, "");
                 break;
             case R.id.server_updatemname:
-                startActivityForResult(new Intent(ServerUserInfoActivity.this,UpdateNameActivity.class),1);
+               startActivityForResult(new Intent(ServerUserInfoActivity.this,UpdateNameActivity.class),2);
                 break;
             case R.id.server_work:
-                startActivityForResult(new Intent(ServerUserInfoActivity.this,SelectAddressActivity.class),3);
+                SelectAddressActivity.startSelectAddressActivity(this, "address", 3, "");
                 break;
             case R.id.server_time:
                 final Window window=this.getWindow();

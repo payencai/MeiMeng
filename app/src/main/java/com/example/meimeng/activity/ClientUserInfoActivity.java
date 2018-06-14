@@ -113,7 +113,7 @@ public class ClientUserInfoActivity extends BaseActivity {
         address.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivityForResult(new Intent(ClientUserInfoActivity.this,SelectAddressActivity.class),0);
+                SelectAddressActivity.startSelectAddressActivity(ClientUserInfoActivity.this, "address", 0, et_address.getText().toString()+"");
             }
         });
         mBtnSave.setOnClickListener(new View.OnClickListener() {

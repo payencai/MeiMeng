@@ -54,7 +54,6 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view=null;
-
         if (APP.sUserType == 0) {
             view = inflater.inflate(R.layout.fragment_usercenter, container, false);
             clientInitView(view);

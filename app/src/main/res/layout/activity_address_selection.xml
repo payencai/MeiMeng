@@ -42,6 +42,7 @@
         </LinearLayout>
 
         <TextView
+            android:id="@+id/searchItemContent"
             style="@style/common_font"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -52,12 +53,34 @@
 
     </LinearLayout>
 
-    <com.baidu.mapapi.map.MapView
-        android:id="@+id/locationMapView"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/siteRv"
-        android:layout_below="@id/searchLayout"></com.baidu.mapapi.map.MapView>
+        android:layout_below="@id/searchLayout">
+
+        <com.baidu.mapapi.map.MapView
+            android:id="@+id/locationMapView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"></com.baidu.mapapi.map.MapView>
+
+        <ImageView
+            android:id="@+id/locationImg"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="6dp"
+            android:layout_marginTop="16dp"
+            android:padding="10dp"
+            android:src="@mipmap/ic_positioning" />
+
+        <ImageView
+            android:layout_width="13dp"
+            android:layout_height="16dp"
+            android:layout_centerInParent="true"
+            android:src="@mipmap/icon_openmap_mark" />
+
+    </RelativeLayout>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/siteRv"

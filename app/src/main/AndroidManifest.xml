@@ -46,9 +46,9 @@
             android:screenOrientation="portrait" />
         <activity android:name=".activity.LoginActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
+            <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".activity.WaitSoSActivity" />
@@ -104,16 +104,28 @@
         <activity android:name=".activity.AskProxyActivity"></activity>
         <activity android:name=".activity.UpdateNameActivity"></activity>
         <activity android:name=".activity.FirstAidDetailsWebActivity"></activity>
-        <activity android:name=".test.LocationActivity">
 
-            <!--  <intent-filter>
-                  <action android:name="android.intent.action.MAIN" />
+        <service
+            android:name="com.baidu.location.f"
+            android:enabled="true"
+            android:process=":remote">
+            <intent-filter>
+                <action android:name="com.baidu.location.service_v2.2"></action>
+            </intent-filter>
+        </service>
 
-                  <category android:name="android.intent.category.LAUNCHER" />
-              </intent-filter>-->
+        <activity android:name=".test.LocationOption">
 
         </activity>
 
+        <activity android:name=".test.LocationActivity" />
+        <activity android:name=".test.NotifyActivity">
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
+
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
+        </activity>
     </application>
 
 </manifest>

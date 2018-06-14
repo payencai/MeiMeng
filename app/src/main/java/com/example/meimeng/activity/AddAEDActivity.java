@@ -138,7 +138,7 @@ public class AddAEDActivity extends BaseActivity implements View.OnClickListener
                 customDatePicker.show(deadline.getText().toString());
                 break;
             case R.id.option3://存放地址
-                startActivity(new Intent(this, AddressSelectionActivity.class));
+                startActivity(new Intent(this, SelectAddressActivity.class));
                 break;
             case R.id.pictureSelector://图片选择器
                 //限数量的多选(比喻最多9张)

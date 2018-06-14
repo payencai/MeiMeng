@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.example.meimeng.R;
 import com.example.meimeng.base.BaseActivity;
+import com.example.meimeng.bean.AddressBean;
 import com.example.meimeng.util.ToaskUtil;
 
 import butterknife.OnClick;
@@ -25,6 +26,7 @@ public class SelectAddressActivity extends BaseActivity implements View.OnClickL
     private String consignSite;
     private int responseCode;
     public static final int REQUEST_CODE_FROM_SELECTADDRESSACTIVITY = 1 << 8;
+    private AddressBean mAddress;
 
     public static void startSelectAddressActivity(Activity activity, String tag, int responseCode, String consignSite) {
         Intent intent = new Intent(activity, SelectAddressActivity.class);
@@ -77,9 +79,8 @@ public class SelectAddressActivity extends BaseActivity implements View.OnClickL
                 AddressSelectionActivity.startAddressSelectionActivity(this, REQUEST_CODE_FROM_SELECTADDRESSACTIVITY);
                 break;
             case R.id.saveText:
-                String address = et_input_address.getEditableText().toString().replace(" ", "");
                 Intent intent = new Intent();
-                intent.putExtra(mTag, address);
+                intent.putExtra(mTag, mAddress);
                 setResult(responseCode, intent);
                 finish();
                 break;
@@ -91,9 +92,11 @@ public class SelectAddressActivity extends BaseActivity implements View.OnClickL
         super.onActivityResult(requestCode, resultCode, data);
         if (data != null) {
             if (requestCode == REQUEST_CODE_FROM_SELECTADDRESSACTIVITY) {
-                String address = data.getStringExtra("address");
-                if (!TextUtils.isEmpty(address)) {
-                    et_input_address.setText(address);
+//                String address = data.getStringExtra("address");
+                mAddress = (AddressBean) data.getSerializableExtra("address");
+                String addressString = mAddress.getAddress();
+                if (!TextUtils.isEmpty(addressString)) {
+                    et_input_address.setText(addressString);
                 }
             }
         }

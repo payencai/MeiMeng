@@ -29,6 +29,7 @@ import com.example.meimeng.R;
 import com.example.meimeng.adapter.OptionAdapter;
 import com.example.meimeng.adapter.PictureAdapter;
 import com.example.meimeng.base.BaseActivity;
+import com.example.meimeng.bean.AddressBean;
 import com.example.meimeng.custom.CustomDatePicker;
 import com.example.meimeng.util.CustomPopWindow;
 import com.example.meimeng.util.ToaskUtil;
@@ -55,7 +56,7 @@ public class AddAEDActivity extends BaseActivity implements View.OnClickListener
     private static final int PERMISSION_REQUEST_CODE = 0;
     private static final int REQUEST_PICTURE_CODE = 1;
     private ArrayList<String> selected = new ArrayList<>();
-//    private ArrayList<Image> mSelectImages = new ArrayList<>();
+    //    private ArrayList<Image> mSelectImages = new ArrayList<>();
     private GridView imgShowGridView;
     private PictureAdapter mAdapter;
     private static final int RQUEST_ADDRESS_CODE = 2;
@@ -63,7 +64,7 @@ public class AddAEDActivity extends BaseActivity implements View.OnClickListener
     @Override
     protected void initView() {
         ImageView back;
-        back=findViewById(R.id.back);
+        back = findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -163,9 +164,13 @@ public class AddAEDActivity extends BaseActivity implements View.OnClickListener
         }
         if (data != null) {
             if (requestCode == RQUEST_ADDRESS_CODE) {
-                String address = data.getStringExtra("address");
-                if (!TextUtils.isEmpty(address)) {
-                    consignSite.setText(address);
+                AddressBean address = (AddressBean) data.getSerializableExtra("address");
+                String addressStr = address.getAddress();
+                double lon = address.getLon();
+                double lat = address.getLat();
+                Log.d("onActivityResult", "onActivityResult: 经度：" + lon + ",维度:" + lat);
+                if (!TextUtils.isEmpty(addressStr)) {
+                    consignSite.setText(addressStr);
                 }
             }
         }

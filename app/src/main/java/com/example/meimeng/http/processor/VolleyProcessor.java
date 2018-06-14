@@ -103,6 +103,11 @@ public class VolleyProcessor implements IHttpProcessor {
 
     }
 
+    @Override
+    public void get(String url, String token, ICallBack callBack) {
+
+    }
+
     private Map<String, String> buildMap(Map<String, Object> sourceMap) {
         Map<String, String> hasMap = new HashMap<>();
         for (String key : sourceMap.keySet()) {

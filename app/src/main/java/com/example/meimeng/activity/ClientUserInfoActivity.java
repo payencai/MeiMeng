@@ -2,6 +2,7 @@ package com.example.meimeng.activity;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -67,7 +68,7 @@ public class ClientUserInfoActivity extends BaseActivity {
     @BindView(R.id.et_userinfo_age)
     EditText et_age;
 
-    TextView tv_bloodType;
+   TextView tv_bloodType;
     @BindView(R.id.et_userinfo_sicken)
     EditText et_sicken;
     @BindView(R.id.et_userinfo_othersicken)
@@ -85,29 +86,24 @@ public class ClientUserInfoActivity extends BaseActivity {
     @BindView(R.id.rg_userinfo_sex)
     RadioGroup rg_sex;
     private UserInfo userInfo;
-
     @Override
     protected void initView() {
-        ButterKnife.bind(this);
-        userInfo = APP.getInstance().getUserInfo();
-        tv_title.setText("个人资料");
-        Drawable drawable = getResources().getDrawable(R.drawable.sex_selector);
-        drawable.setBounds(0, 0, 30, 30);//将drawable设置为宽100 高100固定大小
-        rb_man.setCompoundDrawables(drawable, null, null, null);
-        Drawable drawable2 = getResources().getDrawable(R.drawable.sex_selector);
-        drawable2.setBounds(0, 0, 30, 30);//将drawable设置为宽100 高100固定大小
-        rb_nv.setCompoundDrawables(drawable2, null, null, null);
-        rb_nv.setChecked(true);
-        String sex = APP.getInstance().getUserInfo().getSex() + "";
-        Log.e("sex", sex);
-        if (sex.equals("男")) {
-            rb_man.setChecked(true);
-        }
 
-        initSpinner();
+        ButterKnife.bind(this);
+
+        userInfo=APP.getInstance().getUserInfo();
+        tv_title.setText("个人资料");
+        Drawable drawable= getResources().getDrawable(R.drawable.sex_selector);
+        drawable.setBounds(0,0,30,30);//将drawable设置为宽100 高100固定大小
+        rb_man.setCompoundDrawables(drawable,null,null,null);
+        Drawable drawable2= getResources().getDrawable(R.drawable.sex_selector);
+        drawable2.setBounds(0,0,30,30);//将drawable设置为宽100 高100固定大小
+        rb_nv.setCompoundDrawables(drawable2,null,null,null);
+        //rb_nv.setChecked(true);
         setValue();
+
         ImageView back;
-        back = findViewById(R.id.back);
+        back=findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -117,35 +113,47 @@ public class ClientUserInfoActivity extends BaseActivity {
         address.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(ClientUserInfoActivity.this, SelectAddressActivity.class));
+                startActivityForResult(new Intent(ClientUserInfoActivity.this,SelectAddressActivity.class),0);
             }
         });
         mBtnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String data = returnJsonString();
-                String token = userInfo.getToken();
-                updateUserInfo(data, token);
+                String data=returnJsonString();
+                String token=userInfo.getToken();
+                updateUserInfo(data,token);
             }
         });
 
 
+
     }
 
-    private void updateUserInfo(String data, String token) {
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==0){
+            if(data!=null) {
+                et_address.setText(data.getExtras().getString("address") + "");
+                et_address.setTextColor(ContextCompat.getColor(this, R.color.text_333));
+            }
+        }
+    }
+
+    private void updateUserInfo(String data, String token){
         HttpProxy.obtain().post(PlatformContans.UseUser.sUpdateUseUser, token, data, new ICallBack() {
             @Override
             public void OnSuccess(String result) {
 
-                JSONObject jsonObject = null;
+                JSONObject jsonObject= null;
                 try {
                     jsonObject = new JSONObject(result);
-                    int code = jsonObject.getInt("resultCode");
-                    if (code == 0) {
-                        Toast.makeText(ClientUserInfoActivity.this, "更新成功", Toast.LENGTH_LONG).show();
+                    int code=jsonObject.getInt("resultCode");
+                    if(code==0){
+                        Toast.makeText(ClientUserInfoActivity.this,"更新成功",Toast.LENGTH_LONG).show();
                         finish();
                     }
-                    if (code == 9999) {
+                    if(code==9999){
 
                     }
                 } catch (JSONException e) {
@@ -159,167 +167,155 @@ public class ClientUserInfoActivity extends BaseActivity {
             }
         });
     }
-
+    private String bloodtype="";
+    private String type=bloodtype;
     @Override
     protected int getContentId() {
         return R.layout.show_usermsg_content;
     }
 
-    public String returnJsonString() {
+    public String returnJsonString(){
 
-        Map<String, Object> params = new HashMap<>();
+        Map<String,Object> params=new HashMap<>();
         Gson gson = new GsonBuilder().enableComplexMapKeySerialization().create();
-        String nickname = et_name.getEditableText().toString();
-        String telephone = et_phone.getEditableText().toString();
-        String fixedLineTelephone = et_fixphone.getEditableText().toString();
-        String address = et_address.getText().toString();
-        String sex = "女";
-        if (rb_man.isChecked()) {
-            sex = "男";
+        String nickname=et_name.getEditableText().toString();
+        String telephone =et_phone.getEditableText().toString();
+        String fixedLineTelephone =et_fixphone.getEditableText().toString();
+        String address=et_address.getText().toString();
+        String sex="女";
+        if(rb_man.isChecked()){
+             sex="男";
         }
-        String bloodType = tv_bloodType.getText().toString();
-        String sickenHistory = et_sicken.getEditableText().toString();
-        String otherSicken = et_othersicken.getEditableText().toString();
-        String linkman1 = et_lianxi1.getEditableText().toString();
-        String linkman2 = et_lianxi2.getEditableText().toString();
-        String linkman3 = et_lianxi3.getEditableText().toString();
-        int age = Integer.parseInt(et_age.getEditableText().toString());
-        String area = userInfo.getArea();
-        String city = userInfo.getCity();
-        String province = userInfo.getProvince();
-        String latitude = userInfo.getLatitude();
-        String longitude = userInfo.getLongitude();
-        if (area == null) {
-            area = "";
+
+        String sickenHistory =et_sicken.getEditableText().toString();
+        String otherSicken=et_othersicken.getEditableText().toString();
+        String linkman1 =et_lianxi1.getEditableText().toString();
+        String linkman2 =et_lianxi2.getEditableText().toString();
+        String linkman3 =et_lianxi3.getEditableText().toString();
+        int age=Integer.parseInt(et_age.getEditableText().toString());
+        String area=userInfo.getArea();
+        String city=userInfo.getCity();
+        String province=userInfo.getProvince();
+        String latitude=userInfo.getLatitude();
+        String longitude=userInfo.getLongitude();
+        if(area==null){
+            area="";
+        }if (city==null){
+            city="";
         }
-        if (city == null) {
-            city = "";
+        if(province==null){
+            province="";
         }
-        if (province == null) {
-            province = "";
+        if (latitude==null){
+            latitude="1";
         }
-        if (latitude == null) {
-            latitude = "1";
-        }
-        if (longitude == null) {
-            longitude = "1";
+        if(longitude==null){
+            longitude="1";
         }
         //params.put("sex",sex);
-        params.put("age", age);
-        params.put("bloodType", bloodType);
-        params.put("fixedLineTelephone", fixedLineTelephone);
-        params.put("linkman1", linkman1);
-        params.put("linkman2", linkman2);
-        params.put("linkman3", linkman3);
-        params.put("nickname", nickname);
-        params.put("otherSicken", otherSicken);
-        params.put("sickenHistory", sickenHistory);
-        params.put("telephone", telephone);
-        params.put("province", province);
-        params.put("area", area);
-        params.put("city", city);
-        params.put("address", address);
-        params.put("longitude", longitude);
-        params.put("latitude", latitude);
+        params.put("age",age);
+        params.put("bloodType",type);
+        params.put("fixedLineTelephone",fixedLineTelephone);
+        params.put("linkman1",linkman1);
+        params.put("linkman2",linkman2);
+        params.put("linkman3",linkman3);
+        params.put("nickname",nickname);
+        params.put("otherSicken",otherSicken);
+        params.put("sickenHistory",sickenHistory);
+        params.put("telephone",telephone);
+        params.put("province",province);
+        params.put("area",area);
+        params.put("city",city);
+        params.put("address",address);
+        params.put("longitude",longitude);
+        params.put("latitude",latitude);
         return gson.toJson(params);
     }
+    public void setValue(){
+        HttpProxy.obtain().get(PlatformContans.UseUser.sGetUseUser, APP.getInstance().getUserInfo().getToken(), new ICallBack() {
+            @Override
+            public void OnSuccess(String result) {
+                JSONObject object = null;
+                try {
+                    object = new JSONObject(result);
+                    int resultCode = object.getInt("resultCode");
+                    if (resultCode == 0) {
+                        JSONObject data = object.getJSONObject("data");
+                        et_name.setText(data.getString("name")+"");
+                        et_fixphone.setText(data.getString("fixedLineTelephone"));
+                        bloodtype=data.getString("bloodType");
+                        et_address.setText(data.getString("address")+"");
+                        et_address.setTextColor(ContextCompat.getColor(ClientUserInfoActivity.this,R.color.text_333));
+                        et_phone.setText(data.getString("telephone")+"");
+                        et_age.setText(data.getInt("age")+"");
+                        String sex=data.getString("sex");
+                        rg_sex.setEnabled(false);
+                        rb_nv.setEnabled(false);
+                        rb_man.setEnabled(false);
+                        if(sex.equals("男")){
+                            rb_man.setChecked(true);
+                        }else{
+                            rb_nv.setChecked(false);
+                        }
+                        et_sicken.setText(data.getString("sickenHistory")+"");
+                        et_othersicken.setText(data.getString("otherSicken")+"");
+                        et_lianxi1.setText(data.getString("linkman1")+"");
+                        et_lianxi2.setText(data.getString("linkman2")+"");
+                        et_lianxi3.setText(data.getString("linkman3")+"");
+                        initSpinner();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
 
-    public void setValue() {
-        if (userInfo.getName() == null) {
-            et_name.setText("");
-        } else {
-            et_name.setText(userInfo.getName() + "");
-        }
-        if (userInfo.getFixedLineTelephone() == null) {
-            et_fixphone.setText("");
-        } else {
-            et_fixphone.setText(userInfo.getFixedLineTelephone() + "");
-        }
-//        if(userInfo.getBloodType()==null){
-//            tv_bloodType.setText("A");
-//        }else{
-//            tv_bloodType.setText(userInfo.getBloodType()+"");
-//        }
-        if (userInfo.getAddress() == null) {
-            et_address.setText("");
-        } else {
-            et_address.setText(userInfo.getAddress());
-        }
-        et_phone.setText(userInfo.getTelephone() + "");
-        et_age.setText(userInfo.getAge() + "");
+            }
 
-        if (userInfo.getSickenHistory() == null) {
-            et_sicken.setText("");
-        } else {
-            et_sicken.setText(userInfo.getSickenHistory() + "");
-        }
-        if (userInfo.getOtherSicken() == null) {
-            et_othersicken.setText("");
-        } else {
-            et_othersicken.setText(userInfo.getOtherSicken() + "");
-        }
-        if (userInfo.getLinkman1() == null) {
-            et_lianxi1.setText("");
-        } else {
-            et_lianxi1.setText(userInfo.getLinkman1() + "");
-        }
-        if (userInfo.getLinkman2() == null) {
-            et_lianxi2.setText("");
-        } else {
-            et_lianxi2.setText(userInfo.getLinkman2());
-        }
-        if (userInfo.getLinkman3() == null) {
-            et_lianxi3.setText("");
-        } else {
-            et_lianxi3.setText(userInfo.getLinkman3());
-        }
+            @Override
+            public void onFailure(String error) {
+              Log.e("user",error);
+            }
+        });
+
     }
 
-    public void initSpinner() {
+    public void initSpinner(){
         dataList = new ArrayList<String>();
-        String bloodtype = userInfo.getBloodType();
-        Log.e("blood", bloodtype);
-        if (bloodtype.equals("B")) {
+        Log.e("blood",bloodtype);
+        if(bloodtype.equals("B")){
             dataList.add("B");
             dataList.add("A");
             dataList.add("AB");
             dataList.add("O");
             dataList.add("未知");
-        } else if (bloodtype.equals("AB")) {
+        }
+        else if (bloodtype.equals("AB")) {
             dataList.add("AB");
             dataList.add("A");
             dataList.add("B");
             dataList.add("O");
             dataList.add("未知");
-        } else if (bloodtype.equals("A")) {
+        }else if (bloodtype.equals("A")) {
             dataList.add("A");
             dataList.add("B");
             dataList.add("AB");
             dataList.add("O");
             dataList.add("未知");
-        } else if (bloodtype.equals("O")) {
+        }
+        else if (bloodtype.equals("O")) {
             dataList.add("O");
             dataList.add("A");
             dataList.add("B");
             dataList.add("AB");
             dataList.add("未知");
-        } else {
+        }else{
             dataList.add("未知");
             dataList.add("A");
             dataList.add("B");
             dataList.add("AB");
             dataList.add("O");
         }
-//        dataList.add("A");
-//        dataList.add("B");
-//        dataList.add("AB");
-//        dataList.add("O");
-//        dataList.add("未知");
-        /*为spinner定义适配器，也就是将数据源存入adapter，这里需要三个参数
-        1. 第一个是Context（当前上下文），这里就是this
-        2. 第二个是spinner的布局样式，这里用android系统提供的一个样式
-        3. 第三个就是spinner的数据源，这里就是dataList*/
-        adapter = new ArrayAdapter<String>(this, R.layout.item_spinner_blood, dataList);
+
+        adapter = new ArrayAdapter<String>(this,R.layout.item_spinner_blood,dataList);
 
         //为适配器设置下拉列表下拉时的菜单样式。
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -331,8 +327,9 @@ public class ClientUserInfoActivity extends BaseActivity {
         select_blood.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                tv_bloodType = (TextView) view;
-                tv_bloodType.setText(adapter.getItem(position));
+                 //tv_bloodType = (TextView)view;
+                 type=adapter.getItem(position);
+                 //Log.e("type",type);
             }
 
             @Override

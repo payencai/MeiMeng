@@ -243,6 +243,37 @@ public class OkHttpProcessor implements IHttpProcessor {
         this.get(url, headParams, tokenMap, callBack);
     }
 
+    @Override
+    public void get(String url, String token, final ICallBack callBack) {
+        OkHttpClient okHttpClient = new OkHttpClient();
+        Request request = addTokenHeader(token).url(url).build();
+        request.url();
+        Call call = okHttpClient.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, final IOException e) {
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        callBack.onFailure(e.getMessage());
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String request = response.body().string();
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        callBack.OnSuccess(request);
+                    }
+                });
+            }
+        });
+
+    }
+
     private FormBody buildBody(Map<String, Object> bodyMap) {
         FormBody.Builder builder = new FormBody.Builder();
         if (bodyMap == null) {
@@ -292,6 +323,14 @@ public class OkHttpProcessor implements IHttpProcessor {
         for (String key : headMap.keySet()) {
             builder.addHeader(key, headMap.get(key) + "");
         }
+        return builder;
+    }
+    private Request.Builder addTokenHeader(String token) {
+        Request.Builder builder = new Request.Builder();
+        if (token == null) {
+            return builder;
+        }
+        builder.addHeader("token",token);
         return builder;
     }
 }

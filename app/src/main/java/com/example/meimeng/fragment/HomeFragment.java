@@ -1,13 +1,10 @@
 package com.example.meimeng.fragment;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -17,26 +14,23 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
-import com.baidu.location.BDLocationListener;
-import com.baidu.location.BDNotifyListener;
 import com.baidu.location.LocationClient;
-import com.baidu.location.LocationClientOption;
 import com.baidu.location.Poi;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
 import com.baidu.mapapi.map.MapStatus;
+import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.MarkerOptions;
+import com.baidu.mapapi.map.MyLocationConfiguration;
 import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.model.LatLng;
-import com.baidu.mapapi.utils.CoordinateConverter;
 import com.example.meimeng.APP;
 import com.example.meimeng.R;
 import com.example.meimeng.activity.AddAEDActivity;
@@ -46,7 +40,7 @@ import com.example.meimeng.base.BaseFragment;
 import com.example.meimeng.service.LocationService;
 import com.example.meimeng.util.ToaskUtil;
 
-public class HomeFragment extends BaseFragment implements View.OnClickListener, BDLocationListener {
+public class HomeFragment extends BaseFragment implements View.OnClickListener {
 
 
     private LinearLayout addAED;
@@ -66,6 +60,10 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener, 
 
     private LocationService locationService;
     public LocationClient mLocationClient = null;
+    private BitmapDescriptor mCurrentMarker;
+
+    private double lat;
+    private double lon;
 
     @Nullable
     @Override
@@ -142,6 +140,7 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener, 
         }
     }
 
+
     private void showTypeSelect(View view) {
         if (mTypeSelectPw != null) {
             mTypeSelectPw = null;
@@ -215,12 +214,69 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener, 
         ToaskUtil.showToast(getContext(), s);
     }
 
+    public void location(BDLocation location) {
+//        // 开启定位图层
+//        mBaiduMap.setMyLocationEnabled(true);
+//
+//        // 构造定位数据
+//        MyLocationData locData = new MyLocationData.Builder()
+//                .accuracy(location.getRadius())
+//                // 此处设置开发者获取到的方向信息，顺时针0-360
+//                .direction(100).latitude(location.getLatitude())
+//                .longitude(location.getLongitude()).build();
+//
+//        // 设置定位数据
+//        mBaiduMap.setMyLocationData(locData);
+//
+//        // 设置定位图层的配置（定位模式，是否允许方向信息，用户自定义定位图标）
+//        mCurrentMarker = BitmapDescriptorFactory
+//                .fromResource(R.mipmap.logo);
+//        int accuracyCircleFillColor = 0xAAFFFF88;//自定义精度圈填充颜色
+//        int accuracyCircleStrokeColor = 0xAA00FF00;//自定义精度圈边框颜色
+//        MyLocationConfiguration config = new MyLocationConfiguration(
+//                MyLocationConfiguration.LocationMode.NORMAL,
+//                true, mCurrentMarker, accuracyCircleFillColor, accuracyCircleStrokeColor);
+//        mBaiduMap.setMyLocationConfiguration(config);
+//        // 当不需要定位图层时关闭定位图层
+//        mBaiduMap.setMyLocationEnabled(false);
+        lat = location.getLatitude();
+        lon = location.getLongitude();
+        setMarker();
+        setUserMapCenter();
+    }
 
     /**
-     * @param bdLocation 百度定位监听
+     * 添加marker
      */
-    @Override
-    public void onReceiveLocation(BDLocation bdLocation) {
+    private void setMarker() {
+        Log.v("pcw", "setMarker : lat : " + lat + " lon : " + lon);
+        //定义Maker坐标点
+        LatLng point = new LatLng(lat, lon);
+        //构建Marker图标
+        BitmapDescriptor bitmap = BitmapDescriptorFactory
+                .fromResource(R.mipmap.ic_high_volunteer);
+        //构建MarkerOption，用于在地图上添加Marker
+        OverlayOptions option = new MarkerOptions()
+                .position(point)
+                .icon(bitmap);
+        //在地图上添加Marker，并显示
+        mBaiduMap.addOverlay(option);
+    }
+
+    /**
+     * 设置中心点
+     */
+    private void setUserMapCenter() {
+        LatLng cenpt = new LatLng(lat, lon);
+        //定义地图状态
+        MapStatus mMapStatus = new MapStatus.Builder()
+                .target(cenpt)
+                .zoom(18)
+                .build();
+        //定义MapStatusUpdate对象，以便描述地图状态将要发生的变化
+        MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
+        //改变地图状态
+        mBaiduMap.setMapStatus(mMapStatusUpdate);
 
     }
 
@@ -233,6 +289,8 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener, 
 
         @Override
         public void onReceiveLocation(BDLocation location) {
+            location(location);
+            locationService.setLocationOption(locationService.getSingleLocationClientOption());
             // TODO Auto-generated method stub
             String addr = location.getAddrStr();    //获取详细地址信息
             String country = location.getCountry();    //获取国家
@@ -322,7 +380,7 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener, 
                     sb.append("\ndescribe : ");
                     sb.append("无法获取有效定位依据导致定位失败，一般是由于手机的原因，处于飞行模式下一般会造成这种结果，可以试着重启手机");
                 }
-                logMsg(sb.toString());
+//                logMsg(sb.toString());
             }
         }
 

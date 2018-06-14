@@ -13,11 +13,13 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.donkingliang.imageselector.ImageSelectorActivity;
 import com.donkingliang.imageselector.PreviewActivity;
@@ -25,13 +27,24 @@ import com.donkingliang.imageselector.entry.Folder;
 import com.donkingliang.imageselector.entry.Image;
 import com.donkingliang.imageselector.model.ImageModel;
 import com.donkingliang.imageselector.utils.ImageSelectorUtils;
+import com.example.meimeng.APP;
 import com.example.meimeng.R;
 import com.example.meimeng.adapter.OptionAdapter;
 import com.example.meimeng.adapter.PictureAdapter;
 import com.example.meimeng.base.BaseActivity;
+import com.example.meimeng.bean.FirstAidSkillOption;
+import com.example.meimeng.constant.PlatformContans;
 import com.example.meimeng.custom.CustomDatePicker;
+import com.example.meimeng.http.HttpProxy;
+import com.example.meimeng.http.ICallBack;
 import com.example.meimeng.util.CustomPopWindow;
 import com.example.meimeng.util.ToaskUtil;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -41,14 +54,26 @@ import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class AddAEDActivity extends BaseActivity implements View.OnClickListener {
-
+    private TextView consignSite;
     private TextView title;
     private TextView AEDBrand;
     private TextView deadline;
+    private Button submit;
     private ImageView pictureSelector;
     private CustomDatePicker customDatePicker;
     private static final int PERMISSION_REQUEST_CODE = 0;
@@ -68,7 +93,9 @@ public class AddAEDActivity extends BaseActivity implements View.OnClickListener
                 finish();
             }
         });
+        submit=findViewById(R.id.submit);
         title = ((TextView) findViewById(R.id.title));
+        consignSite=findViewById(R.id.consignSite);
         AEDBrand = ((TextView) findViewById(R.id.AEDBrand));
         deadline = ((TextView) findViewById(R.id.deadline));
         pictureSelector = ((ImageView) findViewById(R.id.pictureSelector));
@@ -80,6 +107,7 @@ public class AddAEDActivity extends BaseActivity implements View.OnClickListener
         findViewById(R.id.option1).setOnClickListener(this);
         findViewById(R.id.option2).setOnClickListener(this);
         findViewById(R.id.option3).setOnClickListener(this);
+        submit.setOnClickListener(this);
         pictureSelector.setOnClickListener(this);
         initPictureAdapter();
         initDatePicker();
@@ -144,7 +172,38 @@ public class AddAEDActivity extends BaseActivity implements View.OnClickListener
                 //限数量的多选(比喻最多9张)
                 ImageSelectorUtils.openPhoto(this, REQUEST_PICTURE_CODE, false, 3, selected); // 把已选的传入。
                 break;
+            case R.id.submit:
+                //submit();
+                break;
         }
+    }
+
+    private void submit() {
+        String token=APP.getInstance().getServerUserInfo().getToken();
+        String data=toJsonString();
+        Log.e("data",data);
+        HttpProxy.obtain().post(PlatformContans.AedController.sAddAed, token, data, new ICallBack() {
+            @Override
+            public void OnSuccess(String result) {
+                try {
+                    JSONObject object = new JSONObject(result);
+                    int resultCode = object.getInt("resultCode");
+                    if (resultCode == 0) {
+                        Toast.makeText(AddAEDActivity.this,"添加成功",Toast.LENGTH_LONG).show();
+                        finish();
+
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(String error) {
+                Log.e("aed",error);
+            }
+        });
     }
 
     @Override
@@ -268,5 +327,63 @@ public class AddAEDActivity extends BaseActivity implements View.OnClickListener
 
     }
 
+    public String toJsonString(){
+        Map<String,Object> params=new HashMap<>();
+        Gson gson = new GsonBuilder().enableComplexMapKeySerialization().create();
+        params.put("tel",APP.getInstance().getServerUserInfo().getTelephone()+"");
+        params.put("role", 0);
+        params.put("latitude","132.4033126831052");
+        params.put("longitude","47.05184555053712");
+        params.put("isPass",1);
+        params.put("expiryDate",deadline.getText().toString());
+        params.put("brank",AEDBrand.getText().toString());
+        params.put("address",consignSite.getText().toString()+"广州番区");
+        //地址是唯一值，每次都必须不同，
+        return gson.toJson(params);
+
+    }
+    private void upImage(String url, String filePath) {
+        //Log.e("tag",url+filePath);
+        OkHttpClient mOkHttpClent = new OkHttpClient();
+        File file = new File(filePath);
+        MultipartBody.Builder builder = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("image", "image",
+                        RequestBody.create(MediaType.parse("image/png"), file));
+        RequestBody requestBody = builder.build();
+        Request request = new Request.Builder()
+                .url(url)
+                .post(requestBody)
+                .build();
+        Call call = mOkHttpClent.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(AddAEDActivity.this, "上传失败", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String string = response.body().string();
+                Log.e("tag", "onResponse: " + string);
+                try {
+                    JSONObject object = new JSONObject(string);
+                    int resultCode = object.getInt("resultCode");
+                    String imgUrl = object.getString("data");
+                    if (resultCode == 0) {
+                        Toast.makeText(AddAEDActivity.this, "上传成功", Toast.LENGTH_SHORT).show();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+    }
 
 }

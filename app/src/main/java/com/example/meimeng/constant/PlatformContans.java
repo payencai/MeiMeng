@@ -24,6 +24,7 @@ public class PlatformContans {
         public static final String sLogin = sHead + "login";//用户登录
         public static final String sUpdateRealNameAuthentication = sHead + "updateRealNameAuthentication";//用户实名认证
         public static final String sUpdateUseUser = sHead + "updateUseUser";//更新用户
+        public static final String sGetUseUser = sHead + "getUseUser";//登录用户获取。
 
     }
 
@@ -33,6 +34,7 @@ public class PlatformContans {
         public static final String ServerUserLogin = sHead + "ServerUserLogin";//志愿者登录
         public static final String sUpdateServerUser=sHead+"updateServerUser";//修改服务用户个人信息
         public static final String sServerUserUpgrade=sHead+"serverUserUpgrade";//升级高级急救人员
+        public static final String sAddServerUserByUseUser=sHead+"addServerUserByUseUser";
     }
 
     public static class AidKnowController {

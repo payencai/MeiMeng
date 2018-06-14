@@ -5,16 +5,23 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.meimeng.R;
 import com.example.meimeng.base.BaseActivity;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 public class VolunteerActivity extends BaseActivity {
     CardView askVolunteer;
     TextView title;
     CardView askProxy;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,6 +29,7 @@ public class VolunteerActivity extends BaseActivity {
 
     @Override
     protected void initView() {
+
          askProxy=findViewById(R.id.ask_proxy);
          askVolunteer=findViewById(R.id.ask_volunteer);
          askVolunteer.setOnClickListener(new View.OnClickListener() {
@@ -52,4 +60,5 @@ public class VolunteerActivity extends BaseActivity {
     protected int getContentId() {
         return R.layout.show_volunteer_content;
     }
+
 }

@@ -51,7 +51,7 @@ public class SelectAddressActivity extends BaseActivity {
         select_address.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                startActivityForResult(new Intent(SelectAddressActivity.this,AddressSelectionActivity.class),0);
             }
         });
     }

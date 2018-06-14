@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +34,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -56,29 +60,31 @@ public class MedicineActivity extends AbsBaseActivity<MedicineBean> {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // EventBus.getDefault().register(this);
+         EventBus.getDefault().register(this);
     }
 
-//    @Subscribe(threadMode = ThreadMode.MAIN)
-//    public void onMessageReceived(MessageEvent event) {
-//        switch (event.getType()) {
-//            case 1:
-//                if (event.getMsg()) {
-//                    if (mCheckBox.isChecked()) {
-//                        //isSelect(true);
-//                        mCheckBox.setChecked(false);
-//                        Toast.makeText(MedicineActivity.this,"click",Toast.LENGTH_LONG).show();
-//
-//                    }
-//                }
-//                break;
-//        }
-//    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageReceived(MessageEvent event) {
+        switch (event.getType()) {
+            case 1:
+                if (event.getMsg()) {
+                    if (mCheckBox.isChecked()) {
+                        //isSelect(true);
+                        mCheckBox.setEnabled(true);
+                        mCheckBox.setChecked(false);
+                        layout.setEnabled(true);
+                        //Toast.makeText(MedicineActivity.this,"click",Toast.LENGTH_LONG).show();
+
+                    }
+                }
+                break;
+        }
+    }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        // EventBus.getDefault().unregister(this); //取消注册
+        EventBus.getDefault().unregister(this); //取消注册
     }
 
     @Override
@@ -88,10 +94,11 @@ public class MedicineActivity extends AbsBaseActivity<MedicineBean> {
         mBaseAdapter.setListen(new RVSimpleAdapter.onSimpleItemClickListen() {
             @Override
             public void onItemListen(RVBaseViewHolder holder, int position) {
-                CheckBox checkBox = (CheckBox) holder.getView(R.id.cb_medicine);
+
+//                CheckBox checkBox = (CheckBox) holder.getView(R.id.cb_medicine);
 //                if (checkBox.isChecked()) {
 //                    Toast.makeText(MedicineActivity.this, "click", Toast.LENGTH_LONG);
-//                    checkBox.setChecked(true);
+//                    //checkBox.setChecked(true);
 //                }
             }
         });
@@ -117,7 +124,7 @@ public class MedicineActivity extends AbsBaseActivity<MedicineBean> {
                 int size = beanLists.size();
                 if (size == 0) {
                     mBaseAdapter.addAll(list);
-                     myAdapter=mBaseAdapter;
+                    // myAdapter=mBaseAdapter;
                 } else {
                     for (MedResponse.BeanList beanList : beanLists) {
                         MedicineBean medicineBean = new MedicineBean();
@@ -213,7 +220,7 @@ public class MedicineActivity extends AbsBaseActivity<MedicineBean> {
         HttpProxy.obtain().get(PlatformContans.Medicine.sGetMedicineByUserId, params, APP.getInstance().getUserInfo().getToken(), new ICallBack() {
             @Override
             public void OnSuccess(String result) {
-                //Log.e("getbyuserid", result);
+                Log.e("getbyuserid", result);
                 listid = new ArrayList<>();
                 Gson gson = new Gson();
                 MedicineResponse medicineResponse = (MedicineResponse) gson.fromJson(result, MedicineResponse.class);
@@ -221,8 +228,14 @@ public class MedicineActivity extends AbsBaseActivity<MedicineBean> {
                 dataList = medicineResponse.getData();
                 int size = dataList.size();
                 if (size == 0) {
+                    mCheckBox.setChecked(true);
+                    mCheckBox.setEnabled(false);
+                    layout.setEnabled(false);
                     getMedicineByServer(listid);
                 } else {
+                    mCheckBox.setChecked(false);
+                    mCheckBox.setEnabled(true);
+                    layout.setEnabled(true);
                     for (MedicineResponse.Data data : dataList) {
                         listid.add(data.getId());
                     }
@@ -245,7 +258,6 @@ public class MedicineActivity extends AbsBaseActivity<MedicineBean> {
         if (!TextUtils.isEmpty(ids)) {
             id = ids.substring(0, ids.length() - 1);
         }
-        //Log.e("shuzu",id);
         params.put("mids", id);
         params.put("type", 2);
         Gson gson = new GsonBuilder().enableComplexMapKeySerialization().create();
@@ -283,15 +295,19 @@ public class MedicineActivity extends AbsBaseActivity<MedicineBean> {
 
     @Override
     public void onPullRefresh() {
-        //page = 1;
+        page = 1;
         //isRefresh = true;
         mRecyclerView.postDelayed(new Runnable() {
             @Override
             public void run() {
                 setRefreshing(false);
-                //getMedicineByServer(listid);
+                listid.clear();
+                list.clear();
+                mBaseAdapter.clear();
+                isEnter=true;
+                queryMedicine();
             }
-        }, 2000);
+        }, 1000);
 
     }
 
@@ -301,12 +317,8 @@ public class MedicineActivity extends AbsBaseActivity<MedicineBean> {
         if (!isEmpty) {
             page++;
             Log.e("page", String.valueOf(page));
-            mBaseAdapter.showLoadMore();
             getMedicineByServer(listid);
         }
-        //queryMedicicneBack(++currentPage);
-
-        //mBaseAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -314,14 +326,16 @@ public class MedicineActivity extends AbsBaseActivity<MedicineBean> {
         super.onResume();
 
     }
-
+    LinearLayout layout;
     @Override
     public View addToolbar() {
 
         View view = LayoutInflater.from(this).inflate(R.layout.show_yaopin_content, null);
-        view.findViewById(R.id.noSelect).setOnClickListener(this);
+        layout=view.findViewById(R.id.noSelect);
+        layout.setOnClickListener(this);
         view.findViewById(R.id.back).setOnClickListener(this);
         mCheckBox = ((CheckBox) view.findViewById(R.id.noSelectCheck));
+
         // itemcheckbox=view.findViewById(R.id.cb_medicine);
         mCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -350,7 +364,8 @@ public class MedicineActivity extends AbsBaseActivity<MedicineBean> {
                     mCheckBox.setChecked(false);
                 } else {
                     mCheckBox.setChecked(true);
-
+                    mCheckBox.setEnabled(false);
+                    layout.setEnabled(false);
                 }
 
                 break;
@@ -382,12 +397,12 @@ public class MedicineActivity extends AbsBaseActivity<MedicineBean> {
                     if (b == true) {
                         medicineBean.setCheck(false);//将所有的itemtcheck改成未选
                     } else {
-                        medicineBean.setCheck(false);//先全部设置成为未选
-                        if (listid.contains(medicineBean.getId()) == true) {
-                            // Log.e("size",listid.size()+"");
-                            //Toast.makeText(MedicineActivity.this, "aaa", Toast.LENGTH_LONG).show();
-                            medicineBean.setCheck(true);
-                        }
+//                        medicineBean.setCheck(false);//先全部设置成为未选
+//                        if (listid.contains(medicineBean.getId()) == true) {
+//                            // Log.e("size",listid.size()+"");
+//                            //Toast.makeText(MedicineActivity.this, "aaa", Toast.LENGTH_LONG).show();
+//                            medicineBean.setCheck(true);
+//                        }
                     }
                 }
 

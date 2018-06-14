@@ -11,6 +11,8 @@ import com.example.meimeng.R;
 import com.example.meimeng.common.rv.base.RVBaseCell;
 import com.example.meimeng.common.rv.base.RVBaseViewHolder;
 
+import org.greenrobot.eventbus.EventBus;
+
 
 public class MedicineBean extends RVBaseCell {
     private String id;
@@ -107,7 +109,7 @@ public class MedicineBean extends RVBaseCell {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 isCheck=b;
                 checkBox.setChecked(b);
-                //EventBus.getDefault().post(new MessageEvent(b,1));
+                EventBus.getDefault().post(new MessageEvent(b,1));
             }
         });
 
@@ -119,11 +121,11 @@ public class MedicineBean extends RVBaseCell {
                 if (isCheck) {
                     isCheck = false;
                     checkBox.setChecked(false);
-                    //EventBus.getDefault().post(new MessageEvent(false,1));
+                    EventBus.getDefault().post(new MessageEvent(false,1));
                 } else {
                     isCheck = true;
                     checkBox.setChecked(true);
-                   // EventBus.getDefault().post(new MessageEvent(true,1));
+                    EventBus.getDefault().post(new MessageEvent(true,1));
                 }
             }
         });

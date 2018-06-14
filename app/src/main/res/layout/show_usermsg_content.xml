@@ -126,6 +126,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"/>
                 <TextView
+
                     android:id="@+id/et_user_address"
                     android:layout_marginRight="3dp"
                     android:background="@color/color_white_100"

@@ -70,7 +70,14 @@ public class FirstAidSkillragment extends AbsBaseFragment<FirstAidSkillOption> {
     }
 
     private void loadData() {
-        String token = APP.getInstance().getUserInfo().getToken();
+
+        String token = null;
+        if (APP.sUserType == 0) {
+            token = APP.getInstance().getUserInfo().getToken();
+        }else {
+            token = APP.getInstance().getServerUserInfo().getToken();
+        }
+
         if (TextUtils.isEmpty(token)) {
             ToaskUtil.showToast(getContext(), "登录异常");
             startActivity(new Intent(getContext(), LoginActivity.class));

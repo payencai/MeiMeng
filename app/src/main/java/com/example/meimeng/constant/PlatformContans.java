@@ -41,6 +41,10 @@ public class PlatformContans {
         public static final String sHead = rootUrl + "aidKnowController/";
         public static final String sGetAidKnowByManage = sHead + "getAidKnowByManage ";//志愿者登录
     }
+    public static class AedController{
+        public static final String sHead=rootUrl+"aedController/";
+        public static final String sAddAed=sHead+"addAed";
+    }
 
     public static class UserAdvice {
         public static final String sHead = rootUrl + "useradvice/";

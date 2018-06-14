@@ -45,6 +45,10 @@ public class ServerUserInfoActivity extends BaseActivity implements View.OnClick
     TextView tv_work;
     TextView tv_time;
     Button save;
+    private String homelon;
+    private String homelat;
+    private String worklat;
+    private String worklon;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,17 +101,20 @@ public class ServerUserInfoActivity extends BaseActivity implements View.OnClick
             String addressStr = address.getAddress();
             double lon = address.getLon();
             double lat = address.getLat();
+            homelat=""+lat;
+            homelon=""+lon;
             Log.d("onActivityResult", "onActivityResult: 经度：" + lon + ",维度:" + lat);
             if (!TextUtils.isEmpty(addressStr)) {
                 tv_home.setText(addressStr);
             }
         }
         if (requestCode == 3) {
-
             AddressBean address = (AddressBean) data.getSerializableExtra("address");
             String addressStr = address.getAddress();
             double lon = address.getLon();
             double lat = address.getLat();
+            worklat=""+lat;
+            worklon=""+lon;
             Log.d("onActivityResult", "onActivityResult: 经度：" + lon + ",维度:" + lat);
             if (!TextUtils.isEmpty(addressStr)) {
                 tv_work.setText(addressStr);

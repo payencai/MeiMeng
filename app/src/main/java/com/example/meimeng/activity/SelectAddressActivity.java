@@ -73,6 +73,9 @@ public class SelectAddressActivity extends BaseActivity implements View.OnClickL
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.back:
+                Intent intent2 = new Intent();
+                intent2.putExtra(mTag, mAddress);
+                setResult(responseCode, intent2);
                 finish();
                 break;
             case R.id.select_address_layout:

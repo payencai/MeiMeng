@@ -58,9 +58,15 @@ import okhttp3.Response;
 public class AskVolunteerActivity extends BaseActivity {
     TextView title;
     ImageView upload;
+    boolean isHomeEmpty=false;
+    boolean isWorkEmpty=false;
     private GridView ask_show_pic;
     private PictureAdapter mAdapter;
     private ArrayList<String> selected = new ArrayList<>();
+    private String homelon;
+    private String homelat;
+    private String worklat;
+    private String worklon;
     @BindView(R.id.et_volunteer_name)
     EditText tv_name;
     @BindView(R.id.et_volunteer_number)
@@ -124,28 +130,47 @@ public class AskVolunteerActivity extends BaseActivity {
             selected.addAll(images);
             mAdapter.updata(images);
         }
-        if (data != null) {
+        if (data != null)
+        {
             if (requestCode == 4) {
                 AddressBean address = (AddressBean) data.getSerializableExtra("address");
-                String addressStr = address.getAddress();
-                double lon = address.getLon();
-                double lat = address.getLat();
-                Log.d("onActivityResult", "onActivityResult: 经度：" + lon + ",维度:" + lat);
-                if (!TextUtils.isEmpty(addressStr)) {
-                    detailhome.setText(addressStr);
+                if(address!=null){
+                    String addressStr = address.getAddress();
+                    double lon = address.getLon();
+                    double lat = address.getLat();
+                    homelon=""+lon;
+                    homelat=""+lat;
+                    Log.d("onActivityResult", "onActivityResult: 经度：" + lon + ",维度:" + lat);
+                    if (!TextUtils.isEmpty(addressStr)) {
+                        detailhome.setText(addressStr);
+                    }
                 }
-            }
-            if (requestCode == 5) {
-                AddressBean address = (AddressBean) data.getSerializableExtra("address");
-                String addressStr = address.getAddress();
-                double lon = address.getLon();
-                double lat = address.getLat();
-                Log.d("onActivityResult", "onActivityResult: 经度：" + lon + ",维度:" + lat);
-                if (!TextUtils.isEmpty(addressStr)) {
-                    detailwork.setText(addressStr);
+                else{
+                     isHomeEmpty=true;
                 }
+
             }
 
+        }
+        if(data!=null){
+            if (requestCode == 5) {
+                AddressBean address = (AddressBean) data.getSerializableExtra("address");
+                if (address!=null){
+                    String addressStr = address.getAddress();
+
+                    double lon = address.getLon();
+                    double lat = address.getLat();
+                    worklon=""+lon;
+                    worklat=""+lat;
+                    Log.d("onActivityResult", "onActivityResult: 经度：" + lon + ",维度:" + lat);
+                    if (!TextUtils.isEmpty(addressStr)) {
+                        detailwork.setText(addressStr);
+                    }
+                }else{
+                    isWorkEmpty=true;
+                }
+
+            }
         }
     }
     @Override
@@ -256,7 +281,12 @@ public class AskVolunteerActivity extends BaseActivity {
                 });
                 break;
             case R.id.btn_vol_commit:
-                commit();
+                if(!isInputEmpty()){
+                    commit();
+                }
+                else{
+                    Toast.makeText(this,msg,Toast.LENGTH_SHORT).show();
+                }
                 break;
         }
 
@@ -275,7 +305,30 @@ public class AskVolunteerActivity extends BaseActivity {
 
         commitImage();
     }
+    String msg="";
+    public boolean isInputEmpty(){
+        if(isHomeEmpty){
+            msg="家庭地址不能为空";
+            return true;
+        }
+        if(isWorkEmpty){
+            msg="工作地址不能为空";
+            return true;
+        }
+        //if("")
+        if(TextUtils.isEmpty(tv_name.getText().toString())){
+            msg="姓名不能为空";
+            return true;
+        }
+        if(TextUtils.isEmpty(number.getText().toString())){
+            msg="身份证号码不能为空";
+            return true;
+        }
+
+        return false;
+    }
     public void commit(){
+
          String token= APP.getInstance().getUserInfo().getToken();
          String data= returnJsonString();
         HttpProxy.obtain().post(PlatformContans.Serveruser.sAddServerUserByUseUser, token, data, new ICallBack() {
@@ -308,19 +361,19 @@ public class AskVolunteerActivity extends BaseActivity {
 
         Map<String,Object> params=new HashMap<>();
         Gson gson = new GsonBuilder().enableComplexMapKeySerialization().create();
-
         String name =tv_name.getEditableText().toString();
         String idNumber =number.getEditableText().toString();
         String homeAddress =detailhome.getText().toString();
         String workAddress =detailwork.getText().toString();
-        String workTime ="24:05";
+
+        String workTime =detailtime.getText().toString()+"";
         String sex="女";
         String certificateImages="上传/2018060119125539";
         String isCertificate="1";
-        String workLatitude ="23.05177879333496";
-        String workLongitude="113.4032974243164";
-        String homeLatitude="113.4033126831055";
-        String homeLongitude="23.05184555053711";
+        String workLatitude =worklat;
+        String workLongitude=worklon;
+        String homeLatitude=homelat;
+        String homeLongitude=homelon;
         String medicineIds="33012750-787c-4880-adad-0c2a8e653ac3,2ff9460d-dbbe-42f5-b8f0-a66ce53cf046,11199602-9e63-40d9-808b-ad467d58e2b5";
         if(man.isChecked()){
             sex="男";

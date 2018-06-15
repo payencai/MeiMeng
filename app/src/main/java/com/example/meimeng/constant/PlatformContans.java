@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class PlatformContans {
 
-    public static String root = "http://47.106.164.34:8080/";//正式地址
+    public static String root = "http://47.106.164.34/";//正式地址
     public static String rootUrl = root + "memen/";//
 //    public static String root = "http://192.168.1.18:8080/";//诗安测试地址
 //    public static String rootUrl = root + "memen/";//
@@ -44,6 +44,8 @@ public class PlatformContans {
     public static class AedController{
         public static final String sHead=rootUrl+"aedController/";
         public static final String sAddAed=sHead+"addAed";
+        public static final String sGetContent=sHead+"getContent";
+        public static final String sGetFacility=sHead+"getFacility";
     }
 
     public static class UserAdvice {
@@ -69,5 +71,11 @@ public class PlatformContans {
     public static class Image{
         public static final String sHead=rootUrl+"image/";
         public static final String sUpdateImage=sHead+"uploadImage";
+    }
+    public static class MessageController{
+        public static final String sHead=rootUrl+"messageController/";
+        public static final String sGetSysInfoBytype=sHead+"getSysInfoBytype";
+        public static final String sGetSysInfoById=sHead+"getSysInfoById";
+        public static final String sAddSysInfo=sHead+"addSysInfo";
     }
 }

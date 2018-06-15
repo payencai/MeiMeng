@@ -23,12 +23,13 @@
             <LinearLayout
                 android:focusable="true"
                 android:focusableInTouchMode="true"
-                android:layout_marginTop="@dimen/margin_15dp"
+
                 android:layout_marginLeft="@dimen/margin_15dp"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="45dp">
                 <TextView
+                    android:layout_gravity="center_vertical"
                     android:layout_weight="8"
                     android:textColor="#333333"
                     android:textSize="@dimen/text_size_14sp"
@@ -36,6 +37,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
                 <EditText
+                    android:layout_gravity="center_vertical"
                     android:id="@+id/et_volunteer_name"
                     android:gravity="right|center_vertical"
                     android:maxLength="10"
@@ -48,20 +50,19 @@
             </LinearLayout>
             <View
                 android:layout_marginLeft="@dimen/margin_15dp"
-                android:layout_marginTop="@dimen/margin_10dp"
+
                 android:background="@color/bg_f2f2f2"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"></View>
             <LinearLayout
                 android:focusable="true"
                 android:focusableInTouchMode="true"
-                android:layout_marginTop="@dimen/margin_15dp"
                 android:layout_marginLeft="@dimen/margin_15dp"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="45dp">
                 <TextView
-
+                    android:layout_gravity="center_vertical"
                     android:layout_weight="8"
                     android:textColor="#333333"
                     android:textSize="@dimen/text_size_14sp"
@@ -69,6 +70,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
                 <EditText
+                    android:layout_gravity="center_vertical"
                     android:digits="0123456789qwertyuioplkjhgfdsazxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"
                     android:gravity="right|center_vertical"
                     android:id="@+id/et_volunteer_number"
@@ -82,19 +84,18 @@
             </LinearLayout>
             <View
                 android:layout_marginLeft="@dimen/margin_15dp"
-                android:layout_marginTop="@dimen/margin_10dp"
                 android:background="@color/bg_f2f2f2"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"></View>
             <LinearLayout
                 android:id="@+id/et_volunteer_home"
-                android:layout_marginTop="@dimen/margin_15dp"
+
                 android:layout_marginLeft="@dimen/margin_15dp"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="45dp">
                 <TextView
-
+                    android:layout_gravity="center_vertical"
                     android:layout_weight="8"
                     android:textColor="#333333"
                     android:textSize="@dimen/text_size_14sp"
@@ -102,11 +103,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
                 <TextView
+                    android:layout_gravity="center_vertical"
+                    android:maxWidth="200dp"
                     android:id="@+id/vol_detail_home"
                     android:textColor="#999999"
                     android:text="详细家庭地址"
-                    android:gravity="right|center_vertical"
-                    android:maxLength="20"
+                    android:gravity="right"
+                    android:maxLength="40"
+                    android:maxLines="2"
                     android:layout_marginRight="@dimen/margin_10dp"
                     android:background="@color/color_white_100"
                     android:textSize="@dimen/text_size_14sp"
@@ -121,19 +125,17 @@
             </LinearLayout>
             <View
                 android:layout_marginLeft="@dimen/margin_15dp"
-                android:layout_marginTop="@dimen/margin_10dp"
                 android:background="@color/bg_f2f2f2"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"></View>
             <LinearLayout
                 android:id="@+id/et_volunteer_work"
-                android:layout_marginTop="@dimen/margin_15dp"
                 android:layout_marginLeft="@dimen/margin_15dp"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="45dp">
                 <TextView
-
+                    android:layout_gravity="center_vertical"
                     android:layout_weight="8"
                     android:textColor="#333333"
                     android:textSize="@dimen/text_size_14sp"
@@ -141,11 +143,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
                 <TextView
+                    android:maxWidth="200dp"
+                    android:layout_gravity="center_vertical"
                     android:id="@+id/vol_detail_work"
                     android:textColor="#999999"
                     android:text="详细工作地址"
                     android:gravity="right|center_vertical"
-                    android:maxLength="20"
+                    android:maxLength="40"
+                    android:maxLines="2"
                     android:layout_marginRight="@dimen/margin_10dp"
                     android:background="@color/color_white_100"
                     android:textSize="@dimen/text_size_14sp"
@@ -160,7 +165,6 @@
             </LinearLayout>
             <View
                 android:layout_marginLeft="@dimen/margin_15dp"
-                android:layout_marginTop="@dimen/margin_10dp"
                 android:background="@color/bg_f2f2f2"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"></View>
@@ -227,16 +231,16 @@
                         android:layout_height="wrap_content"
                         android:layout_marginRight="@dimen/margin_20dp"
                         android:button="@null"
-                        android:drawableLeft="@drawable/sex_selector"
+
                         android:drawablePadding="8dp"
                         android:text="男"/>
 
                     <RadioButton
                         android:id="@+id/rb_vol_nv"
                         android:drawablePadding="8dp"
-                        android:drawableLeft="@drawable/sex_selector"
+
                         android:button="@null"
-                        android:checked="true"
+
                         android:layout_marginRight="@dimen/margin_20dp"
                         android:text="女"
                         android:layout_width="wrap_content"
@@ -303,7 +307,7 @@
                 android:textSize="@dimen/text_size_17sp"
                 android:text="提交审核"
                 android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
+                android:layout_marginBottom="30dp"
                 android:layout_marginRight="@dimen/margin_20dp"
                 android:layout_marginLeft="@dimen/margin_20dp"
                 android:background="@drawable/shape_renzhen_btn"

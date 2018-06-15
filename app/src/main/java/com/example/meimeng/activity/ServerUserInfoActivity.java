@@ -96,29 +96,37 @@ public class ServerUserInfoActivity extends BaseActivity implements View.OnClick
                tv_name.setText(data.getExtras().getString("name"));
             }
         }
-        if (requestCode == 1) {
+        if (requestCode == 1&&data!=null) {
             AddressBean address = (AddressBean) data.getSerializableExtra("address");
-            String addressStr = address.getAddress();
-            double lon = address.getLon();
-            double lat = address.getLat();
-            homelat=""+lat;
-            homelon=""+lon;
-            Log.d("onActivityResult", "onActivityResult: 经度：" + lon + ",维度:" + lat);
-            if (!TextUtils.isEmpty(addressStr)) {
-                tv_home.setText(addressStr);
+            if(address!=null){
+                String addressStr = address.getAddress();
+
+                double lon = address.getLon();
+                double lat = address.getLat();
+                homelat=""+lat;
+                homelon=""+lon;
+                Log.d("onActivityResult", "onActivityResult: 经度：" + lon + ",维度:" + lat);
+                if (!TextUtils.isEmpty(addressStr)) {
+                    tv_home.setText(addressStr);
+                }
             }
+
         }
-        if (requestCode == 3) {
+        if (requestCode == 3&&data!=null) {
+
             AddressBean address = (AddressBean) data.getSerializableExtra("address");
-            String addressStr = address.getAddress();
-            double lon = address.getLon();
-            double lat = address.getLat();
-            worklat=""+lat;
-            worklon=""+lon;
-            Log.d("onActivityResult", "onActivityResult: 经度：" + lon + ",维度:" + lat);
-            if (!TextUtils.isEmpty(addressStr)) {
-                tv_work.setText(addressStr);
+            if(address!=null){
+                String addressStr = address.getAddress();
+                double lon = address.getLon();
+                double lat = address.getLat();
+                worklat=""+lat;
+                worklon=""+lon;
+                Log.d("onActivityResult", "onActivityResult: 经度：" + lon + ",维度:" + lat);
+                if (!TextUtils.isEmpty(addressStr)) {
+                    tv_work.setText(addressStr);
+                }
             }
+
         }
 
     }

@@ -49,13 +49,14 @@ public class FirstAidSkillragment extends AbsBaseFragment<FirstAidSkillOption> {
     public void onPullRefresh() {
         page = 1;
         isRefresh = true;
-        mRecyclerView.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                setRefreshing(false);
-                loadData();
-            }
-        }, 2000);
+//        mRecyclerView.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                setRefreshing(false);
+//            }
+//        }, 2000);
+        loadData();
+
     }
 
     @Override
@@ -115,6 +116,7 @@ public class FirstAidSkillragment extends AbsBaseFragment<FirstAidSkillOption> {
                         } else {
                             mBaseAdapter.addAll(list);
                         }
+                        mSwipeRefreshLayout.setRefreshing(isRefresh);
                     }
 
                 } catch (JSONException e) {

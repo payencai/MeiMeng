@@ -15,19 +15,20 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="220dp"
+            android:layout_height="210dp"
             android:layout_marginTop="10dp"
             android:background="@color/color_white_100"
             android:orientation="vertical">
 
 
             <LinearLayout
+                android:gravity="center_vertical"
                 android:id="@+id/server_updatemname"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="50dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="@dimen/margin_15dp"
-                android:layout_marginTop="15dp"
+
                 android:orientation="horizontal"
                 android:paddingTop="5dp">
 
@@ -39,6 +40,7 @@
                     android:text="修改昵称"
                     style="@style/font_14sp_333"/>
                 <TextView
+
                     android:id="@+id/tv_server_nick"
                     android:layout_marginRight="@dimen/margin_10dp"
                     android:layout_width="wrap_content"
@@ -57,28 +59,31 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginLeft="15dp"
-                android:layout_marginTop="15dp"
+
                 android:background="@color/bg_e5e5e5"/>
 
 
             <LinearLayout
+                android:gravity="center_vertical"
                 android:id="@+id/server_home"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="50dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="@dimen/margin_15dp"
-                android:layout_marginTop="15dp"
+
                 android:orientation="horizontal"
                 android:paddingTop="5dp">
 
                 <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    style="@style/font_14sp_333"
+                    android:layout_width="319dp"
+                    android:layout_height="24dp"
                     android:layout_marginLeft="10dp"
                     android:layout_weight="8"
-                    android:text="家庭住址"
-                    style="@style/font_14sp_333"/>
+                    android:text="家庭住址"/>
                 <TextView
+                    android:maxWidth="200dp"
+                    android:maxLines="2"
                     android:id="@+id/tv_server_home"
                     android:layout_marginRight="@dimen/margin_10dp"
                     android:layout_width="wrap_content"
@@ -97,17 +102,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginLeft="15dp"
-                android:layout_marginTop="15dp"
                 android:background="@color/bg_e5e5e5"/>
 
-
             <LinearLayout
+                android:gravity="center_vertical"
                 android:id="@+id/server_work"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="50dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="@dimen/margin_15dp"
-                android:layout_marginTop="15dp"
+
                 android:orientation="horizontal"
                 android:paddingTop="5dp">
 
@@ -119,6 +123,9 @@
                     android:text="工作住址"
                     style="@style/font_14sp_333"/>
                 <TextView
+
+                    android:maxWidth="200dp"
+                    android:maxLines="2"
                     android:id="@+id/tv_server_work"
                     android:layout_marginRight="@dimen/margin_10dp"
                     android:layout_width="wrap_content"
@@ -137,17 +144,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginLeft="15dp"
-                android:layout_marginTop="15dp"
+
                 android:background="@color/bg_e5e5e5"/>
 
 
             <LinearLayout
+                android:gravity="center_vertical"
                 android:id="@+id/server_time"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="50dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="@dimen/margin_15dp"
-                android:layout_marginTop="15dp"
+
                 android:orientation="horizontal"
                 android:paddingTop="5dp">
 

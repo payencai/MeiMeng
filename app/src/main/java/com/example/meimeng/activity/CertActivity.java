@@ -1,5 +1,6 @@
 package com.example.meimeng.activity;
 
+import android.graphics.drawable.Drawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -52,6 +53,15 @@ public class CertActivity extends BaseActivity {
         rb_nv = findViewById(R.id.rb_nv);
         rg_sex = findViewById(R.id.rg_sex);
         title.setText("实名认证");
+
+
+        Drawable drawable= getResources().getDrawable(R.drawable.sex_selector);
+        drawable.setBounds(0,0,30,30);//将drawable设置为宽100 高100固定大小
+        rb_man.setCompoundDrawables(drawable,null,null,null);
+        Drawable drawable2= getResources().getDrawable(R.drawable.sex_selector);
+        drawable2.setBounds(0,0,30,30);//将drawable设置为宽100 高100固定大小
+        rb_nv.setCompoundDrawables(drawable2,null,null,null);
+        rb_nv.setChecked(true);
         ImageView back;
         back=findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {

@@ -28,6 +28,8 @@ import java.util.Map;
 
 public class ServerRecordActivity extends AbsBaseActivity<ServerRecordBean> {
     TextView title;
+    private int page=1;
+    private boolean isRefresh = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,11 +42,12 @@ public class ServerRecordActivity extends AbsBaseActivity<ServerRecordBean> {
 
     private void loadData() {
         Map<String,Object> params=new HashMap<>();
-        params.put("page",1);
+        params.put("page",page);
         HttpProxy.obtain().get(PlatformContans.ForHelp.sGetCompleteHelpByServerUser, params , APP.getInstance().getServerUserInfo().getToken(),new ICallBack() {
             @Override
             public void OnSuccess(String result) {
                 Log.e("TAG",result);
+                mBaseAdapter.hideLoadMore();
                 List<ServerRecordBean> list = new ArrayList<>();
                 Gson gson=new Gson();
                 ServerRespnse recordResponse=(ServerRespnse)gson.fromJson(result, ServerRespnse.class);
@@ -53,6 +56,7 @@ public class ServerRecordActivity extends AbsBaseActivity<ServerRecordBean> {
                 int size=beanLists.size();
                 if(size==0){
                     mBaseAdapter.addAll(list);
+                    mSwipeRefreshLayout.setRefreshing(false);
                 }else{
                     for(ServerRespnse.BeanList beanList:beanLists){
                         ServerRecordBean bean = new ServerRecordBean();
@@ -61,7 +65,15 @@ public class ServerRecordActivity extends AbsBaseActivity<ServerRecordBean> {
                         bean.setName(beanList.getName());
                         list.add(bean);
                     }
-                    mBaseAdapter.addAll(list);
+                    //mBaseAdapter.addAll(list);
+                    if (isRefresh) {
+                        isRefresh = false;
+                        mBaseAdapter.clear();
+                        mBaseAdapter.addAll(list);
+                    } else {
+                        mBaseAdapter.addAll(list);
+                    }
+                    mSwipeRefreshLayout.setRefreshing(isRefresh);
                 }
 
             }
@@ -89,19 +101,21 @@ public class ServerRecordActivity extends AbsBaseActivity<ServerRecordBean> {
     }
     @Override
     public void onPullRefresh() {
-
-        mRecyclerView.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                setRefreshing(false);
-            }
-        }, 2000);
-
+        page = 1;
+        isRefresh = true;
+//        mRecyclerView.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                setRefreshing(false);
+//            }
+//        }, 2000);
+        loadData();
     }
 
     @Override
     public void onLoadMore() {
-
+          page++;
+          loadData();
     }
 
     @Override

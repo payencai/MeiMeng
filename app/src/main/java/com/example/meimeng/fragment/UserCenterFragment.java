@@ -27,7 +27,10 @@ import com.example.meimeng.activity.ShengjiActivity;
 import com.example.meimeng.activity.VolunteerActivity;
 import com.example.meimeng.activity.MedicineActivity;
 import com.example.meimeng.base.BaseFragment;
+import com.example.meimeng.bean.LoginAccount.ServerUserInfo;
 import com.example.meimeng.bean.LoginAccount.UserInfo;
+import com.example.meimeng.manager.ActivityManager;
+import com.example.meimeng.util.ServerUserInfoSharedPre;
 
 public class UserCenterFragment extends BaseFragment implements View.OnClickListener {
     private ImageView mClientSetting;
@@ -165,8 +168,9 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
                 startActivity(new Intent(getActivity(), ServerRecordActivity.class));
                 break;
             case R.id.iv_server_settings:
+                ServerUserInfoSharedPre.getIntance(getActivity()).clearUserInfo();
+                ActivityManager.getInstance().finishAllActivity();
                 startActivity(new Intent(getActivity(), LoginActivity.class));
-                getActivity().finish();
                 break;
         }
     }

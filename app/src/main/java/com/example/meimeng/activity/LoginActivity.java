@@ -25,7 +25,9 @@ import com.example.meimeng.custom.KyLoadingBuilder;
 import com.example.meimeng.http.HttpCallback;
 import com.example.meimeng.http.HttpProxy;
 import com.example.meimeng.http.ICallBack;
+import com.example.meimeng.util.LoginSharedUilt;
 import com.example.meimeng.util.MLog;
+import com.example.meimeng.util.ServerUserInfoSharedPre;
 import com.example.meimeng.util.ToaskUtil;
 import com.example.meimeng.util.UserInfoSharedPre;
 import com.google.gson.Gson;
@@ -95,6 +97,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             }
         }
     }
+
     @TargetApi(23)
     private boolean addPermission(ArrayList<String> permissionsList, String permission) {
         // 如果应用没有获得对应权限,则添加到列表中,准备批量申请
@@ -111,9 +114,9 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         }
     }
 
-
     @Override
     protected void initView() {
+
         userNumberEdit = (EditText) findViewById(R.id.userNumberEdit);
         verificationEdit = (EditText) findViewById(R.id.verificationEdit);
         findPassword = (TextView) findViewById(R.id.findPassword);
@@ -123,17 +126,45 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         headLayout = findViewById(R.id.headLayout);
         findViewById(R.id.back).setVisibility(View.GONE);
 
+
+
         headLayout.setBackgroundColor(Color.parseColor("#00ffffff"));
 
         title = (TextView) findViewById(R.id.title);
         title.setText("用户登录");
 
+        userLoginState = LoginSharedUilt.getIntance(this).getLastLoginType();
+        updataTypeUI();
         loginType.setOnClickListener(this);
         findPassword.setOnClickListener(this);
         submit.setOnClickListener(this);
         register.setOnClickListener(this);
         getPersimmions();
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        /*以下为自动登录代码*/
+        String tel;
+        String psw;
+        String url;
+        if (userLoginState == 0) {//用户登录
+            UserInfoSharedPre intance = UserInfoSharedPre.getIntance(this);
+            url = PlatformContans.UseUser.sLogin;
+            tel = (String) intance.getUserInfoFiledValue("account");
+            psw = (String) intance.getUserInfoFiledValue("password");
+        } else {
+            ServerUserInfoSharedPre intance = ServerUserInfoSharedPre.getIntance(this);
+            url = PlatformContans.Serveruser.ServerUserLogin;
+            tel = (String) intance.getServerUserFiledValue("account");
+            psw = (String) intance.getServerUserFiledValue("password");
+        }
+        if (!TextUtils.isEmpty(tel) && !TextUtils.isEmpty(psw)) {
+            mLoginLoadView = openLoadView("");
+            requestLogin(url, tel, psw);
+        }
     }
 
     @Override
@@ -164,6 +195,16 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                         psw = "123456";
                     }
                 } else {
+                    if (userLoginState == 0) {//用户登录
+                        UserInfoSharedPre intance = UserInfoSharedPre.getIntance(this);
+                        tel = (String) intance.getUserInfoFiledValue("account");
+                        psw = (String) intance.getUserInfoFiledValue("password");
+                    } else {
+                        ServerUserInfoSharedPre intance = ServerUserInfoSharedPre.getIntance(this);
+                        tel = (String) intance.getServerUserFiledValue("account");
+                        psw = (String) intance.getServerUserFiledValue("password");
+                    }
+
                     tel = userNumberEdit.getEditableText().toString();
                     psw = verificationEdit.getEditableText().toString();
                 }
@@ -184,16 +225,28 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 if (replace.equals("志愿者登录")) {//前一个状态为用户登录状态
                     title.setText("志愿者登录");
                     loginType.setText("用户登录");//切换成志愿者登录状态
-                    userLoginState = 1;//处于志愿者登录状态
                     register.setVisibility(View.GONE);
+                    userLoginState = 1;//处于志愿者登录状态
                 } else {
                     title.setText("用户登录");
                     loginType.setText("志愿者登录");
-                    userLoginState = 0;
                     register.setVisibility(View.VISIBLE);
+                    userLoginState = 0;
                 }
 //                ToaskUtil.showToast(this, userLoginState + "");
                 break;
+        }
+    }
+
+    private void updataTypeUI() {
+        if (userLoginState == 0) {
+            title.setText("用户登录");
+            loginType.setText("志愿者登录");
+            register.setVisibility(View.VISIBLE);
+        } else {
+            title.setText("志愿者登录");
+            loginType.setText("用户登录");//切换成志愿者登录状态
+            register.setVisibility(View.GONE);
         }
     }
 
@@ -293,7 +346,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                         JSONObject data = object.getJSONObject("data");
                         ServerUserInfo userInfo = new Gson().fromJson(data.toString(), ServerUserInfo.class);
                         userInfo.setPassword(psw);
-                        UserInfoSharedPre intance = UserInfoSharedPre.getIntance(LoginActivity.this);
+                        ServerUserInfoSharedPre intance = ServerUserInfoSharedPre.getIntance(LoginActivity.this);
                         intance.saveServerUserInfo(userInfo, true);
                         startActivity(new Intent(LoginActivity.this, MainActivity.class));
                         finish();

@@ -5,45 +5,44 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.example.meimeng.APP;
-import com.example.meimeng.bean.LoginAccount.UserInfo;
+import com.example.meimeng.bean.LoginAccount.ServerUserInfo;
 
 import java.lang.reflect.Field;
-
-import static com.example.meimeng.common.rv.absRv.AbsBaseActivity.TAG;
 
 /**
  * 作者：凌涛 on 2018/6/6 17:55
  * 邮箱：771548229@qq..com
  */
-public class UserInfoSharedPre {
+public class ServerUserInfoSharedPre {
 
-    private static UserInfoSharedPre sIntance;
+    private static ServerUserInfoSharedPre sIntance;
     private static Context mContext;
     private SharedPreferences mPreferences;
-    public static final String TAG = "UserInfoSharedPre";
+    public static final String TAG = "ServerUserSharedPre";
 
 
-    private UserInfoSharedPre() {
-        mPreferences = mContext.getSharedPreferences("userInfo", Context.MODE_PRIVATE);
+    private ServerUserInfoSharedPre() {
+        mPreferences = mContext.getSharedPreferences("serviceuserInfo", Context.MODE_PRIVATE);
     }
 
-    public static UserInfoSharedPre getIntance(Context context) {
+    public static ServerUserInfoSharedPre getIntance(Context context) {
         if (sIntance == null) {
-            synchronized (UserInfoSharedPre.class) {
+            synchronized (ServerUserInfoSharedPre.class) {
                 if (sIntance == null) {
                     mContext = context.getApplicationContext();
-                    sIntance = new UserInfoSharedPre();
+                    sIntance = new ServerUserInfoSharedPre();
                 }
             }
         }
         return sIntance;
     }
 
-    public void saveUserInfo(UserInfo userInfo, boolean isSavePassword) {
-        APP.getInstance().setUserInfo(userInfo);
-        APP.sUserType = 0;
-        saveUserFields(userInfo);
-        LoginSharedUilt.getIntance(mContext).saveLastLoginType(0);
+
+    public void saveServerUserInfo(ServerUserInfo userInfo, boolean isSavePassword) {
+        APP.getInstance().setServerUserInfo(userInfo);
+        APP.sUserType = 1;
+        saveServerUserFields(userInfo);
+        LoginSharedUilt.getIntance(mContext).saveLastLoginType(1);
     }
 
     public void clearUserInfo() {
@@ -52,9 +51,8 @@ public class UserInfoSharedPre {
         editor.commit();
     }
 
-
-    private void saveUserFields(UserInfo userInfo) {
-        Class<UserInfo> clazz = UserInfo.class;
+    private void saveServerUserFields(ServerUserInfo userInfo) {
+        Class<ServerUserInfo> clazz = ServerUserInfo.class;
         Field[] fields = clazz.getDeclaredFields();
         for (Field field : fields) {
             field.setAccessible(true);
@@ -77,8 +75,8 @@ public class UserInfoSharedPre {
         }
     }
 
-    public Object getUserInfoFiledValue(String filedName) {
-        Class<UserInfo> clazz = UserInfo.class;
+    public Object getServerUserFiledValue(String filedName) {
+        Class<ServerUserInfo> clazz = ServerUserInfo.class;
         Field[] fields = clazz.getDeclaredFields();
         for (Field field : fields) {
             field.setAccessible(true);
@@ -101,6 +99,5 @@ public class UserInfoSharedPre {
         return null;
 
     }
-
 
 }

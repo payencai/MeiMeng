@@ -8,12 +8,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.meimeng.APP;
 import com.example.meimeng.R;
 import com.example.meimeng.base.BaseActivity;
 import com.example.meimeng.bean.LoginAccount.UserInfo;
 import com.example.meimeng.common.rv.base.RVBaseAdapter;
 import com.example.meimeng.common.rv.base.RVBaseViewHolder;
 import com.example.meimeng.manager.ActivityManager;
+import com.example.meimeng.util.ServerUserInfoSharedPre;
+import com.example.meimeng.util.UserInfoSharedPre;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +30,9 @@ public class SettingActivity extends BaseActivity {
     LinearLayout mLinearLayout;
     @BindView(R.id.title)
     TextView tv_title;
+    @BindView(R.id.exit)
+    LinearLayout exit;
+
     @Override
     protected void initView() {
         ButterKnife.bind(this);
@@ -34,11 +40,11 @@ public class SettingActivity extends BaseActivity {
         mLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(SettingActivity.this,UpdateNameActivity.class));
+                startActivity(new Intent(SettingActivity.this, UpdateNameActivity.class));
             }
         });
         ImageView back;
-        back=findViewById(R.id.back);
+        back = findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -51,9 +57,11 @@ public class SettingActivity extends BaseActivity {
     protected int getContentId() {
         return R.layout.show_settings_content;
     }
-    @OnClick({R.id.tv_logout})
-    void onClick(View view){
-        switch (view.getId()){
+
+    @OnClick({R.id.tv_logout, R.id.exit})
+    void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.exit:
             case R.id.tv_logout:
                 logout();
                 break;
@@ -61,9 +69,9 @@ public class SettingActivity extends BaseActivity {
     }
 
     private void logout() {
-        startActivity(new Intent(this,LoginActivity.class));
-        finish();
-        ActivityManager.getInstance().finishActivity(ActivityManager.getInstance().getActivity(MainActivity.class));
+        UserInfoSharedPre.getIntance(this).clearUserInfo();
+        ActivityManager.getInstance().finishAllActivity();
+        startActivity(new Intent(this, LoginActivity.class));
     }
 
     private void initData() {

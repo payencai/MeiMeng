@@ -32,6 +32,7 @@ public class SpinerPopWindow<T> extends PopupWindow {
         setWidth(ViewGroup.LayoutParams.WRAP_CONTENT);
         setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
         setFocusable(true);
+
         ColorDrawable dw = new ColorDrawable(0x00);
         setBackgroundDrawable(dw);
         mListView = (ListView) view.findViewById(R.id.listview);

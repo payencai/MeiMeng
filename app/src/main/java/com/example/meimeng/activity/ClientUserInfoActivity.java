@@ -110,9 +110,7 @@ public class ClientUserInfoActivity extends BaseActivity {
         //rb_nv.setChecked(true);
         setValue();
 
-
         initData();
-
         bloodLayout.setOnClickListener(clickListener);
         mSpinerPopWindow = new SpinerPopWindow<String>(this, list,itemClickListener);
        // mSpinerPopWindow.setOnDismissListener(dismissListener);
@@ -311,6 +309,7 @@ public class ClientUserInfoActivity extends BaseActivity {
         public void onItemClick(AdapterView<?> parent, View view, int position,long id) {
             mSpinerPopWindow.dismiss();
             tvValue.setText(list.get(position));
+           // tvValue.setTextSize(14);
 
         }
     };
@@ -324,7 +323,8 @@ public class ClientUserInfoActivity extends BaseActivity {
             switch (v.getId()) {
                 case R.id.blood_layout:
                     mSpinerPopWindow.setWidth(bloodLayout.getWidth());
-                    mSpinerPopWindow.showAsDropDown(tvValue);
+                    mSpinerPopWindow.showAsDropDown(bloodLayout);
+                    //mSpinerPopWindow.showAtLocation(bloodLayout,);
                     break;
             }
         }
@@ -337,7 +337,7 @@ public class ClientUserInfoActivity extends BaseActivity {
         list = new ArrayList<String>();
         list.add("A");
         list.add("B");
-        list.add("C");
+        list.add("O");
         list.add("AB");
         list.add("未知");
 

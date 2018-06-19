@@ -2,6 +2,7 @@ package com.example.meimeng;
 
 import android.app.Application;
 import android.app.Service;
+import android.location.Location;
 import android.os.Vibrator;
 
 import com.baidu.mapapi.SDKInitializer;

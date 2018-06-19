@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_aed_infowindow_bg"
+        android:orientation="vertical"
+        android:padding="@dimen/margin_7dp">
+
+        <TextView
+            android:id="@+id/brank"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="品牌"
+            android:textColor="@color/text_9"
+            android:textSize="10sp" />
+
+        <TextView
+            android:id="@+id/expiryDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/brank"
+            android:layout_gravity="center_horizontal"
+            android:text="电池有效期限:2015-06-05"
+            android:textColor="@color/text_9"
+            android:textSize="10sp" />
+
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="20dp"
+        android:layout_height="10dp"
+        android:layout_gravity="center_horizontal"
+        android:scaleType="fitXY"
+        android:src="@mipmap/ic_triangle_down2" />
+
+</LinearLayout>

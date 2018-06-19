@@ -33,20 +33,23 @@ public class PlatformContans {
     public static class Serveruser {
         public static final String sHead = rootUrl + "serveruser/";
         public static final String ServerUserLogin = sHead + "ServerUserLogin";//志愿者登录
-        public static final String sUpdateServerUser=sHead+"updateServerUser";//修改服务用户个人信息
-        public static final String sServerUserUpgrade=sHead+"serverUserUpgrade";//升级高级急救人员
-        public static final String sAddServerUserByUseUser=sHead+"addServerUserByUseUser";
+        public static final String sUpdateServerUser = sHead + "updateServerUser";//修改服务用户个人信息
+        public static final String sServerUserUpgrade = sHead + "serverUserUpgrade";//升级高级急救人员
+        public static final String sAddServerUserByUseUser = sHead + "addServerUserByUseUser";
     }
 
     public static class AidKnowController {
         public static final String sHead = rootUrl + "aidKnowController/";
         public static final String sGetAidKnowByManage = sHead + "getAidKnowByManage ";//志愿者登录
     }
-    public static class AedController{
-        public static final String sHead=rootUrl+"aedController/";
-        public static final String sAddAed=sHead+"addAed";
-        public static final String sGetContent=sHead+"getContent";
-        public static final String sGetFacility=sHead+"getFacility";
+
+    public static class AedController {
+        public static final String sHead = rootUrl + "aedController/";
+        public static final String sAddAed = sHead + "addAed";
+        public static final String sGetContent = sHead + "getContent";
+        public static final String sGetFacility = sHead + "getFacility";
+        public static final String sGetAed = sHead + "getAed";
+
     }
 
     public static class UserAdvice {
@@ -63,20 +66,23 @@ public class PlatformContans {
     public static class Medicine {
         public static final String sHead = rootUrl + "medicine/";
         public static final String sGetMedicineByUserId = sHead + "getMedicineByUserId";
-        public static final String sUpdateMedicineByManage=sHead+"updateMedicineByManage";
-        public static final String sAddMedicineByManage=sHead+"addMedicineByManage";
-        public static final String sAddMedicineRelation=sHead+"addMedicineRelation";
-        public static final String sGetMedicineByManage=sHead+"getMedicineByManage";
-        public static final String sGetMedicineByServer=sHead+"getMedicineByServer";
+        public static final String sUpdateMedicineByManage = sHead + "updateMedicineByManage";
+        public static final String sAddMedicineByManage = sHead + "addMedicineByManage";
+        public static final String sAddMedicineRelation = sHead + "addMedicineRelation";
+        public static final String sGetMedicineByManage = sHead + "getMedicineByManage";
+        public static final String sGetMedicineByServer = sHead + "getMedicineByServer";
     }
-    public static class Image{
-        public static final String sHead=rootUrl+"image/";
-        public static final String sUpdateImage=sHead+"uploadImage";
+
+    public static class Image {
+        public static final String sHead = rootUrl + "image/";
+        public static final String sUpdateImage = sHead + "uploadImage";
     }
-    public static class MessageController{
-        public static final String sHead=rootUrl+"messageController/";
-        public static final String sGetSysInfoBytype=sHead+"getSysInfoBytype";
-        public static final String sGetSysInfoById=sHead+"getSysInfoById";
-        public static final String sAddSysInfo=sHead+"addSysInfo";
+
+    public static class MessageController {
+        public static final String sHead = rootUrl + "messageController/";
+        public static final String sGetSysInfoBytype = sHead + "getSysInfoBytype";
+        public static final String sGetSysInfoById = sHead + "getSysInfoById";
+        public static final String sAddSysInfo = sHead + "addSysInfo";
     }
+
 }

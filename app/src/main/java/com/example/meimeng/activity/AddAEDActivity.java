@@ -1,12 +1,8 @@
 package com.example.meimeng.activity;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
@@ -21,11 +17,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.donkingliang.imageselector.ImageSelectorActivity;
-import com.donkingliang.imageselector.PreviewActivity;
-import com.donkingliang.imageselector.entry.Folder;
 import com.donkingliang.imageselector.entry.Image;
-import com.donkingliang.imageselector.model.ImageModel;
 import com.donkingliang.imageselector.utils.ImageSelectorUtils;
 import com.example.meimeng.APP;
 import com.example.meimeng.R;
@@ -45,11 +37,8 @@ import com.google.gson.GsonBuilder;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;

@@ -1,6 +1,8 @@
 package com.example.meimeng.fragment;
 
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -8,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +24,8 @@ import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
 import com.baidu.location.LocationClient;
 import com.baidu.location.Poi;
+import com.baidu.mapapi.bikenavi.BikeNavigateHelper;
+import com.baidu.mapapi.bikenavi.params.BikeNaviLaunchParam;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
@@ -32,23 +37,41 @@ import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
-import com.baidu.mapapi.map.MyLocationConfiguration;
-import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.navi.BaiduMapNavigation;
+import com.baidu.mapapi.search.route.BikingRouteResult;
+import com.baidu.mapapi.search.route.DrivingRouteResult;
+import com.baidu.mapapi.search.route.IndoorRouteResult;
+import com.baidu.mapapi.search.route.MassTransitRouteResult;
+import com.baidu.mapapi.search.route.OnGetRoutePlanResultListener;
+import com.baidu.mapapi.search.route.PlanNode;
+import com.baidu.mapapi.search.route.RoutePlanSearch;
+import com.baidu.mapapi.search.route.TransitRouteResult;
+import com.baidu.mapapi.search.route.WalkingRoutePlanOption;
+import com.baidu.mapapi.search.route.WalkingRouteResult;
 import com.baidu.mapapi.utils.DistanceUtil;
+import com.baidu.mapapi.walknavi.WalkNavigateHelper;
+import com.baidu.mapapi.walknavi.adapter.IWEngineInitListener;
+import com.baidu.mapapi.walknavi.adapter.IWRoutePlanListener;
+import com.baidu.mapapi.walknavi.model.WalkRoutePlanError;
+import com.baidu.mapapi.walknavi.params.WalkNaviLaunchParam;
 import com.example.meimeng.APP;
 import com.example.meimeng.R;
 import com.example.meimeng.activity.AddAEDActivity;
+import com.example.meimeng.activity.PathPlanActivity;
 import com.example.meimeng.activity.SearchActivity;
 import com.example.meimeng.activity.SystemMsgActivity;
 import com.example.meimeng.activity.VolunteerActivity;
+import com.example.meimeng.activity.WNaviGuideActivity;
 import com.example.meimeng.base.BaseFragment;
+import com.example.meimeng.bean.AEDInfo;
 import com.example.meimeng.bean.ServerUser;
 import com.example.meimeng.constant.PlatformContans;
 import com.example.meimeng.http.HttpProxy;
 import com.example.meimeng.http.ICallBack;
 import com.example.meimeng.service.LocationService;
+import com.example.meimeng.util.CustomPopWindow;
 import com.example.meimeng.util.LoginSharedUilt;
 import com.example.meimeng.util.MLog;
 import com.example.meimeng.util.ToaskUtil;
@@ -86,9 +109,15 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
     public LocationClient mLocationClient = null;
     private BitmapDescriptor mCurrentMarker;
 
+    private BikeNavigateHelper mNaviHelper;//骑行
+    private WalkNavigateHelper mWNaviHelper;//步行
+    BikeNaviLaunchParam param;
+    WalkNaviLaunchParam walkParam;
+
+
     private double lat;
     private double lon;
-    private View mMarkeyInfoLayout;
+//    private Snackbar snackbar;
 
     @Nullable
     @Override
@@ -120,19 +149,6 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         //开启定位图层
         mBaiduMap = mMapView.getMap();
         mBaiduMap.setOnMarkerClickListener(onMarkerClicklistener);
-        mBaiduMap.setOnMapClickListener(new BaiduMap.OnMapClickListener() {
-            @Override
-            public void onMapClick(LatLng latLng) {
-                if (mMarkeyInfoLayout != null) {
-                    mMarkeyInfoLayout.setVisibility(View.GONE);
-                }
-            }
-
-            @Override
-            public boolean onMapPoiClick(MapPoi mapPoi) {
-                return false;
-            }
-        });
         ring.setOnClickListener(this);
         volunteerRecruiting.setOnClickListener(this);
         addAED.setOnClickListener(this);
@@ -150,6 +166,7 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         LoginSharedUilt intance = LoginSharedUilt.getIntance(getContext());
         lat = intance.getLat();
         lon = intance.getLon();
+        locationService.start();
         if (lat != 0 && lon != 0) {
             setMarker();
             setUserMapCenter();
@@ -172,7 +189,7 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
                 getActivity().startActivity(new Intent(getContext(), AddAEDActivity.class));
                 break;
             case R.id.firstAidSite:
-                ToaskUtil.showToast(getActivity(), "急救站");
+                getAEDController();
                 break;
             case R.id.positioning:
                 locationService.start();
@@ -182,16 +199,22 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
                 break;
             case R.id.ring:
                 startActivity(new Intent(getContext(), SystemMsgActivity.class));
+//                closeAEDHint();
                 break;
             case R.id.searchBar:
                 SearchActivity.startSearchActivity(getContext(), searchType);
                 break;
             case R.id.volunteerRecruiting:
                 startActivity(new Intent(getActivity(), VolunteerActivity.class));
+//                openAEDLocation(v);
                 break;
         }
     }
 
+
+    /**
+     * 获取自愿者位置信息
+     */
     private void getServerUserByUser() {
         String token;
         if (APP.sUserType == 0) {
@@ -226,6 +249,53 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
                         }
                         mBaiduMap.clear();//清除地图上所有覆盖物，无法分成批删除
                         batchAddMarker(list);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(String error) {
+
+            }
+        });
+    }
+
+    private void getAEDController() {
+        String token;
+        if (APP.sUserType == 0) {
+            token = APP.getInstance().getUserInfo().getToken();
+        } else {
+            token = APP.getInstance().getServerUserInfo().getToken();
+        }
+        if (TextUtils.isEmpty(token)) {
+            return;
+        }
+
+        Map<String, Object> paramr = new HashMap<>();
+        paramr.put("longitude", lon);//经度
+        paramr.put("latitude", lat);//维度
+        HttpProxy.obtain().get(PlatformContans.AedController.sGetAed, paramr, token, new ICallBack() {
+            @Override
+            public void OnSuccess(String result) {
+                MLog.log("getAEDController", result);
+                try {
+                    JSONObject object = new JSONObject(result);
+                    int resultCode = object.getInt("resultCode");
+                    String message = object.getString("message");
+                    if (resultCode == 0) {
+                        JSONArray data = object.getJSONArray("data");
+                        int length = data.length();
+                        Gson gson = new Gson();
+                        List<AEDInfo> list = new ArrayList<>();
+                        for (int i = 0; i < length; i++) {
+                            JSONObject item = data.getJSONObject(i);
+                            AEDInfo serverUser = gson.fromJson(item.toString(), AEDInfo.class);
+                            list.add(serverUser);
+                        }
+//                        mBaiduMap.clear();//清除地图上所有覆盖物，无法分成批删除
+                        batchAddAED(list);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -377,60 +447,73 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
                 option = position.icon(bitmap2);
             }
 //            options.add(option);
-            Log.d("batchAddMarker", "batchAddMarker: " + serverUser.getTelephone());
             int distance = (int) DistanceUtil.getDistance(pointcur, point);
             Marker marker = (Marker) mBaiduMap.addOverlay(option);
             Bundle bundle = new Bundle();
+            bundle.putInt("type", 1);//0为AED 1为志愿者覆盖物
             bundle.putInt("distance", distance);
             bundle.putString("telephone", serverUser.getAccount());
             bundle.putDouble("latNumber", latNumber);
             bundle.putDouble("lonNumber", lonNumber);
             marker.setExtraInfo(bundle);
         }
-//        mBaiduMap.addOverlays(options);
     }
 
-    BaiduMap.OnMarkerClickListener onMarkerClicklistener = new BaiduMap.OnMarkerClickListener() {
-        /**
-         * 地图 Marker 覆盖物点击事件监听函数
-         * @param marker 被点击的 marker
-         */
-        @Override
-        public boolean onMarkerClick(Marker marker) {
-            //从marker中获取info信息
-            Bundle bundle = marker.getExtraInfo();
-            int distance = bundle.getInt("distance");
-            String telephone = bundle.getString("telephone");
-            double lonNumber = bundle.getDouble("lonNumber");
-            double latNumber = bundle.getDouble("latNumber");
-
-            //创建InfoWindow展示的view
-            mMarkeyInfoLayout = LayoutInflater.from(getContext()).inflate(R.layout.marker_service_info_layout, null);
-            String disString = "该志愿者距离您" + distance + "米";
-            String telString = "志愿者：134****7692";
+    private void batchAddAED(List<AEDInfo> list) {
+        List<OverlayOptions> options = new ArrayList<OverlayOptions>();
+        //构建Marker图标
+        //当前自己的位置
+        LatLng pointcur = new LatLng(lat, lon);
+        BitmapDescriptor bitmap1 = BitmapDescriptorFactory
+                .fromResource(R.mipmap.ic_exist_aed3);
+        //构建Marker图标
+        BitmapDescriptor bitmap2 = BitmapDescriptorFactory
+                .fromResource(R.mipmap.ic_unexist_aed3);
+        for (AEDInfo AEDInfobean : list) {
+            //isCertificate 1为高级，2为普通
+            //workLongitude  经度
+            //workLatitude 维度
+            AEDInfo.KeyBean key = AEDInfobean.getKey();
+            int isPass = key.getIsPass();
+            String workLatitude = key.getLatitude();
+            String workLongitude = key.getLongitude();
+            double latNumber = 0;
+            double lonNumber = 0;
+            LatLng point;
             try {
-                String startStr = telephone.substring(0, 3);
-                String endStr = telephone.substring(telephone.length() - 4, telephone.length());
-                String showString = startStr + "****" + endStr;
-                telString = "志愿者：" + showString;
+                latNumber = Double.parseDouble(workLatitude);
+                lonNumber = Double.parseDouble(workLongitude);
             } catch (Exception e) {
 
             }
+            point = new LatLng(latNumber, lonNumber);
+            MarkerOptions position = new MarkerOptions().position(point);
+            OverlayOptions option;
+            if (isPass == 4) {
+                option = position.icon(bitmap1);
+            } else {
+                option = position.icon(bitmap2);
+            }
+//            options.add(option);
+            int distance = (int) DistanceUtil.getDistance(pointcur, point);//距离定位的距离
+            Marker marker = (Marker) mBaiduMap.addOverlay(option);
+            String address = key.getAddress();//广州新东方学校大学城教学区广州市番禺区大学城中六路1号广州大学城信息枢纽楼814房
+            String expiryDate = key.getExpiryDate();//2018-05-23
+            String brank = key.getBrank();//回家你那边
+            Bundle bundle = new Bundle();
+            bundle.putInt("type", 0);//0为AED 1为志愿者覆盖物
+            bundle.putInt("distance", distance);
+            bundle.putString("telephone", key.getTel());
+            bundle.putDouble("latNumber", latNumber);
+            bundle.putDouble("lonNumber", lonNumber);
 
-            TextView markerTel = (TextView) mMarkeyInfoLayout.findViewById(R.id.markerTel);
-            TextView markerDistance = (TextView) mMarkeyInfoLayout.findViewById(R.id.markerDistance);
-            markerDistance.setText(disString);
-            markerTel.setText(telString);
-            //定义用于显示该InfoWindow的坐标点
-            LatLng pt = new LatLng(latNumber, lonNumber);
-            //创建InfoWindow , 传入 view， 地理坐标， y 轴偏移量
-            InfoWindow mInfoWindow = new InfoWindow(mMarkeyInfoLayout, pt, -100);
-            //显示InfoWindow
-            mBaiduMap.showInfoWindow(mInfoWindow);
-            return true;
-
+            bundle.putString("address", address);
+            bundle.putString("expiryDate", expiryDate);
+            bundle.putString("brank", brank);
+            marker.setExtraInfo(bundle);
         }
-    };
+    }
+
 
     /**
      * 设置中心点
@@ -449,6 +532,173 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
 
     }
 
+    private void showPwAEDInfo(View view, int distance, String address, String tel, double lonNumber, double latNumber) {
+        View brandView = LayoutInflater.from(getContext()).inflate(R.layout.pw_aed_info, null);
+        CustomPopWindow customPopWindow = new CustomPopWindow.PopupWindowBuilder(getContext())
+                .setView(brandView)
+                .sizeByPercentage(getContext(), 1f, 0f)
+                .setOutsideTouchable(true)
+                .enableBackgroundDark(false)
+                .setAnimationStyle(R.style.CustomPopWindowStyle)
+                .setBgDarkAlpha(0.5f)
+                .create();
+        handlerBrandView(getContext(), brandView, customPopWindow, distance, address, tel, lonNumber, latNumber);
+        customPopWindow.showAtLocation(view, Gravity.BOTTOM, 0, 0);
+    }
+
+    private void handlerBrandView(Context context, View view, final CustomPopWindow customPopWindow, int distance, String address, String tel, final double lonNumber, final double latNumber) {
+        view.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (customPopWindow != null) {
+                    customPopWindow.dissmiss();
+                }
+            }
+        });
+        view.findViewById(R.id.beginNavigation).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                LatLng startPt = new LatLng(lat, lon);
+//                LatLng endPt = new LatLng(latNumber, lonNumber);
+////                walkParam = new WalkNaviLaunchParam().stPt(startPt).endPt(endPt);
+////                startWalkNavi();
+                Intent intent = new Intent();
+                Bundle bundle = new Bundle();
+                intent.putExtra("bundle", bundle);
+                bundle.putDouble("latNumber", latNumber);
+                bundle.putDouble("lonNumber", lonNumber);
+                intent.setClass(getActivity(), PathPlanActivity.class);
+                startActivity(intent);
+
+            }
+        });
+        ((TextView) view.findViewById(R.id.distance)).setText("AED距离" + distance + "米");
+        ((TextView) view.findViewById(R.id.address)).setText(address);
+        TextView telNumber = (TextView) view.findViewById(R.id.phoneNumber);
+        if (!TextUtils.isEmpty(tel)) {
+            telNumber.setText("电话号码:" + tel);
+        }
+    }
+
+
+    private void startWalkNavi() {
+        Log.d("View", "startBikeNavi");
+        try {
+            mWNaviHelper.initNaviEngine(getActivity(), new IWEngineInitListener() {
+                @Override
+                public void engineInitSuccess() {
+                    Log.d("View", "engineInitSuccess");
+                    routePlanWithWalkParam();
+                }
+
+                @Override
+                public void engineInitFail() {
+                    Log.d("View", "engineInitFail");
+                }
+            });
+        } catch (Exception e) {
+            Log.d("Exception", "startBikeNavi");
+            e.printStackTrace();
+        }
+    }
+
+    private void routePlanWithWalkParam() {
+        mWNaviHelper.routePlanWithParams(walkParam, new IWRoutePlanListener() {
+            @Override
+            public void onRoutePlanStart() {
+                Log.d("View", "onRoutePlanStart");
+            }
+
+            @Override
+            public void onRoutePlanSuccess() {
+                Log.d("View", "onRoutePlanSuccess");
+                Intent intent = new Intent();
+                intent.setClass(getActivity(), WNaviGuideActivity.class);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onRoutePlanFail(WalkRoutePlanError error) {
+                Log.d("View", "onRoutePlanFail");
+            }
+
+        });
+    }
+
+    BaiduMap.OnMarkerClickListener onMarkerClicklistener = new BaiduMap.OnMarkerClickListener() {
+        /**
+         * 地图 Marker 覆盖物点击事件监听函数
+         * @param marker 被点击的 marker
+         */
+        @Override
+        public boolean onMarkerClick(final Marker marker) {
+            Bundle bundle = marker.getExtraInfo();
+            int type = bundle.getInt("type");
+            int distance = bundle.getInt("distance");
+            String telephone = bundle.getString("telephone");
+            double lonNumber = bundle.getDouble("lonNumber");
+            double latNumber = bundle.getDouble("latNumber");
+            if (type == 0) {//AED
+                String address = bundle.getString("address");
+                String expiryDate = bundle.getString("expiryDate");
+                String brank = bundle.getString("brank");
+                View view = LayoutInflater.from(getContext()).inflate(R.layout.marker_aed_info_layout, null);
+                TextView brankText = (TextView) view.findViewById(R.id.brank);
+                TextView expiryDateText = (TextView) view.findViewById(R.id.expiryDate);
+                brankText.setText(brank);
+                expiryDateText.setText("电池有效期限:" + expiryDate);
+
+                InfoWindow.OnInfoWindowClickListener listener = null;
+                listener = new InfoWindow.OnInfoWindowClickListener() {
+                    public void onInfoWindowClick() {
+                        LatLng ll = marker.getPosition();
+                        marker.setPosition(ll);
+                        mBaiduMap.hideInfoWindow();
+                    }
+                };
+                LatLng ll = marker.getPosition();
+                InfoWindow infoWindow = new InfoWindow(BitmapDescriptorFactory.fromView(view), ll, -47, listener);
+                mBaiduMap.showInfoWindow(infoWindow);
+                showPwAEDInfo(view, distance, address, telephone, lonNumber, latNumber);
+
+
+            } else {//志愿者
+                //创建InfoWindow展示的view
+                View view = LayoutInflater.from(getContext()).inflate(R.layout.marker_service_info_layout, null);
+                String disString = "该志愿者距离您" + distance + "米";
+                String telString = "志愿者：134****7692";
+                try {
+                    String startStr = telephone.substring(0, 3);
+                    String endStr = telephone.substring(telephone.length() - 4, telephone.length());
+                    String showString = startStr + "****" + endStr;
+                    telString = "志愿者：" + showString;
+                } catch (Exception e) {
+
+                }
+
+                TextView markerTel = (TextView) view.findViewById(R.id.markerTel);
+                TextView markerDistance = (TextView) view.findViewById(R.id.markerDistance);
+                markerDistance.setText(disString);
+                markerTel.setText(telString);
+                //定义用于显示该InfoWindow的坐标点
+//            LatLng pt = new LatLng(latNumber, lonNumber);
+                InfoWindow.OnInfoWindowClickListener listener = null;
+                listener = new InfoWindow.OnInfoWindowClickListener() {
+                    public void onInfoWindowClick() {
+                        LatLng ll = marker.getPosition();
+                        marker.setPosition(ll);
+                        mBaiduMap.hideInfoWindow();
+                    }
+                };
+                LatLng ll = marker.getPosition();
+                InfoWindow infoWindow = new InfoWindow(BitmapDescriptorFactory.fromView(view), ll, -47, listener);
+                mBaiduMap.showInfoWindow(infoWindow);
+            }
+            return true;
+
+        }
+    };
+
     /*****
      *
      * 定位结果回调，重写onReceiveLocation方法，可以直接拷贝如下代码到自己工程中修改
@@ -460,6 +710,7 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         public void onReceiveLocation(BDLocation location) {
             lat = location.getLatitude();
             lon = location.getLongitude();
+            Log.d("onReceiveLocation", "onReceiveLocation: 定位");
             location();
             locationService.setLocationOption(locationService.getSingleLocationClientOption());
             // TODO Auto-generated method stub

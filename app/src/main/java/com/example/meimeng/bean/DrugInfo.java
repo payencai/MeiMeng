@@ -15,6 +15,60 @@ import com.example.meimeng.common.rv.base.RVBaseViewHolder;
  */
 public class DrugInfo extends RVBaseCell {
 
+    private String name;
+    private String address;
+    private String telephone;
+    private String medicine;
+    private int distance;
+
+    public DrugInfo(Object o, String name, String address, String telephone, String medicine, int distance) {
+        super(o);
+        this.name = name;
+        this.address = address;
+        this.telephone = telephone;
+        this.medicine = medicine;
+        this.distance = distance;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getTelephone() {
+        return telephone;
+    }
+
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
+    }
+
+    public String getMedicine() {
+        return medicine;
+    }
+
+    public void setMedicine(String medicine) {
+        this.medicine = medicine;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
+
+    public void setDistance(int distance) {
+        this.distance = distance;
+    }
 
     public DrugInfo() {
         super(null);
@@ -33,7 +87,10 @@ public class DrugInfo extends RVBaseCell {
 
     @Override
     public void onBindViewHolder(final RVBaseViewHolder holder, int position) {
-
+        holder.setText(R.id.userTel,name+"   "+telephone);
+        holder.setText(R.id.drugInfo,"药品信息： "+medicine);
+        holder.setText(R.id.address,address);
+        holder.setText(R.id.distance,"距离你"+distance+"米");
     }
 
 

@@ -58,6 +58,7 @@ public class PlatformContans {
         public static final String sHead = rootUrl + "forhelp/";
         public static final String sGetCompleteHelpByServerUser = sHead + "getCompleteHelpByServerUser";
         public static final String sGetCompleteHelpByUseUser = sHead + "getCompleteHelpByUseUser";
+        public static final String sGetServerMedicine=sHead+"getServerMedicine";
     }
 
     public static class Medicine {

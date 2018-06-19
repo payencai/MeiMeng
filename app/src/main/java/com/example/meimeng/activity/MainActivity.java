@@ -23,14 +23,17 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.donkingliang.imageselector.utils.ImageSelectorUtils;
 import com.example.meimeng.R;
 import com.example.meimeng.base.BaseActivity;
+import com.example.meimeng.constant.PlatformContans;
 import com.example.meimeng.fragment.FirstAidFragment;
 import com.example.meimeng.fragment.HomeFragment;
 import com.example.meimeng.fragment.UsFragment;
 import com.example.meimeng.fragment.UserCenterFragment;
 import com.example.meimeng.util.ToaskUtil;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -300,5 +303,33 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        FragmentManager fragmentManager=getSupportFragmentManager();
+        UserCenterFragment fragment= (UserCenterFragment) fragmentManager.getFragments().get(3);
+        if (requestCode == 0 && data != null)
+        {
+            //获取选择器返回的数据
+            ArrayList<String> images = data.getStringArrayListExtra(
+                    ImageSelectorUtils.SELECT_RESULT);
+            if (images.size() > 0) {
+                fragment.upImage(PlatformContans.Image.sUpdateImage, new File(images.get(0)),images.get(0));
+            }
 
+        }
+        if (requestCode == 1&& data != null)
+        {
+            //Log.e("url","111");
+            //获取选择器返回的数据
+            ArrayList<String> images = data.getStringArrayListExtra(
+                    ImageSelectorUtils.SELECT_RESULT);
+            if(images.size()>0)
+            {
+               fragment.upImage(PlatformContans.Image.sUpdateImage, new File(images.get(0)),images.get(0));
+            }
+
+        }
+
+    }
 }

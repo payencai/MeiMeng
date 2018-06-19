@@ -42,6 +42,7 @@ import com.example.meimeng.R;
 import com.example.meimeng.activity.AddAEDActivity;
 import com.example.meimeng.activity.SearchActivity;
 import com.example.meimeng.activity.SystemMsgActivity;
+import com.example.meimeng.activity.VolunteerActivity;
 import com.example.meimeng.base.BaseFragment;
 import com.example.meimeng.bean.ServerUser;
 import com.example.meimeng.constant.PlatformContans;
@@ -74,6 +75,7 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
     private TextView selectorText;
     private TextView commonFont;
     private ImageView ring;
+    private ImageView volunteerRecruiting;
 
     private MapView mMapView = null;
     private BaiduMap mBaiduMap;
@@ -111,6 +113,7 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         selectorText = (TextView) view.findViewById(R.id.selectorText);
         commonFont = (TextView) view.findViewById(R.id.searchHint);
         ring = (ImageView) view.findViewById(R.id.ring);
+        volunteerRecruiting = (ImageView) view.findViewById(R.id.volunteerRecruiting);
         //获取地图控件引用
         mMapView = (MapView) view.findViewById(R.id.bmapView);
 
@@ -131,6 +134,7 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
             }
         });
         ring.setOnClickListener(this);
+        volunteerRecruiting.setOnClickListener(this);
         addAED.setOnClickListener(this);
         firstAidSite.setOnClickListener(this);
         positioning.setOnClickListener(this);
@@ -181,6 +185,9 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
                 break;
             case R.id.searchBar:
                 SearchActivity.startSearchActivity(getContext(), searchType);
+                break;
+            case R.id.volunteerRecruiting:
+                startActivity(new Intent(getActivity(), VolunteerActivity.class));
                 break;
         }
     }

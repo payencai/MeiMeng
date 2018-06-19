@@ -75,7 +75,7 @@ public class ClientRecordBean extends RVBaseCell {
         holder.setText(R.id.tv_createhelp_time,completeTime);
         holder.setText(R.id.tv_help_address,address);
         addGroupImg(holder,position,imgList);
-
+        holder.setIsRecyclable(false);
         //holder.setText(R.id.tv_help_people,name);
     }
 

@@ -13,7 +13,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="385dp"
+            android:layout_height="400dp"
             android:layout_marginTop="10dp"
             android:background="@color/color_white_100"
             android:orientation="vertical">
@@ -256,8 +256,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="55dp"
-                android:layout_marginRight="@dimen/margin_10dp"
+                android:layout_height="60dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
@@ -265,12 +264,14 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/margin_15dp"
-                    android:layout_weight="9"
+                    android:layout_weight="8"
                     android:text="血型"
                     android:textColor="#333333"
                     android:textSize="@dimen/text_size_14sp" />
 
                 <LinearLayout
+                    android:layout_marginRight="@dimen/margin_10dp"
+                    android:id="@+id/blood_layout"
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/margin_35dp"
                     android:background="@drawable/shape_blood_bg"
@@ -279,17 +280,17 @@
                     android:paddingLeft="@dimen/margin_10dp"
                     android:paddingRight="5dp">
 
-                    <!--<TextView-->
-                    <!--android:id="@+id/tv_userinfo_bloodType"-->
-                    <!--style="@style/common_font"-->
-                    <!--android:text=""-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"/>-->
-                    <Spinner
-                        android:id="@+id/select_blood"
+                    <TextView
+                        android:id="@+id/tv_value"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:overlapAnchor="false"></Spinner>
+                        android:text="A"
+                        android:textSize="14sp"/>
+                    <ImageView
+                        android:layout_marginLeft="@dimen/margin_20dp"
+                        android:src="@mipmap/ic_triangle_down"
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"/>
 
                 </LinearLayout>
 

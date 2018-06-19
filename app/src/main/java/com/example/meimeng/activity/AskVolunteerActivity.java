@@ -1,6 +1,7 @@
 package com.example.meimeng.activity;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -91,6 +92,7 @@ public class AskVolunteerActivity extends BaseActivity {
     TextView detailtime;
     @BindView(R.id.btn_vol_commit)
     Button commit;
+    int count=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,7 +104,17 @@ public class AskVolunteerActivity extends BaseActivity {
         title=findViewById(R.id.title);
         upload=findViewById(R.id.ask_upload);
         ask_show_pic=findViewById(R.id.ask_show_pic);
+
         title.setText("志愿者招募");
+
+        Drawable drawable= getResources().getDrawable(R.drawable.sex_selector);
+        drawable.setBounds(0,0,30,30);//将drawable设置为宽100 高100固定大小
+        man.setCompoundDrawables(drawable,null,null,null);
+        Drawable drawable2= getResources().getDrawable(R.drawable.sex_selector);
+        drawable2.setBounds(0,0,30,30);//将drawable设置为宽100 高100固定大小
+        nv.setCompoundDrawables(drawable2,null,null,null);
+        nv.setChecked(true);
+
         ImageView back;
         back=findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {
@@ -143,6 +155,7 @@ public class AskVolunteerActivity extends BaseActivity {
                     Log.d("onActivityResult", "onActivityResult: 经度：" + lon + ",维度:" + lat);
                     if (!TextUtils.isEmpty(addressStr)) {
                         detailhome.setText(addressStr);
+                        detailhome.setTextColor(ContextCompat.getColor(this,R.color.text_333));
                     }
                 }
                 else{
@@ -165,6 +178,7 @@ public class AskVolunteerActivity extends BaseActivity {
                     Log.d("onActivityResult", "onActivityResult: 经度：" + lon + ",维度:" + lat);
                     if (!TextUtils.isEmpty(addressStr)) {
                         detailwork.setText(addressStr);
+                        detailwork.setTextColor(ContextCompat.getColor(this,R.color.text_333));
                     }
                 }else{
                     isWorkEmpty=true;
@@ -215,10 +229,22 @@ public class AskVolunteerActivity extends BaseActivity {
                 try {
                     JSONObject object = new JSONObject(string);
                     int resultCode = object.getInt("resultCode");
+                    final String msg=object.getString("message");
                     urls = urls+object.getString("data")+",";
                     if (resultCode == 0) {
-
-
+                        count++;
+                        if(count==selected.size()){
+                            Log.e("commit",count+"");
+                            commit();
+                        }
+                    }
+                    else{
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(AskVolunteerActivity.this, msg, Toast.LENGTH_SHORT).show();
+                            }
+                        });
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -282,7 +308,7 @@ public class AskVolunteerActivity extends BaseActivity {
                 break;
             case R.id.btn_vol_commit:
                 if(!isInputEmpty()){
-                    commit();
+                    commitAll();
                 }
                 else{
                     Toast.makeText(this,msg,Toast.LENGTH_SHORT).show();
@@ -292,26 +318,32 @@ public class AskVolunteerActivity extends BaseActivity {
 
     }
     private void commitImage(){
-        if(selected.size()!=0){
-            for(String filepath:selected){
-                upImage(PlatformContans.Image.sUpdateImage,filepath);
+            if(selected.size()!=0) {
+                for (String filepath : selected) {
+                    Log.e("aaa","aaa");
+                    upImage(PlatformContans.Image.sUpdateImage, filepath);
+                }
             }
-        }
-        else{
-            Toast.makeText(AskVolunteerActivity.this,"请选择图片",Toast.LENGTH_LONG).show();
-        }
+
+
     }
     private void commitAll(){
+        if(selected.size()==0)
+        {
+            commit();
+        }
+        else{
+            commitImage();
+        }
 
-        commitImage();
     }
     String msg="";
     public boolean isInputEmpty(){
-        if(isHomeEmpty){
+        if(TextUtils.equals(detailhome.getText().toString(),"详细家庭地址")){
             msg="家庭地址不能为空";
             return true;
         }
-        if(isWorkEmpty){
+        if(TextUtils.equals(detailwork.getText().toString(),"详细工作地址")){
             msg="工作地址不能为空";
             return true;
         }
@@ -328,23 +360,24 @@ public class AskVolunteerActivity extends BaseActivity {
         return false;
     }
     public void commit(){
-
          String token= APP.getInstance().getUserInfo().getToken();
          String data= returnJsonString();
-        HttpProxy.obtain().post(PlatformContans.Serveruser.sAddServerUserByUseUser, token, data, new ICallBack() {
+          HttpProxy.obtain().post(PlatformContans.Serveruser.sAddServerUserByUseUser, token, data, new ICallBack() {
             @Override
             public void OnSuccess(String result) {
-
+                Log.e("success",result);
                 JSONObject jsonObject= null;
                 try {
                     jsonObject = new JSONObject(result);
                     int code=jsonObject.getInt("resultCode");
                     if(code==0){
                         Toast.makeText(AskVolunteerActivity.this,"申请成功",Toast.LENGTH_LONG).show();
+                        count=0;
                         finish();
                     }
-                    if(code==9999){
-
+                    if(code==2001){
+                        Toast.makeText(AskVolunteerActivity.this,"您已申请成为志愿者或已经是志愿者，请勿重复操作",Toast.LENGTH_LONG).show();
+                        count=0;
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -353,7 +386,7 @@ public class AskVolunteerActivity extends BaseActivity {
 
             @Override
             public void onFailure(String error) {
-
+                 Log.e("error",error);
             }
         });
     }
@@ -368,13 +401,20 @@ public class AskVolunteerActivity extends BaseActivity {
 
         String workTime =detailtime.getText().toString()+"";
         String sex="女";
-        String certificateImages="上传/2018060119125539";
-        String isCertificate="1";
+        String certificateImages="";
+        int isCertificate;
+        if(selected.size()==0){
+            isCertificate=0;
+        }else{
+            isCertificate=1;
+            certificateImages=urls.substring(0,urls.length()-1);
+        }
+        Log.e("url",urls);
         String workLatitude =worklat;
         String workLongitude=worklon;
         String homeLatitude=homelat;
         String homeLongitude=homelon;
-        String medicineIds="33012750-787c-4880-adad-0c2a8e653ac3,2ff9460d-dbbe-42f5-b8f0-a66ce53cf046,11199602-9e63-40d9-808b-ad467d58e2b5";
+        //String medicineIds="33012750-787c-4880-adad-0c2a8e653ac3,2ff9460d-dbbe-42f5-b8f0-a66ce53cf046,11199602-9e63-40d9-808b-ad467d58e2b5";
         if(man.isChecked()){
             sex="男";
         }
@@ -390,7 +430,7 @@ public class AskVolunteerActivity extends BaseActivity {
         params.put("workLongitude",workLongitude);
         params.put("homeLatitude",homeLatitude);
         params.put("homeLongitude",homeLongitude);
-        params.put("medicineIds",medicineIds);
+        params.put("medicineIds","");
         return gson.toJson(params);
     }
 }

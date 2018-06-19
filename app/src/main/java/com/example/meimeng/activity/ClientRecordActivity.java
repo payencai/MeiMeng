@@ -33,7 +33,8 @@ import butterknife.BindView;
 public class ClientRecordActivity extends AbsBaseActivity<ClientRecordBean> {
 
     TextView title;
-
+    private int page=1;
+    private boolean isRefresh = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,22 +48,31 @@ public class ClientRecordActivity extends AbsBaseActivity<ClientRecordBean> {
 
     @Override
     public void onPullRefresh() {
-
-        mRecyclerView.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                setRefreshing(false);
-            }
-        }, 2000);
+        page = 1;
+        isRefresh = true;
+//        mRecyclerView.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                setRefreshing(false);
+//            }
+//        }, 2000);
+        loadData();
+//        mRecyclerView.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                setRefreshing(false);
+//            }
+//        }, 2000);
 
     }
 
     public void loadData() {
         Map<String, Object> params = new HashMap<>();
-        params.put("page", 1);
+        params.put("page", page);
         HttpProxy.obtain().get(PlatformContans.ForHelp.sGetCompleteHelpByUseUser, params, APP.getInstance().getUserInfo().getToken(), new ICallBack() {
             @Override
             public void OnSuccess(String result) {
+                mBaseAdapter.hideLoadMore();
                 Log.e("TAG", result);
                 List<ClientRecordBean> list = new ArrayList<>();
                 Gson gson = new Gson();
@@ -72,6 +82,7 @@ public class ClientRecordActivity extends AbsBaseActivity<ClientRecordBean> {
                 int size = beanLists.size();
                 if (size == 0) {
                     mBaseAdapter.addAll(list);
+                    mSwipeRefreshLayout.setRefreshing(false);
                 } else {
                     for (RecordResponse.beanList beanList : beanLists) {
                         ClientRecordBean bean = new ClientRecordBean();
@@ -85,7 +96,17 @@ public class ClientRecordActivity extends AbsBaseActivity<ClientRecordBean> {
                         bean.setImgList(imgList);
                         list.add(bean);
                     }
-                    mBaseAdapter.addAll(list);
+                    //mBaseAdapter.addAll(list);
+                    if (isRefresh) {
+                        isRefresh = false;
+                        mBaseAdapter.clear();
+                       // loadHead();
+                        mBaseAdapter.addAll(list);
+
+                    } else {
+                        mBaseAdapter.addAll(list);
+                    }
+                    mSwipeRefreshLayout.setRefreshing(isRefresh);
                 }
 
             }
@@ -101,7 +122,8 @@ public class ClientRecordActivity extends AbsBaseActivity<ClientRecordBean> {
 
     @Override
     public void onLoadMore() {
-
+           page++;
+           loadData();
     }
 
     @Override

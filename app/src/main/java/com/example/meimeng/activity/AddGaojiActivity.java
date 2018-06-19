@@ -101,6 +101,8 @@ public class AddGaojiActivity extends BaseActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 2 && data != null) {
             //获取选择器返回的数据
+            //Log.e("gaoji","gaiji");
+
             ArrayList<String> images = data.getStringArrayListExtra(
                     ImageSelectorUtils.SELECT_RESULT);
             selected.clear();

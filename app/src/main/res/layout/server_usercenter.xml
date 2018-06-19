@@ -19,13 +19,18 @@
             android:layout_margin="10dp"
             android:src="@mipmap/ic_tuichu"/>
 
-        <ImageView
+        <de.hdodenhof.circleimageview.CircleImageView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/server_cv_head"
             android:layout_width="60dp"
             android:layout_height="55dp"
             android:layout_gravity="center"
             android:layout_marginBottom="5dp"
             android:layout_marginTop="-25dp"
-            android:src="@mipmap/ic_me_head"/>
+            android:src="@mipmap/ic_me_head"
+            app:civ_border_width="2dp"
+            app:civ_border_color="@color/color_red"/>
+
 
         <LinearLayout
             android:layout_width="match_parent"

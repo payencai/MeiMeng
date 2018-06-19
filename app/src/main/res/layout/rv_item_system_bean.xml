@@ -1,23 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingBottom="12dp">
+    android:paddingTop="5dp"
+    android:orientation="vertical"
+    android:paddingBottom="15dp">
+    <LinearLayout
+
+        android:id="@+id/med_layout"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="25dp">
+
+        <TextView
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="15dp"
+            android:gravity="left"
+            android:layout_weight="8"
+            android:id="@+id/userTel"
+            style="@style/common_font"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="张三    13480197987"
+       />
+        <ImageView
+            android:layout_marginRight="@dimen/margin_20dp"
+            android:layout_gravity="center_vertical"
+            android:src="@mipmap/phone"
+            android:layout_width="20dp"
+            android:layout_height="15dp"/>
+    </LinearLayout>
+
+
 
     <TextView
-        android:id="@+id/userTel"
-        style="@style/common_font"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/margin_15dp"
-        android:layout_marginTop="@dimen/margin_12dp"
-        android:text="张三    13480197987"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-
-    <TextView
         android:id="@+id/drugInfo"
         style="@style/common_font"
         android:layout_width="wrap_content"
@@ -25,31 +43,51 @@
         android:layout_marginTop="8dp"
         android:text="药品信息：救心丸/阿品托/阿品托/阿品托"
         android:textColor="@color/text_6"
-        app:layout_constraintLeft_toLeftOf="@id/userTel"
-        app:layout_constraintTop_toBottomOf="@id/userTel" />
+         />
+    <LinearLayout
+
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="25dp">
+
+        <ImageView
+            android:layout_marginLeft="@dimen/margin_15dp"
+            android:id="@+id/img1"
+            android:layout_width="11dp"
+            android:layout_height="14dp"
+            android:layout_marginTop="8dp"
+            android:scaleType="fitXY"
+            android:src="@mipmap/ic_location"
+            />
+
+        <TextView
+            android:layout_weight="8"
+            android:id="@+id/address"
+            style="@style/common_font"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
+            android:text="广州市天河区"
+            android:gravity="left"
+            android:textColor="@color/text_9"
+            android:textSize="@dimen/text_size_12sp">
+
+        </TextView>
+        <TextView
+            android:id="@+id/distance"
+            style="@style/common_font"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/margin_20dp"
+            android:layout_marginTop="8dp"
+            android:text="距离你500米"
+            android:textColor="@color/text_9"
+            android:textSize="@dimen/text_size_12sp"
+            />
+    </LinearLayout>
 
 
-    <ImageView
-        android:id="@+id/img1"
-        android:layout_width="11dp"
-        android:layout_height="14dp"
-        android:layout_marginTop="8dp"
-        android:scaleType="fitXY"
-        android:src="@mipmap/ic_location"
-        app:layout_constraintLeft_toLeftOf="@id/drugInfo"
-        app:layout_constraintTop_toBottomOf="@id/drugInfo" />
 
-    <TextView
-        android:id="@+id/address"
-        style="@style/common_font"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        android:text="广州市天河区天河公园"
-        android:textColor="@color/text_9"
-        android:textSize="@dimen/text_size_12sp"
-        app:layout_constraintLeft_toRightOf="@id/img1"
-        app:layout_constraintTop_toBottomOf="@id/drugInfo" />
 
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>

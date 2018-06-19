@@ -19,13 +19,17 @@
             android:layout_width="21dp"
             android:layout_height="21dp"/>
 
-        <ImageView
+        <de.hdodenhof.circleimageview.CircleImageView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/client_cv_head"
             android:layout_marginBottom="5dp"
             android:layout_marginTop="-25dp"
             android:layout_gravity="center"
             android:src="@mipmap/ic_me_head"
             android:layout_width="60dp"
-            android:layout_height="55dp"/>
+            android:layout_height="55dp"
+            app:civ_border_width="2dp"
+            app:civ_border_color="@color/color_red"/>
         <LinearLayout
             android:gravity="center"
             android:layout_width="match_parent"
@@ -345,6 +349,7 @@
 
 
         <LinearLayout
+            android:id="@+id/layout_qrcode"
             android:layout_marginBottom="20dp"
             android:background="@color/color_white_100"
             android:layout_marginTop="15dp"

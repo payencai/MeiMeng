@@ -4,7 +4,6 @@ package com.example.meimeng.activity;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
@@ -24,14 +23,12 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.baidu.mapapi.SDKInitializer;
 import com.example.meimeng.R;
 import com.example.meimeng.base.BaseActivity;
 import com.example.meimeng.fragment.FirstAidFragment;
 import com.example.meimeng.fragment.HomeFragment;
 import com.example.meimeng.fragment.UsFragment;
 import com.example.meimeng.fragment.UserCenterFragment;
-import com.example.meimeng.receiver.SDKReceiver;
 import com.example.meimeng.util.ToaskUtil;
 
 import java.util.ArrayList;
@@ -69,7 +66,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private FragmentManager fm;
     //当前打电话的号码
     private String curCallTel = "";
-    private SDKReceiver mReceiver;
     //当前显示的Fragment
 
     private void checkPower() {
@@ -134,13 +130,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     @Override
     protected void initView() {
 
-        IntentFilter iFilter = new IntentFilter();
-        iFilter.addAction(SDKInitializer.SDK_BROADTCAST_ACTION_STRING_PERMISSION_CHECK_ERROR);
-        iFilter.addAction(SDKInitializer.SDK_BROADCAST_ACTION_STRING_NETWORK_ERROR);
-        mReceiver = new SDKReceiver();
-        registerReceiver(mReceiver, iFilter);
-
-
         imgSos = (ImageView) findViewById(R.id.imgSos);
         home = (LinearLayout) findViewById(R.id.home);
         firstAid = (LinearLayout) findViewById(R.id.firstAid);
@@ -167,11 +156,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         initFragment();
 
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
     }
 
     @Override
@@ -316,9 +300,5 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        unregisterReceiver(mReceiver);
-    }
+
 }

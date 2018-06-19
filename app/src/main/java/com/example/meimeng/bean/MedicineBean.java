@@ -109,6 +109,7 @@ public class MedicineBean extends RVBaseCell {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 isCheck=b;
                 checkBox.setChecked(b);
+                if(b)
                 EventBus.getDefault().post(new MessageEvent(b,1));
             }
         });

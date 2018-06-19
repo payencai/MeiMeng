@@ -43,4 +43,27 @@ public class LoginSharedUilt {
         return mPreferences.getInt("lastLoginType", 0);
     }
 
+    //保存经度
+    public void saveLon(double lon) {
+        String lonStr = lon + "";
+        mPreferences.edit().putString("lon", lonStr).commit();
+    }
+
+    public double getLon() {
+        String lon = mPreferences.getString("lon", "0");
+        double v = Double.parseDouble(lon);
+        return v;
+    }
+    //保存维度
+    public void saveLat(double lat) {
+        String latStr = lat + "";
+        mPreferences.edit().putString("lat", latStr).commit();
+    }
+
+    public double getLat() {
+        String lat = mPreferences.getString("lat", "0");
+        double v = Double.parseDouble(lat);
+        return v;
+    }
+
 }

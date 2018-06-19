@@ -5,11 +5,13 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -22,23 +24,43 @@ import com.baidu.location.Poi;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
+import com.baidu.mapapi.map.InfoWindow;
+import com.baidu.mapapi.map.MapPoi;
 import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
+import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.MyLocationConfiguration;
 import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.utils.DistanceUtil;
 import com.example.meimeng.APP;
 import com.example.meimeng.R;
 import com.example.meimeng.activity.AddAEDActivity;
 import com.example.meimeng.activity.SearchActivity;
 import com.example.meimeng.activity.SystemMsgActivity;
 import com.example.meimeng.base.BaseFragment;
+import com.example.meimeng.bean.ServerUser;
+import com.example.meimeng.constant.PlatformContans;
+import com.example.meimeng.http.HttpProxy;
+import com.example.meimeng.http.ICallBack;
 import com.example.meimeng.service.LocationService;
+import com.example.meimeng.util.LoginSharedUilt;
+import com.example.meimeng.util.MLog;
 import com.example.meimeng.util.ToaskUtil;
+import com.google.gson.Gson;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class HomeFragment extends BaseFragment implements View.OnClickListener {
 
@@ -64,6 +86,7 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
 
     private double lat;
     private double lon;
+    private View mMarkeyInfoLayout;
 
     @Nullable
     @Override
@@ -90,9 +113,23 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         ring = (ImageView) view.findViewById(R.id.ring);
         //获取地图控件引用
         mMapView = (MapView) view.findViewById(R.id.bmapView);
+
         //开启定位图层
         mBaiduMap = mMapView.getMap();
+        mBaiduMap.setOnMarkerClickListener(onMarkerClicklistener);
+        mBaiduMap.setOnMapClickListener(new BaiduMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                if (mMarkeyInfoLayout != null) {
+                    mMarkeyInfoLayout.setVisibility(View.GONE);
+                }
+            }
 
+            @Override
+            public boolean onMapPoiClick(MapPoi mapPoi) {
+                return false;
+            }
+        });
         ring.setOnClickListener(this);
         addAED.setOnClickListener(this);
         firstAidSite.setOnClickListener(this);
@@ -106,6 +143,14 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         super.onResume();
         //在activity执行onResume时执行mMapView. onResume ()，实现地图生命周期管理
         mMapView.onResume();
+        LoginSharedUilt intance = LoginSharedUilt.getIntance(getContext());
+        lat = intance.getLat();
+        lon = intance.getLon();
+        if (lat != 0 && lon != 0) {
+            setMarker();
+            setUserMapCenter();
+        }
+        getServerUserByUser();
     }
 
     @Override
@@ -138,6 +183,53 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
                 SearchActivity.startSearchActivity(getContext(), searchType);
                 break;
         }
+    }
+
+    private void getServerUserByUser() {
+        String token;
+        if (APP.sUserType == 0) {
+            token = APP.getInstance().getUserInfo().getToken();
+        } else {
+            token = APP.getInstance().getServerUserInfo().getToken();
+        }
+        if (TextUtils.isEmpty(token)) {
+            return;
+        }
+        Map<String, Object> paramr = new HashMap<>();
+        paramr.put("longitude", lon);//经度
+        paramr.put("latitude", lat);//维度
+
+        HttpProxy.obtain().get(PlatformContans.UseUser.sGetServerUserByUser, paramr, token, new ICallBack() {
+            @Override
+            public void OnSuccess(String result) {
+                MLog.log("ServerUserByUser", result);
+                try {
+                    JSONObject object = new JSONObject(result);
+                    int resultCode = object.getInt("resultCode");
+                    String message = object.getString("message");
+                    if (resultCode == 0) {
+                        JSONArray data = object.getJSONArray("data");
+                        int length = data.length();
+                        Gson gson = new Gson();
+                        List<ServerUser> list = new ArrayList<>();
+                        for (int i = 0; i < length; i++) {
+                            JSONObject item = data.getJSONObject(i);
+                            ServerUser serverUser = gson.fromJson(item.toString(), ServerUser.class);
+                            list.add(serverUser);
+                        }
+                        mBaiduMap.clear();//清除地图上所有覆盖物，无法分成批删除
+                        batchAddMarker(list);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(String error) {
+
+            }
+        });
     }
 
 
@@ -214,33 +306,10 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         ToaskUtil.showToast(getContext(), s);
     }
 
-    public void location(BDLocation location) {
-//        // 开启定位图层
-//        mBaiduMap.setMyLocationEnabled(true);
-//
-//        // 构造定位数据
-//        MyLocationData locData = new MyLocationData.Builder()
-//                .accuracy(location.getRadius())
-//                // 此处设置开发者获取到的方向信息，顺时针0-360
-//                .direction(100).latitude(location.getLatitude())
-//                .longitude(location.getLongitude()).build();
-//
-//        // 设置定位数据
-//        mBaiduMap.setMyLocationData(locData);
-//
-//        // 设置定位图层的配置（定位模式，是否允许方向信息，用户自定义定位图标）
-//        mCurrentMarker = BitmapDescriptorFactory
-//                .fromResource(R.mipmap.logo);
-//        int accuracyCircleFillColor = 0xAAFFFF88;//自定义精度圈填充颜色
-//        int accuracyCircleStrokeColor = 0xAA00FF00;//自定义精度圈边框颜色
-//        MyLocationConfiguration config = new MyLocationConfiguration(
-//                MyLocationConfiguration.LocationMode.NORMAL,
-//                true, mCurrentMarker, accuracyCircleFillColor, accuracyCircleStrokeColor);
-//        mBaiduMap.setMyLocationConfiguration(config);
-//        // 当不需要定位图层时关闭定位图层
-//        mBaiduMap.setMyLocationEnabled(false);
-        lat = location.getLatitude();
-        lon = location.getLongitude();
+    public void location() {
+        LoginSharedUilt intance = LoginSharedUilt.getIntance(getContext());
+        intance.saveLat(lat);
+        intance.saveLon(lon);
         setMarker();
         setUserMapCenter();
     }
@@ -249,12 +318,11 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
      * 添加marker
      */
     private void setMarker() {
-        Log.v("pcw", "setMarker : lat : " + lat + " lon : " + lon);
         //定义Maker坐标点
         LatLng point = new LatLng(lat, lon);
         //构建Marker图标
         BitmapDescriptor bitmap = BitmapDescriptorFactory
-                .fromResource(R.mipmap.ic_high_volunteer);
+                .fromResource(R.mipmap.ic_location);
         //构建MarkerOption，用于在地图上添加Marker
         OverlayOptions option = new MarkerOptions()
                 .position(point)
@@ -262,6 +330,100 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         //在地图上添加Marker，并显示
         mBaiduMap.addOverlay(option);
     }
+
+
+    /**
+     * @param list 批量添加 覆盖物
+     */
+    private void batchAddMarker(List<ServerUser> list) {
+        List<OverlayOptions> options = new ArrayList<OverlayOptions>();
+        //构建Marker图标
+        //当前自己的位置
+        LatLng pointcur = new LatLng(lat, lon);
+        BitmapDescriptor bitmap1 = BitmapDescriptorFactory
+                .fromResource(R.mipmap.ic_high_volunteer);
+        //构建Marker图标
+        BitmapDescriptor bitmap2 = BitmapDescriptorFactory
+                .fromResource(R.mipmap.ic_low_volunteer);
+        for (ServerUser serverUser : list) {
+            //isCertificate 1为高级，2为普通
+            //workLongitude  经度
+            //workLatitude 维度
+            int isCertificate = serverUser.getIsCertificate();
+            String workLatitude = serverUser.getWorkLatitude();
+            String workLongitude = serverUser.getWorkLongitude();
+            double latNumber = 0;
+            double lonNumber = 0;
+            LatLng point;
+            try {
+                latNumber = Double.parseDouble(workLatitude);
+                lonNumber = Double.parseDouble(workLongitude);
+            } catch (Exception e) {
+
+            }
+            point = new LatLng(latNumber, lonNumber);
+            MarkerOptions position = new MarkerOptions().position(point);
+            OverlayOptions option;
+            if (isCertificate == 1) {
+                option = position.icon(bitmap1);
+            } else {
+                option = position.icon(bitmap2);
+            }
+//            options.add(option);
+            Log.d("batchAddMarker", "batchAddMarker: " + serverUser.getTelephone());
+            int distance = (int) DistanceUtil.getDistance(pointcur, point);
+            Marker marker = (Marker) mBaiduMap.addOverlay(option);
+            Bundle bundle = new Bundle();
+            bundle.putInt("distance", distance);
+            bundle.putString("telephone", serverUser.getAccount());
+            bundle.putDouble("latNumber", latNumber);
+            bundle.putDouble("lonNumber", lonNumber);
+            marker.setExtraInfo(bundle);
+        }
+//        mBaiduMap.addOverlays(options);
+    }
+
+    BaiduMap.OnMarkerClickListener onMarkerClicklistener = new BaiduMap.OnMarkerClickListener() {
+        /**
+         * 地图 Marker 覆盖物点击事件监听函数
+         * @param marker 被点击的 marker
+         */
+        @Override
+        public boolean onMarkerClick(Marker marker) {
+            //从marker中获取info信息
+            Bundle bundle = marker.getExtraInfo();
+            int distance = bundle.getInt("distance");
+            String telephone = bundle.getString("telephone");
+            double lonNumber = bundle.getDouble("lonNumber");
+            double latNumber = bundle.getDouble("latNumber");
+
+            //创建InfoWindow展示的view
+            mMarkeyInfoLayout = LayoutInflater.from(getContext()).inflate(R.layout.marker_service_info_layout, null);
+            String disString = "该志愿者距离您" + distance + "米";
+            String telString = "志愿者：134****7692";
+            try {
+                String startStr = telephone.substring(0, 3);
+                String endStr = telephone.substring(telephone.length() - 4, telephone.length());
+                String showString = startStr + "****" + endStr;
+                telString = "志愿者：" + showString;
+            } catch (Exception e) {
+
+            }
+
+            TextView markerTel = (TextView) mMarkeyInfoLayout.findViewById(R.id.markerTel);
+            TextView markerDistance = (TextView) mMarkeyInfoLayout.findViewById(R.id.markerDistance);
+            markerDistance.setText(disString);
+            markerTel.setText(telString);
+            //定义用于显示该InfoWindow的坐标点
+            LatLng pt = new LatLng(latNumber, lonNumber);
+            //创建InfoWindow , 传入 view， 地理坐标， y 轴偏移量
+            InfoWindow mInfoWindow = new InfoWindow(mMarkeyInfoLayout, pt, -100);
+            //显示InfoWindow
+            mBaiduMap.showInfoWindow(mInfoWindow);
+            return true;
+
+        }
+    };
 
     /**
      * 设置中心点
@@ -289,7 +451,9 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
 
         @Override
         public void onReceiveLocation(BDLocation location) {
-            location(location);
+            lat = location.getLatitude();
+            lon = location.getLongitude();
+            location();
             locationService.setLocationOption(locationService.getSingleLocationClientOption());
             // TODO Auto-generated method stub
             String addr = location.getAddrStr();    //获取详细地址信息

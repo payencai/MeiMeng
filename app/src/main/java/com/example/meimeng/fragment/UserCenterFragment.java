@@ -169,7 +169,7 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
                 mClientUsername.setText("朵雪花，你好");
             }
         }
-        mAdapter = new PictureAdapter(getActivity(), client_selected);
+        //mAdapter = new PictureAdapter(getActivity(), client_selected);
         Glide.with(this).load(userInfo.getImage()).into(client_head);
     }
     String clientimgurl="";
@@ -352,7 +352,7 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
                 startActivity(new Intent(getActivity(), LoginActivity.class));
                 break;
             case R.id.client_cv_head:
-                Log.e("tag",getActivity().toString());
+                //Log.e("tag",getActivity().toString());
                 ImageSelectorUtils.openPhoto(getActivity(),0,false,1,client_selected);
                 break;
             case R.id.server_cv_head:

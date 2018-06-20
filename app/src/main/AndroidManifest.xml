@@ -85,6 +85,7 @@
         <activity android:name=".activity.ServerUserInfoActivity" />
         <activity android:name=".activity.ServerRecordActivity" />
         <activity android:name=".activity.AddGaojiActivity" />
+        <activity android:name=".activity.QRCodeActivity"/>
         <!-- 图片框架地址：https://github.com/donkingliang/ImageSelector -->
         <!-- 图片选择Activity -->
         <!-- 去掉Activity的ActionBar。 -->

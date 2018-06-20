@@ -76,19 +76,11 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
     private LinearLayout mClientReback;
     private LinearLayout mClientAboutus;
     private LinearLayout mClientQrcode;
-    //GridView mGridView=new GridView(getContext());
+
     private CircleImageView client_head;
-    private CircleImageView server_head;
-    private ImageView mServerSetting;
-    private TextView mServerUsername;
-    private LinearLayout mServerUserinfo;
-    private LinearLayout mServerShengji;
-    private LinearLayout mServerAddAed;
-    private LinearLayout mServerReback;
-    private LinearLayout mServerRecord;
-    private PictureAdapter mAdapter;
+
     private ArrayList<String> client_selected = new ArrayList<>();
-    private ArrayList<String> server_selected = new ArrayList<>();
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -99,42 +91,11 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
             clientInitView(view);
             clientInitEvent();
         } else {
-            view = inflater.inflate(R.layout.server_usercenter, container, false);
-            serverInitView(view);
-            serverInitEvent();
         }
         return view;
     }
 
-    private void serverInitEvent() {
-        mServerSetting.setOnClickListener(this);
-        mServerAddAed.setOnClickListener(this);
-        mServerReback.setOnClickListener(this);
-        mServerRecord.setOnClickListener(this);
-        mServerShengji.setOnClickListener(this);
-        mServerUserinfo.setOnClickListener(this);
-        server_head.setOnClickListener(this);
-    }
 
-    private void serverInitView(View view) {
-        server_head=view.findViewById(R.id.server_cv_head);
-        mServerUsername=view.findViewById(R.id.tv_server_username);
-        mServerSetting=view.findViewById(R.id.iv_server_settings);
-        mServerAddAed=view.findViewById(R.id.addaed_server_layout);
-        mServerReback=view.findViewById(R.id.reback_server_layout);
-        mServerRecord=view.findViewById(R.id.record_server_layout);
-        mServerShengji=view.findViewById(R.id.shengji_server_layout);
-        mServerUserinfo=view.findViewById(R.id.userinfo_server_layout);
-        if(APP.getInstance().getServerUserInfo().getNickname()==null){
-            mServerUsername.setText("朵雪花,你好");
-        }else{
-            mServerUsername.setText(APP.getInstance().getServerUserInfo().getName()+",你好");
-        }
-
-        Log.e("image",APP.getInstance().getServerUserInfo().getImage());
-        Glide.with(this).load(APP.getInstance().getServerUserInfo().getImage()).into(server_head);
-        //server_head.setAdapter();
-    }
 
     private void clientInitEvent() {
         mClientQrcode.setOnClickListener(this);
@@ -173,7 +134,6 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
         Glide.with(this).load(userInfo.getImage()).into(client_head);
     }
     String clientimgurl="";
-    String serveriamge="";
     private void updateClientUserInfo(String image){
         Map<String,Object> params=new HashMap<>();
         UserInfo userInfo=APP.getInstance().getUserInfo();
@@ -220,7 +180,7 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
     public void upImage(String url,  File file,String imgurl) {
         OkHttpClient mOkHttpClent = new OkHttpClient();
         clientimgurl=imgurl;
-        serveriamge=imgurl;
+       // serveriamge=imgurl;
         MultipartBody.Builder builder = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("image", "image",
@@ -256,8 +216,6 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
                             public void run() {
                                 if(APP.sUserType==0)
                                    updateClientUserInfo(data);
-                                else
-                                    updateServerUserInfo(data);
                             }
                         });
 
@@ -270,40 +228,8 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
         });
     }
 
-    private String returnServer(String image){
-        Map<String,Object> params=new HashMap<>();
-        params.put("image",image);
-        Gson gson = new GsonBuilder().enableComplexMapKeySerialization().create();
-        return gson.toJson(params);
-    }
-    public void updateServerUserInfo(String image){
-        String token =APP.getInstance().getServerUserInfo().getToken();
-        String data=returnServer(image);
-        HttpProxy.obtain().post(PlatformContans.Serveruser.sUpdateServerUser, token, data, new ICallBack() {
-            @Override
-            public void OnSuccess(String result) {
-                JSONObject jsonObject= null;
-                try {
-                    jsonObject = new JSONObject(result);
-                    int code=jsonObject.getInt("resultCode");
-                    if(code==0){
-                        File file = new File(serveriamge);
-                        Glide.with(getActivity()).load(file).into(server_head);
-                    }
-                    if(code==9999){
 
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
 
-            @Override
-            public void onFailure(String error) {
-
-            }
-        });
-    }
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -331,32 +257,9 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
             case R.id.aboutus_client_layout:
                 startActivity(new Intent(getActivity(), AboutActivity.class));
                 break;
-            case R.id.shengji_server_layout:
-                startActivity(new Intent(getActivity(), ShengjiActivity.class));
-                break;
-            case R.id.addaed_server_layout:
-                startActivity(new Intent(getActivity(), AddAEDActivity.class));
-                break;
-            case R.id.reback_server_layout:
-                startActivity(new Intent(getActivity(), RebackActivity.class));
-                break;
-            case R.id.userinfo_server_layout:
-                startActivity(new Intent(getActivity(), ServerUserInfoActivity.class));
-                break;
-            case R.id.record_server_layout:
-                startActivity(new Intent(getActivity(), ServerRecordActivity.class));
-                break;
-            case R.id.iv_server_settings:
-                ServerUserInfoSharedPre.getIntance(getActivity()).clearUserInfo();
-                ActivityManager.getInstance().finishAllActivity();
-                startActivity(new Intent(getActivity(), LoginActivity.class));
-                break;
+
             case R.id.client_cv_head:
-                //Log.e("tag",getActivity().toString());
                 ImageSelectorUtils.openPhoto(getActivity(),0,false,1,client_selected);
-                break;
-            case R.id.server_cv_head:
-                ImageSelectorUtils.openPhoto(getActivity(),1,false,1,server_selected);
                 break;
             case R.id.layout_qrcode:
                 startActivity(new Intent(getActivity(), QRCodeActivity.class));

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:paddingTop="@dimen/margin_10dp"
+              android:orientation="vertical"
+              android:paddingLeft="@dimen/margin_15dp">
+
+    <TextView
+        android:id="@+id/help_msg_time"
+        android:textSize="@dimen/text_size_12sp"
+        android:textColor="#999999"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="2018-02-01 15:31:21"/>
+
+    <TextView
+        android:id="@+id/help_msg_name"
+        android:layout_marginTop="@dimen/margin_5dp"
+        style="@style/font_14sp_333"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="用户13202908133 发起了求救"/>
+
+    <TextView
+        android:id="@+id/help_msg_address"
+        android:layout_marginTop="@dimen/margin_5dp"
+        android:textSize="@dimen/text_size_12sp"
+        android:textColor="#999999"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="广州市番禺区广州市番禺区广州市番禺区"/>
+    <View
+        android:layout_marginTop="@dimen/margin_5dp"
+        android:background="@color/bg_f2f2f2"
+        android:layout_width="match_parent"
+        android:layout_height="1.5dp"></View>
+</LinearLayout>

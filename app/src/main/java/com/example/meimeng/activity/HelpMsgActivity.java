@@ -1,14 +1,17 @@
 package com.example.meimeng.activity;
 
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.meimeng.APP;
 import com.example.meimeng.R;
+import com.example.meimeng.bean.HelpMsg;
 import com.example.meimeng.bean.SystemMsgBean;
-import com.example.meimeng.bean.TrainBean;
 import com.example.meimeng.common.rv.absRv.AbsBaseActivity;
 import com.example.meimeng.common.rv.base.Cell;
 import com.example.meimeng.constant.PlatformContans;
@@ -25,19 +28,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SystemMsgActivity extends AbsBaseActivity<SystemMsgBean> {
-    private int page=31;
+public class HelpMsgActivity extends AbsBaseActivity<HelpMsg> {
+    private int page=1;
     private boolean isRefresh=false;
-    private TextView mTitle;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
 
     @Override
     public void onRecyclerViewInitialized() {
-        findViewById(R.id.back).setOnClickListener(this);
-        mTitle = (TextView) findViewById(R.id.title);
-        mTitle.setText("系统信息");
         addDividerItem(0);
         loadData();
-
     }
 
     @Override
@@ -47,68 +49,60 @@ public class SystemMsgActivity extends AbsBaseActivity<SystemMsgBean> {
         loadData();
     }
 
-
     @Override
     public void onLoadMore() {
         page++;
         loadData();
-
     }
-
     @Override
     public View addToolbar() {
+        TextView title;
+        ImageView back;
         View view = LayoutInflater.from(this).inflate(R.layout.toobar_head_layout, null);
+        back=view.findViewById(R.id.back);
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+        title=view.findViewById(R.id.title);
+        title.setText("急救消息");
         return view;
     }
-
     @Override
-    protected List<Cell> getCells(List<SystemMsgBean> list) {
+    protected List<Cell> getCells(List<HelpMsg> list) {
         return null;
     }
 
     @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.back:
-                finish();
-                break;
-        }
-    }
+    public void onClick(View view) {
 
-    private void loadData() {
-        addSysInfo();
+    }
+    private void loadData(){
         Map<String,Object> params=new HashMap<>();
-        String token="";
-        if(APP.sUserType==0){
-            token=APP.getInstance().getUserInfo().getToken();
-        }else{
-            token=APP.getInstance().getServerUserInfo().getToken();
-        }
-        params.put("type",1);
+        String token=APP.getInstance().getServerUserInfo().getToken();
         params.put("page",page);
-        HttpProxy.obtain().get(PlatformContans.MessageController.sGetSysInfoBytype, params,token, new ICallBack() {
+        HttpProxy.obtain().get(PlatformContans.PutMessage.sGetPutMessageByManage, params,token, new ICallBack() {
             @Override
             public void OnSuccess(String result) {
                 mBaseAdapter.hideLoadMore();
                 try {
                     JSONObject jsonObject=new JSONObject(result);
                     int code=jsonObject.getInt("resultCode");
-                    Log.e("tag",result);
+                    Log.e("msg--",result);
                     if(code==0){
                         JSONObject data = jsonObject.getJSONObject("data");
                         JSONArray beanList = data.getJSONArray("beanList");
-                        List<SystemMsgBean> list = new ArrayList<>();
+                        List<HelpMsg> list = new ArrayList<>();
                         int length = beanList.length();
-                        Gson gson = new Gson();
                         for (int i = 0; i < length; i++) {
                             JSONObject item = beanList.getJSONObject(i);
                             //TrainBean bean = gson.fromJson(item.toString(), TrainBean.class);
-                            SystemMsgBean bean=new SystemMsgBean();
-                            bean.setArticle(item.getString("article"));
-                            long time=item.getLong("createTime");
-                            bean.setCreateTime(time);
-                            bean.setTitle(item.getString("title"));
-                            bean.setId(item.getInt("id"));
+                            HelpMsg bean=new HelpMsg();
+                            bean.setAddress(item.getString("address"));
+                            bean.setCreateTime(item.getString("createTime"));
+                            bean.setTelephone(item.getString("telephone"));
                             list.add(bean);
                         }
                         if (isRefresh) {
@@ -133,37 +127,4 @@ public class SystemMsgActivity extends AbsBaseActivity<SystemMsgBean> {
             }
         });
     }
-    private void addSysInfo(){
-        Map<String,Object> params=new HashMap<>();
-        String token="";
-        if(APP.sUserType==0){
-            token=APP.getInstance().getUserInfo().getToken();
-        }else{
-            token=APP.getInstance().getServerUserInfo().getToken();
-        }
-        params.put("title","欢迎你");
-        params.put("article","我是系统信息的内容体");
-        HttpProxy.obtain().post(PlatformContans.MessageController.sAddSysInfo, token,params, new ICallBack() {
-            @Override
-            public void OnSuccess(String result) {
-                try {
-                    JSONObject jsonObject=new JSONObject(result);
-                    int code=jsonObject.getInt("resultCode");
-                    Log.e("tag",result);
-                    if(code==0){
-
-                    }
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(String error) {
-
-            }
-        });
-    }
-
 }

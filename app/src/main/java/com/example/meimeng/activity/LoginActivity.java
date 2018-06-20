@@ -348,7 +348,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                         userInfo.setPassword(psw);
                         ServerUserInfoSharedPre intance = ServerUserInfoSharedPre.getIntance(LoginActivity.this);
                         intance.saveServerUserInfo(userInfo, true);
-                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                        startActivity(new Intent(LoginActivity.this, ServerMainActivity.class));
                         finish();
                     } else {
                         ToaskUtil.showToast(LoginActivity.this, message);

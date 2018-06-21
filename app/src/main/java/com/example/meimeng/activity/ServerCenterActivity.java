@@ -13,6 +13,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -238,7 +239,7 @@ public class ServerCenterActivity extends BaseActivity {
         String savePath = "";
         String storageState = Environment.getExternalStorageState();
         if (storageState.equals(Environment.MEDIA_MOUNTED)) {
-            savePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/camera/";
+            savePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/test/";
             File savedir = new File(savePath);
             if (!savedir.exists()) {
                 savedir.mkdirs();
@@ -253,13 +254,15 @@ public class ServerCenterActivity extends BaseActivity {
 
         String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
         //照片命名
-        String fileName = timeStamp + ".jpg";
-        File out = new File(savePath, fileName);
-        Uri uri = Uri.fromFile(out);
+        String fileName = timeStamp + ".png";
+        File file = new File(savePath, fileName);
+        Uri uri = FileProvider.getUriForFile(this, "com.example.meimeng.fileprovider", file);
+        //添加权限
         //该照片的绝对路径
         imagePath = savePath + fileName;
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         startActivityForResult(intent, 0x008);
     }
     private static String[] PERMISSIONS_CAMERA_AND_STORAGE = {
@@ -313,5 +316,19 @@ public class ServerCenterActivity extends BaseActivity {
             default:
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
+    }
+    private void useCamera() {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
+                + "/test/" + System.currentTimeMillis() + ".jpg");
+        file.getParentFile().mkdirs();
+
+        //改变Uri  com.xykj.customview.fileprovider注意和xml中的一致
+        Uri uri = FileProvider.getUriForFile(this, "com.example.meimeng.fileprovider", file);
+        //添加权限
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+        startActivityForResult(intent, 1);
     }
 }

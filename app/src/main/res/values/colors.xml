@@ -24,4 +24,23 @@
     <color name="bg_yellow">#ffa938</color>
     <color name="pw_cancel_text_color">#008cdd</color>
     <color name="translucence">#c6ffffff</color>
+
+    <!--按压后的色彩值-->
+    <color name="red_focus">#FF3030</color>
+    <color name="black_focus">#FF777777</color>
+    <color name="white_focus">#e9eaeb</color>
+    <color name="yellow_focus">#ecab24</color>
+    <color name="orange_focus">#cd3736</color>
+
+    <!--按压后的色彩值-->
+    <!--基础色彩值-->
+    <color name="black">#000000</color>
+    <color name="white">#ffffff</color>
+    <color name="green">#00ff00</color>
+    <color name="orange">#fc6a2e</color>
+    <color name="yellow">#ffbd33</color>
+    <color name="grey">#C2C2C2</color>
+    <color name="blue">#56b2cf</color>
+    <color name="red">#FF0000</color>
+    <!--基础色彩值-->
 </resources>

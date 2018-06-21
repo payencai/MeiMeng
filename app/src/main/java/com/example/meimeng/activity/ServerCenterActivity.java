@@ -5,6 +5,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Build;
@@ -17,10 +20,15 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,10 +40,14 @@ import com.example.meimeng.constant.PlatformContans;
 import com.example.meimeng.http.HttpProxy;
 import com.example.meimeng.http.ICallBack;
 import com.example.meimeng.manager.ActivityManager;
+import com.example.meimeng.util.ImageSelectPopWindow;
 import com.example.meimeng.util.ServerUserInfoSharedPre;
+import com.example.meimeng.util.TimeSelectPopWindow;
 import com.example.meimeng.util.ToaskUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -78,8 +90,7 @@ public class ServerCenterActivity extends BaseActivity {
     LinearLayout mServerReback;
     @BindView(R.id.record_server_layout)
     LinearLayout mServerRecord;
-    String serveriamge = "";
-    private ArrayList<String> server_selected = new ArrayList<>();
+    private ImageSelectPopWindow mImageSelectPopWindow;
 
 
     @Override
@@ -91,7 +102,53 @@ public class ServerCenterActivity extends BaseActivity {
     protected void initView() {
         ButterKnife.bind(this);
         serverInitView();
-        // serverInitEvent();
+    }
+
+    private void setPopupWindow() {
+        final Window window = this.getWindow();
+        final ImageSelectPopWindow mPop = new ImageSelectPopWindow(this);
+        final WindowManager.LayoutParams params = window.getAttributes();
+        params.alpha = (float) 0.3;
+        window.setAttributes(params);
+        //mPop.getAnimationStyle()
+        mPop.showAtLocation(ServerCenterActivity.this.findViewById(R.id.popup_layout), Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
+        //window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        mPop.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                final WindowManager.LayoutParams params = window.getAttributes();
+                params.alpha = (float) 1.0;
+                window.setAttributes(params);
+                //mPop.getBackground().
+                //mPop.getBackground().setAlpha(255);
+            }
+        });
+        mPop.setOnItemClickListener(new ImageSelectPopWindow.OnItemClickListener() {
+            @Override
+            public void setOnItemClick(View v) {
+                switch (v.getId()) {
+                    case R.id.tv_select_cancel:
+                        mPop.dismiss();
+                        break;
+                    case R.id.tv_select_camera:
+                        mPop.dismiss();
+                        if (isCameraPermission(ServerCenterActivity.this, 0x007))
+                            startCamera();
+                        break;
+                    case R.id.tv_select_gallery:
+                        //upImage(PlatformContans.Image.sUpdateImage,);
+                        mPop.dismiss();
+                        Intent mIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                        mIntent.addCategory(Intent.CATEGORY_OPENABLE);
+                        mIntent.setType("image/*");
+                        startActivityForResult(mIntent, 2);
+                        break;
+                    case R.id.layout_empty:
+                        mPop.dismiss();
+
+                }
+            }
+        });
     }
 
     @Override
@@ -100,6 +157,7 @@ public class ServerCenterActivity extends BaseActivity {
     }
 
     private void serverInitView() {
+        String image = getIntent().getExtras().getString("image");
 
         if (APP.getInstance().getServerUserInfo().getNickname() == null) {
             mServerUsername.setText("朵雪花,你好");
@@ -107,14 +165,21 @@ public class ServerCenterActivity extends BaseActivity {
             mServerUsername.setText(APP.getInstance().getServerUserInfo().getNickname() + ",你好");
         }
 
-        Log.e("image", APP.getInstance().getServerUserInfo().getImage());
-        Glide.with(this).load(APP.getInstance().getServerUserInfo().getImage()).into(server_head);
+        Log.e("image", image);
+        if (!TextUtils.isEmpty(image)) {
+            Glide.with(this).load(image).into(server_head);
+
+        } else {
+            Glide.with(this).load(APP.getInstance().getServerUserInfo().getImage()).into(server_head);
+        }
+
 
     }
-    @OnClick({R.id.shengji_server_layout,R.id.addaed_server_layout,R.id.reback_server_layout,R.id.iv_server_settings,
-            R.id.userinfo_server_layout,R.id.record_server_layout,R.id.server_cv_head})
-    void onClick(View view){
-        switch (view.getId()){
+
+    @OnClick({R.id.shengji_server_layout, R.id.addaed_server_layout, R.id.reback_server_layout, R.id.iv_server_settings,
+            R.id.userinfo_server_layout, R.id.record_server_layout, R.id.server_cv_head})
+    void onClick(View view) {
+        switch (view.getId()) {
             case R.id.shengji_server_layout:
                 startActivity(new Intent(this, ShengjiActivity.class));
                 break;
@@ -136,13 +201,32 @@ public class ServerCenterActivity extends BaseActivity {
                 startActivity(new Intent(this, LoginActivity.class));
                 break;
             case R.id.server_cv_head:
-                ToaskUtil.showToast(ServerCenterActivity.this,"上传头像");
-                if (isCameraPermission(ServerCenterActivity.this, 0x007))
-                    byCamera();
+                //ToaskUtil.showToast(ServerCenterActivity.this,"上传头像");
+                setPopupWindow();
+//                if (isCameraPermission(ServerCenterActivity.this, 0x007))
+//                    byCamera();
                 break;
         }
     }
 
+    private void lightoff() {
+        WindowManager.LayoutParams lp = getWindow().getAttributes();
+        lp.alpha = 0.3f;
+        getWindow().setAttributes(lp);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent data = new Intent();
+        Bundle bundle = new Bundle();
+        bundle.putString("image", updateimage);
+        data.putExtras(bundle);
+        setResult(1, data);
+        super.onBackPressed();
+    }
+
+    int count = 0;
+    String updateimage = "";
 
     public void updateServerUserInfo(String image) {
         String token = APP.getInstance().getServerUserInfo().getToken();
@@ -155,8 +239,11 @@ public class ServerCenterActivity extends BaseActivity {
                     jsonObject = new JSONObject(result);
                     int code = jsonObject.getInt("resultCode");
                     if (code == 0) {
-                        File file = new File(serveriamge);
-                        Glide.with(ServerCenterActivity.this).load(file).into(server_head);
+                        JSONObject object = jsonObject.getJSONObject("data");
+                        String image = object.getString("image");
+                        updateimage = image;
+                        count++;
+                        Glide.with(ServerCenterActivity.this).load(image).into(server_head);
                     }
                     if (code == 9999) {
 
@@ -173,9 +260,9 @@ public class ServerCenterActivity extends BaseActivity {
         });
     }
 
-    public void upImage(String url, File file, String imgurl) {
+    public void upImage(String url, File file) {
         OkHttpClient mOkHttpClent = new OkHttpClient();
-        serveriamge = imgurl;
+        //serveriamge = imgurl;
         MultipartBody.Builder builder = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("image", "image",
@@ -228,14 +315,14 @@ public class ServerCenterActivity extends BaseActivity {
         Gson gson = new GsonBuilder().enableComplexMapKeySerialization().create();
         return gson.toJson(params);
     }
-    public void takePhoto() {
-        Intent captureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(captureIntent, 1);
-    }
 
 
     private String imagePath;
-    public void byCamera() {
+
+    /**
+     * 拍照
+     */
+    private void startCamera() {
         String savePath = "";
         String storageState = Environment.getExternalStorageState();
         if (storageState.equals(Environment.MEDIA_MOUNTED)) {
@@ -245,36 +332,46 @@ public class ServerCenterActivity extends BaseActivity {
                 savedir.mkdirs();
             }
         }
-
-        // 没有挂载SD卡，无法保存文件
         if (savePath == null || "".equals(savePath)) {
             System.out.println("无法保存照片，请检查SD卡是否挂载");
             return;
         }
-
         String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
         //照片命名
         String fileName = timeStamp + ".png";
         File file = new File(savePath, fileName);
-        Uri uri = FileProvider.getUriForFile(this, "com.example.meimeng.fileprovider", file);
-        //添加权限
-        //该照片的绝对路径
-        imagePath = savePath + fileName;
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        startActivityForResult(intent, 0x008);
+        try {
+            if (file.exists()) {
+                file.delete();
+            }
+            file.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        /** * 因 Android 7.0 开始，不能使用 file:// 类型的 Uri 访问跨应用文件，否则报异常， * 因此我们这里需要使用内容提供器，FileProvider 是 ContentProvider 的一个子类， * 我们可以轻松的使用 FileProvider 来在不同程序之间分享数据(相对于 ContentProvider 来说) */
+        if (Build.VERSION.SDK_INT >= 24) {
+            photoUri = FileProvider.getUriForFile(this, "com.example.meimeng.fileprovider", file);
+        } else {
+            photoUri = Uri.fromFile(file); // Android 7.0 以前使用原来的方法来获取文件的 Uri
+        }
+        // 打开系统相机的 Action，等同于："android.media.action.IMAGE_CAPTURE"
+        Intent takePhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // 设置拍照所得照片的输出目录
+        takePhotoIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+        startActivityForResult(takePhotoIntent, 1);
     }
+
     private static String[] PERMISSIONS_CAMERA_AND_STORAGE = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.CAMERA};
-    public static boolean isCameraPermission(Activity context, int requestCode){
+
+    public static boolean isCameraPermission(Activity context, int requestCode) {
         if (Build.VERSION.SDK_INT >= 23) {
             int storagePermission = ActivityCompat.checkSelfPermission(context,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE);
             int cameraPermission = ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA);
-            if (storagePermission != PackageManager.PERMISSION_GRANTED || cameraPermission!= PackageManager.PERMISSION_GRANTED ) {
+            if (storagePermission != PackageManager.PERMISSION_GRANTED || cameraPermission != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(context, PERMISSIONS_CAMERA_AND_STORAGE,
                         requestCode);
                 return false;
@@ -282,33 +379,14 @@ public class ServerCenterActivity extends BaseActivity {
         }
         return true;
     }
-    public static boolean cameraIsCanUse() {
-        boolean isCanUse = true;
-        Camera mCamera = null;
-        try {
-            mCamera = Camera.open();
-            Camera.Parameters mParameters = mCamera.getParameters();
-            mCamera.setParameters(mParameters);
-        } catch (Exception e) {
-            isCanUse = false;
-        }
 
-        if (mCamera != null) {
-            try {
-                mCamera.release();
-            } catch (Exception e) {
-                e.printStackTrace();
-                return isCanUse;
-            }
-        }
-        return isCanUse;
-    }
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case 0x007:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    byCamera();
+                    // byCamera();
+                    startCamera();
                 } else {
                     Toast.makeText(this, "拍照权限被拒绝", Toast.LENGTH_SHORT).show();
                 }
@@ -317,18 +395,53 @@ public class ServerCenterActivity extends BaseActivity {
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
-    private void useCamera() {
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
-                + "/test/" + System.currentTimeMillis() + ".jpg");
-        file.getParentFile().mkdirs();
 
-        //改变Uri  com.xykj.customview.fileprovider注意和xml中的一致
-        Uri uri = FileProvider.getUriForFile(this, "com.example.meimeng.fileprovider", file);
-        //添加权限
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+    Uri photoUri;
+    Uri photoOutputUri;
 
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
-        startActivityForResult(intent, 1);
+    /**
+     * 裁剪图片
+     */
+    private void cropPhoto(Uri inputUri) {
+        // 调用系统裁剪图片的 Action
+        Intent cropPhotoIntent = new Intent("com.android.camera.action.CROP");
+        // 设置数据Uri 和类型
+        cropPhotoIntent.setDataAndType(inputUri, "image/*");
+        // 授权应用读取 Uri，这一步要有，不然裁剪程序会崩溃
+        cropPhotoIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        // 设置图片的最终输出目录
+        cropPhotoIntent.putExtra(MediaStore.EXTRA_OUTPUT,
+                photoOutputUri = Uri.parse("file:////sdcard/image_output.jpg"));
+        startActivityForResult(cropPhotoIntent, 3);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1 && resultCode == RESULT_OK) {
+            cropPhoto(photoUri);
+            //File file=new File(imagePath);
+            //upImage(PlatformContans.Image.sUpdateImage,file);
+            //Log.e("TAG", "---------" + FileProvider.getUriForFile(this, "com.xykj.customview.fileprovider", file));
+            // server_head.setImageBitmap(BitmapFactory.decodeFile(imagePath));
+        }
+        if (requestCode == 2 && resultCode == RESULT_OK) {
+            Uri uri = data.getData();
+            cropPhoto(uri);
+//            File file=new File(imagePath);
+//            upImage(PlatformContans.Image.sUpdateImage,file);
+//            //Log.e("TAG", "---------" + FileProvider.getUriForFile(this, "com.xykj.customview.fileprovider", file));
+            // server_head.setImageBitmap(BitmapFactory.decodeFile(imagePath));
+        }
+        if (requestCode == 3 && data != null) {
+            File file = new File(photoOutputUri.getPath());
+            if (file.exists()) {
+                //Bitmap bitmap = BitmapFactory.decodeFile(photoOutputUri.getPath());
+                //server_head.setImageBitmap(bitmap);
+                upImage(PlatformContans.Image.sUpdateImage, file);
+            } else {
+                Toast.makeText(this, "找不到照片", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }

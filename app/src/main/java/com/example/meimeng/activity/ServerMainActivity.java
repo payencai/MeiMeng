@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -85,7 +86,11 @@ public class ServerMainActivity extends BaseActivity {
         enter_main.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(ServerMainActivity.this,ServerCenterActivity.class));
+                Intent intent=new Intent(ServerMainActivity.this,ServerCenterActivity.class);
+                Bundle bundle=new Bundle();
+                bundle.putString("image",image);
+                intent.putExtras(bundle);
+                startActivityForResult(intent,1);
             }
         });
 
@@ -101,6 +106,17 @@ public class ServerMainActivity extends BaseActivity {
                 startActivity(new Intent(ServerMainActivity.this, HelpMsgActivity.class));
             }
         });
+    }
+    String image="";
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==1&&data!=null){
+            image=data.getExtras().getString("image");
+            if(!TextUtils.isEmpty(data.getExtras().getString("image"))){
+                Glide.with(this).load(data.getExtras().getString("image")).into(iv_head);
+            }
+        }
     }
 
     @Override

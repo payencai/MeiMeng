@@ -298,11 +298,26 @@
 
 
         </LinearLayout>
-
+        <TextView
+            android:paddingRight="@dimen/margin_12dp"
+            android:layout_marginTop="@dimen/margin_10dp"
+            android:paddingTop="@dimen/margin_10dp"
+            android:paddingLeft="15dp"
+            android:background="@color/white"
+            android:textColor="#999999"
+            android:textSize="@dimen/text_size_13sp"
+            android:text="“请填写真实完整的信息，错误的信息会影响志愿者和医生对您的病情判断”"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/margin_50dp"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginLeft="@dimen/margin_15dp"
+            android:background="@color/bg_f2f2f2"></View>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="110dp"
-            android:layout_marginTop="@dimen/margin_10dp"
+
             android:background="@color/color_white_100"
             android:orientation="vertical">
 

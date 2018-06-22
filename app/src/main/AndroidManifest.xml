@@ -85,7 +85,7 @@
         <activity android:name=".activity.ServerUserInfoActivity" />
         <activity android:name=".activity.ServerRecordActivity" />
         <activity android:name=".activity.AddGaojiActivity" />
-        <activity android:name=".activity.QRCodeActivity" />
+        <activity android:name=".activity.QRCodeActivity"/>
         <!-- 图片框架地址：https://github.com/donkingliang/ImageSelector -->
         <!-- 图片选择Activity -->
         <!-- 去掉Activity的ActionBar。 -->
@@ -137,9 +137,6 @@
             android:theme="@style/TranslucentTheme" />
         <activity android:name=".activity.PathPlanActivity"></activity>
         <activity android:name=".activity.WNaviGuideActivity" />
-        <activity android:name=".test.BNaviMainActivity" />
-        <activity android:name=".test.BNaviGuideActivity" />
-        <activity android:name=".test.TestWNaviGuideActivity" />
     </application>
 
 </manifest>

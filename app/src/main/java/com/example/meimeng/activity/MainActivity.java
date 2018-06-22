@@ -122,17 +122,19 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         fragments.add(mUserCenterFragment);
 
         for (Fragment fragment : fragments) {
-            fm.beginTransaction().add(R.id.fragment_container, fragment).commit();
+            if(!fragment.isAdded())
+              fm.beginTransaction().add(R.id.fragment_container, fragment).commit();
         }
         //显示主页
         resetStateForTagbar(R.id.home);
         hideAllFragment();
         showFragment(0);
     }
-
+    int i=0;
     @Override
     protected void initView() {
-
+        i++;
+        Log.e("i",i+"");
         imgSos = (ImageView) findViewById(R.id.imgSos);
         home = (LinearLayout) findViewById(R.id.home);
         firstAid = (LinearLayout) findViewById(R.id.firstAid);
@@ -307,27 +309,23 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         super.onActivityResult(requestCode, resultCode, data);
         FragmentManager fragmentManager=getSupportFragmentManager();
         UserCenterFragment fragment= (UserCenterFragment) fragmentManager.getFragments().get(3);
-        if (requestCode == 0 && data != null)
-        {
-            //获取选择器返回的数据
-            ArrayList<String> images = data.getStringArrayListExtra(
-                    ImageSelectorUtils.SELECT_RESULT);
-            if (images.size() > 0) {
-                fragment.upImage(PlatformContans.Image.sUpdateImage, new File(images.get(0)),images.get(0));
-            }
+        if (requestCode == 1 && resultCode == RESULT_OK) {
+            Log.e("request",1+"");
+            fragment.cropPhoto(fragment.getPhotoUri());
 
         }
-        if (requestCode == 1&& data != null)
-        {
-            //Log.e("url","111");
-            //获取选择器返回的数据
-            ArrayList<String> images = data.getStringArrayListExtra(
-                    ImageSelectorUtils.SELECT_RESULT);
-            if(images.size()>0)
-            {
-                fragment.upImage(PlatformContans.Image.sUpdateImage, new File(images.get(0)),images.get(0));
+        if (requestCode == 2 && resultCode == RESULT_OK) {
+            Log.e("request",2+"");
+            Uri uri = data.getData();
+            fragment.cropPhoto(uri);
+        }
+        if (requestCode == 3 && data != null) {
+            File file = new File(fragment.getPhotoOutputUri().getPath());
+            if (file.exists()) {
+                fragment.upImage(PlatformContans.Image.sUpdateImage, file);
+            } else {
+                Toast.makeText(this, "找不到照片", Toast.LENGTH_SHORT).show();
             }
-
         }
 
     }

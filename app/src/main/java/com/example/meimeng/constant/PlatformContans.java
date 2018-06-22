@@ -5,6 +5,8 @@ import com.example.meimeng.APP;
 import java.util.HashMap;
 import java.util.Map;
 
+import retrofit2.http.GET;
+
 /**
  * Created by Administrator on 2017/12/13 0013.
  */
@@ -62,8 +64,12 @@ public class PlatformContans {
         public static final String sGetCompleteHelpByServerUser = sHead + "getCompleteHelpByServerUser";
         public static final String sGetCompleteHelpByUseUser = sHead + "getCompleteHelpByUseUser";
         public static final String sGetServerMedicine=sHead+"getServerMedicine";
+        public static final String sGetCurrentHelp=sHead+"getCurrentHelp";
     }
-
+    public static class PutMessage {
+        public static final String sHead = rootUrl + "putmessage/";
+        public static final String sGetPutMessageByManage=sHead+"getPutMessageByManage";
+    }
     public static class Medicine {
         public static final String sHead = rootUrl + "medicine/";
         public static final String sGetMedicineByUserId = sHead + "getMedicineByUserId";

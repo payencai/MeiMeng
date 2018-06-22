@@ -1,14 +1,20 @@
 package com.example.meimeng.activity;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import com.baidu.location.BDAbstractLocationListener;
-import com.baidu.location.BDLocation;
+import com.baidu.mapapi.bikenavi.BikeNavigateHelper;
+import com.baidu.mapapi.bikenavi.adapter.IBEngineInitListener;
+import com.baidu.mapapi.bikenavi.adapter.IBRoutePlanListener;
+import com.baidu.mapapi.bikenavi.model.BikeRoutePlanError;
+import com.baidu.mapapi.bikenavi.params.BikeNaviLaunchParam;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
@@ -19,25 +25,34 @@ import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.search.route.BikingRouteResult;
+import com.baidu.mapapi.search.route.DrivingRouteResult;
+import com.baidu.mapapi.search.route.IndoorRouteResult;
+import com.baidu.mapapi.search.route.MassTransitRouteResult;
+import com.baidu.mapapi.search.route.OnGetRoutePlanResultListener;
+import com.baidu.mapapi.search.route.PlanNode;
+import com.baidu.mapapi.search.route.RoutePlanSearch;
+import com.baidu.mapapi.search.route.TransitRouteResult;
+import com.baidu.mapapi.search.route.WalkingRoutePlanOption;
+import com.baidu.mapapi.search.route.WalkingRouteResult;
 import com.baidu.mapapi.walknavi.WalkNavigateHelper;
 import com.baidu.mapapi.walknavi.adapter.IWEngineInitListener;
-import com.baidu.mapapi.walknavi.adapter.IWNaviStatusListener;
 import com.baidu.mapapi.walknavi.adapter.IWRoutePlanListener;
 import com.baidu.mapapi.walknavi.model.WalkRoutePlanError;
 import com.baidu.mapapi.walknavi.params.WalkNaviLaunchParam;
-import com.baidu.platform.comapi.walknavi.WalkNaviModeSwitchListener;
-import com.example.meimeng.APP;
 import com.example.meimeng.R;
 import com.example.meimeng.base.BaseActivity;
-import com.example.meimeng.service.LocationService;
+import com.example.meimeng.test.BNaviGuideActivity;
+import com.example.meimeng.test.TestWNaviGuideActivity;
 import com.example.meimeng.util.LoginSharedUilt;
-import com.example.meimeng.util.ToaskUtil;
+
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class PathPlanActivity extends BaseActivity {
+public class PathPlanActivity extends BaseActivity implements OnGetRoutePlanResultListener {
 
 
     @BindView(R.id.drive)
@@ -46,70 +61,111 @@ public class PathPlanActivity extends BaseActivity {
     TextView walk;
     @BindView(R.id.bus)
     TextView bus;
-    @BindView(R.id.bmapView)
-    MapView mMapView;
+
 
     private static final String TAG = "PathPlanActivity";
+    private MapView mMapView = null;
     private BaiduMap mBaiduMap;
-    private LocationService locationService;
-    private double lat;
-    private double lon;
 
-    private int mNavigationType = -1;//导航类型
-    private WalkNavigateHelper mNaviHelper;
-    private WalkNaviLaunchParam mParam;
+    private int mNavigationType = -1;//导航类型 0为驾车，1为步行，2为公交
     private double mLatNumber;
     private double mLonNumber;
+
+    private BikeNavigateHelper mNaviHelper;//骑行
+    private WalkNavigateHelper mWNaviHelper;//步行
+    WalkNaviLaunchParam walkParam;//步行导航
+    BikeNaviLaunchParam param;//骑行导航
+
+    private RoutePlanSearch mSearch;
+
+    private static boolean isPermissionRequested = false;
+    private double lat;
+    private double lon;
 
     @Override
     protected void initView() {
         ButterKnife.bind(this);
+        //获取地图控件引用
+        mMapView = (MapView) findViewById(R.id.bmapView);
+
+        //开启定位图层
+        mBaiduMap = mMapView.getMap();
+        mSearch = RoutePlanSearch.newInstance();
+        mSearch.setOnGetRoutePlanResultListener(this);
+        try {
+            mWNaviHelper = WalkNavigateHelper.getInstance();
+            mNaviHelper = BikeNavigateHelper.getInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         Intent intent = getIntent();
         Bundle bundle = intent.getBundleExtra("bundle");
         mLatNumber = bundle.getDouble("latNumber");
         mLonNumber = bundle.getDouble("lonNumber");
-
-        //开启定位图层
-        locationService = APP.getInstance().locationService;
-        //获取locationservice实例，建议应用中只初始化1个location实例，
-        // 然后使用，可以参考其他示例的activity，都是通过此种方式获取locationservice实例的
-        locationService.registerListener(myListener);
-        mBaiduMap = mMapView.getMap();
-
-        LatLng startPt = new LatLng(lat, lon);
-        LatLng endPt = new LatLng(mLatNumber, mLonNumber);
-        mParam = new WalkNaviLaunchParam().stPt(startPt).endPt(endPt);
-        // 获取导航控制类
-        mNaviHelper = WalkNavigateHelper.getInstance();
-        // 引擎初始化
-        mNaviHelper.initNaviEngine(this, new IWEngineInitListener() {
-            @Override
-            public void engineInitSuccess() {
-                Log.d(TAG, "引擎初始化成功");
-                routePlanWithParam();
-            }
-
-            @Override
-            public void engineInitFail() {
-                Log.d(TAG, "引擎初始化失败");
-            }
-        });
-//        mNaviHelper.setWalkNaviStatusListener(new IWNaviStatusListener() {
-//            @Override
-//            public void onWalkNaviModeChange(int mode, WalkNaviModeSwitchListener listener) {
-//                Log.d(TAG, "onWalkNaviModeChange : " + mode);
-//                mNaviHelper.switchWalkNaviMode(PathPlanActivity.this, mode, listener);
-//            }
+        requestPermission();
 //
-//            @Override
-//            public void onNaviExit() {
-//                Log.d(TAG, "onNaviExit");
-//            }
-//        });
+        initFragment();
     }
 
-    public void routePlanWithParam() {
-        mNaviHelper.routePlanWithParams(mParam, new IWRoutePlanListener() {
+    private void initFragment() {
+        LatLng endPt = new LatLng(mLatNumber, mLonNumber);
+        LoginSharedUilt intance = LoginSharedUilt.getIntance(this);
+        lat = intance.getLat();
+        lon = intance.getLon();
+        LatLng startPt = new LatLng(lat, lon);
+        if (lat != 0 && lon != 0) {
+            setMarker();
+            setUserMapCenter();
+        }
+        walkParam = new WalkNaviLaunchParam().stPt(startPt).endPt(endPt);
+        param = new BikeNaviLaunchParam().stPt(startPt).endPt(endPt);
+
+        //显示主页
+        resetView(0);
+    }
+
+
+    private void requestPermission() {
+        if (Build.VERSION.SDK_INT >= 23 && !isPermissionRequested) {
+            isPermissionRequested = true;
+            ArrayList<String> permissions = new ArrayList<>();
+            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
+            }
+            if (permissions.size() == 0) {
+                return;
+            } else {
+                requestPermissions(permissions.toArray(new String[permissions.size()]), 0);
+            }
+        }
+    }
+
+    private void startWalkNavi() {
+        Log.d("View", "startBikeNavi");
+        try {
+            mWNaviHelper.initNaviEngine(this, new IWEngineInitListener() {
+                @Override
+                public void engineInitSuccess() {
+                    Log.d("View", "engineInitSuccess");
+                    routePlanWithWalkParam();
+                }
+
+                @Override
+                public void engineInitFail() {
+                    Log.d("View", "engineInitFail");
+                }
+            });
+        } catch (Exception e) {
+            Log.d("Exception", "startBikeNavi");
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 开始算路
+     */
+    private void routePlanWithWalkParam() {
+        mWNaviHelper.routePlanWithParams(walkParam, new IWRoutePlanListener() {
             @Override
             public void onRoutePlanStart() {
                 Log.d(TAG, "开始算路");
@@ -119,7 +175,7 @@ public class PathPlanActivity extends BaseActivity {
             public void onRoutePlanSuccess() {
                 Log.d(TAG, "算路成功,跳转至诱导页面");
                 Intent intent = new Intent();
-                intent.setClass(PathPlanActivity.this, WNaviGuideActivity.class);
+                intent.setClass(PathPlanActivity.this, TestWNaviGuideActivity.class);
                 startActivity(intent);
             }
 
@@ -132,43 +188,54 @@ public class PathPlanActivity extends BaseActivity {
     }
 
 
+    private void startBikeNavi() {
+        Log.d("View", "startBikeNavi");
+        try {
+            mNaviHelper.initNaviEngine(this, new IBEngineInitListener() {
+                @Override
+                public void engineInitSuccess() {
+                    Log.d("View", "engineInitSuccess");
+                    routePlanWithParam();
+                }
+
+                @Override
+                public void engineInitFail() {
+                    Log.d("View", "engineInitFail");
+                }
+            });
+        } catch (Exception e) {
+            Log.d("Exception", "startBikeNavi");
+            e.printStackTrace();
+        }
+    }
+
+    private void routePlanWithParam() {
+        mNaviHelper.routePlanWithParams(param, new IBRoutePlanListener() {
+            @Override
+            public void onRoutePlanStart() {
+                Log.d("View", "onRoutePlanStart");
+            }
+
+            @Override
+            public void onRoutePlanSuccess() {
+                Log.d("View", "onRoutePlanSuccess");
+                Intent intent = new Intent();
+                intent.setClass(PathPlanActivity.this, BNaviGuideActivity.class);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onRoutePlanFail(BikeRoutePlanError error) {
+                Log.d("View", "onRoutePlanFail");
+            }
+
+        });
+    }
+
+
     @Override
     protected int getContentId() {
         return R.layout.activity_path_plan;
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        resetView(0);
-        //在activity执行onResume时执行mMapView. onResume ()，实现地图生命周期管理
-        mMapView.onResume();
-        locationService.start();
-
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        //在activity执行onPause时执行mMapView. onPause ()，实现地图生命周期管理
-        mMapView.onPause();
-
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        locationService.unregisterListener(myListener); //注销掉监听
-        locationService.stop(); //停止定位服务
-        mMapView.onDestroy();
-    }
-
-    public void location() {
-        LoginSharedUilt intance = LoginSharedUilt.getIntance(this);
-        intance.saveLat(lat);
-        intance.saveLon(lon);
-        setMarker();
-        setUserMapCenter();
     }
 
     /**
@@ -205,6 +272,31 @@ public class PathPlanActivity extends BaseActivity {
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+//        PlanNode stNode = PlanNode.withCityNameAndPlaceName("广州", "马场路南");
+//        PlanNode enNode = PlanNode.withCityNameAndPlaceName("广州", "冼村路北");
+//        mSearch.transitSearch(new TransitRoutePlanOption().from(stNode).to(enNode).city("广州"));
+//        mSearch.walkingSearch((new WalkingRoutePlanOption()).from(stNode).to(enNode));
+        mMapView.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mMapView.onPause();
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mMapView.onDestroy();
+        mSearch.destroy();
+    }
+
+
     private void resetView(int type) {
         if (type == mNavigationType) {//如果点击两次，直接返回
             return;
@@ -221,10 +313,12 @@ public class PathPlanActivity extends BaseActivity {
             case 0:
                 drive.setBackgroundColor(Color.parseColor("#0066ff"));
                 drive.setTextColor(Color.parseColor("#ffffff"));
+//                startBikeNavi();
                 break;
             case 1:
                 walk.setBackgroundColor(Color.parseColor("#0066ff"));
                 walk.setTextColor(Color.parseColor("#ffffff"));
+//                startWalkNavi();
                 break;
             case 2:
                 bus.setBackgroundColor(Color.parseColor("#0066ff"));
@@ -235,32 +329,7 @@ public class PathPlanActivity extends BaseActivity {
     }
 
 
-    /*****
-     * 定位结果回调，重写onReceiveLocation方法，可以直接拷贝如下代码到自己工程中修改
-     */
-    private BDAbstractLocationListener myListener = new BDAbstractLocationListener() {
-
-        @Override
-        public void onReceiveLocation(BDLocation location) {
-            lat = location.getLatitude();
-            lon = location.getLongitude();
-            location();
-            locationService.setLocationOption(locationService.getSingleLocationClientOption());
-            // TODO Auto-generated method stub
-//            String addr = location.getAddrStr();    //获取详细地址信息
-//            String country = location.getCountry();    //获取国家
-//            String province = location.getProvince();    //获取省份
-//            String city = location.getCity();    //获取城市
-//            String district = location.getDistrict();    //获取区县
-//            String street = location.getStreet();    //获取街道信息
-//            int LocType = location.getLocType();    //返回码
-
-        }
-
-    };
-
-
-    @OnClick({R.id.drive, R.id.walk, R.id.bus})
+    @OnClick({R.id.drive, R.id.walk, R.id.bus, R.id.begin})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.drive:
@@ -272,6 +341,50 @@ public class PathPlanActivity extends BaseActivity {
             case R.id.bus:
                 resetView(2);
                 break;
+            case R.id.begin:
+                switch (mNavigationType) {
+                    case 0:
+                        startBikeNavi();
+                        break;
+                    case 1:
+                        startWalkNavi();
+                        break;
+                    case 2:
+                        break;
+                    default:
+                        break;
+                }
+                break;
         }
+    }
+
+    @Override
+    public void onGetWalkingRouteResult(WalkingRouteResult walkingRouteResult) {
+
+    }
+
+    @Override
+    public void onGetTransitRouteResult(TransitRouteResult transitRouteResult) {
+
+    }
+
+    @Override
+    public void onGetMassTransitRouteResult(MassTransitRouteResult massTransitRouteResult) {
+
+    }
+
+    @Override
+    public void onGetDrivingRouteResult(DrivingRouteResult drivingRouteResult) {
+
+    }
+
+    @Override
+    public void onGetIndoorRouteResult(IndoorRouteResult indoorRouteResult) {
+
+    }
+
+    @Override
+    public void onGetBikingRouteResult(BikingRouteResult bikingRouteResult) {
+
     }
 }

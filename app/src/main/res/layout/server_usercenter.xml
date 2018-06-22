@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:id="@+id/popup_layout"
-              android:layout_height="match_parent"
-              android:orientation="vertical">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <LinearLayout
 
@@ -18,10 +17,9 @@
             android:layout_height="21dp"
             android:layout_gravity="right"
             android:layout_margin="10dp"
-            android:src="@mipmap/ic_tuichu"/>
+            android:src="@mipmap/ic_tuichu" />
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            xmlns:app="http://schemas.android.com/apk/res-auto"
+        <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/server_cv_head"
             android:layout_width="60dp"
             android:layout_height="55dp"
@@ -29,7 +27,8 @@
             android:layout_marginBottom="5dp"
             android:layout_marginTop="-25dp"
             android:src="@mipmap/ic_me_head"
-           />
+            app:civ_border_color="@color/color_red"
+            app:civ_border_width="2dp" />
 
 
         <LinearLayout
@@ -43,8 +42,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
-                android:text="朵雪花，你好"
-                />
+                android:text="朵雪花，你好" />
         </LinearLayout>
 
 
@@ -83,21 +81,21 @@
                     <ImageView
                         android:layout_width="27dp"
                         android:layout_height="27dp"
-                        android:src="@mipmap/ic_userinfo"/>
+                        android:src="@mipmap/ic_userinfo" />
 
                     <TextView
+                        style="@style/common_font"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"
-                        android:text="个人资料"
-                        style="@style/common_font"/>
+                        android:text="个人资料" />
                 </LinearLayout>
 
                 <ImageView
                     android:layout_width="8dp"
                     android:layout_height="15dp"
                     android:layout_marginRight="15dp"
-                    android:src="@mipmap/ic_arrows_right"/>
+                    android:src="@mipmap/ic_arrows_right" />
             </LinearLayout>
 
             <View
@@ -126,21 +124,21 @@
                     <ImageView
                         android:layout_width="27dp"
                         android:layout_height="27dp"
-                        android:src="@mipmap/ic_volunteers"/>
+                        android:src="@mipmap/ic_volunteers" />
 
                     <TextView
+                        style="@style/common_font"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"
-                        android:text="急救资格升级"
-                        style="@style/common_font"/>
+                        android:text="急救资格升级" />
                 </LinearLayout>
 
                 <ImageView
                     android:layout_width="8dp"
                     android:layout_height="15dp"
                     android:layout_marginRight="15dp"
-                    android:src="@mipmap/ic_arrows_right"/>
+                    android:src="@mipmap/ic_arrows_right" />
             </LinearLayout>
 
 
@@ -172,21 +170,21 @@
                     <ImageView
                         android:layout_width="27dp"
                         android:layout_height="27dp"
-                        android:src="@mipmap/ic_add_aed"/>
+                        android:src="@mipmap/ic_add_aed" />
 
                     <TextView
+                        style="@style/common_font"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"
-                        android:text="添加AED站点"
-                        style="@style/common_font"/>
+                        android:text="添加AED站点" />
                 </LinearLayout>
 
                 <ImageView
                     android:layout_width="8dp"
                     android:layout_height="15dp"
                     android:layout_marginRight="15dp"
-                    android:src="@mipmap/ic_arrows_right"/>
+                    android:src="@mipmap/ic_arrows_right" />
             </LinearLayout>
 
             <View
@@ -214,21 +212,21 @@
                     <ImageView
                         android:layout_width="27dp"
                         android:layout_height="27dp"
-                        android:src="@mipmap/ic_feedback"/>
+                        android:src="@mipmap/ic_feedback" />
 
                     <TextView
+                        style="@style/common_font"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"
-                        android:text="意见反馈"
-                        style="@style/common_font"/>
+                        android:text="意见反馈" />
                 </LinearLayout>
 
                 <ImageView
                     android:layout_width="8dp"
                     android:layout_height="15dp"
                     android:layout_marginRight="15dp"
-                    android:src="@mipmap/ic_arrows_right"/>
+                    android:src="@mipmap/ic_arrows_right" />
             </LinearLayout>
 
             <View
@@ -257,21 +255,21 @@
                     <ImageView
                         android:layout_width="27dp"
                         android:layout_height="27dp"
-                        android:src="@mipmap/ic_me_jiuyuan"/>
+                        android:src="@mipmap/ic_me_jiuyuan" />
 
                     <TextView
+                        style="@style/common_font"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"
-                        android:text="救援记录"
-                        style="@style/common_font"/>
+                        android:text="救援记录" />
                 </LinearLayout>
 
                 <ImageView
                     android:layout_width="8dp"
                     android:layout_height="15dp"
                     android:layout_marginRight="15dp"
-                    android:src="@mipmap/ic_arrows_right"/>
+                    android:src="@mipmap/ic_arrows_right" />
             </LinearLayout>
 
 

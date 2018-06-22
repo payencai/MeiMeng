@@ -177,7 +177,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:singleLine="true"
-                android:text="急救站"
+                android:text="AED"
                 android:textColor="#fefefe"
                 android:textSize="12sp" />
         </LinearLayout>
@@ -210,10 +210,10 @@
     <ImageView
         android:id="@+id/volunteerRecruiting"
         android:layout_width="115dp"
-        android:layout_height="33dp"
+        android:layout_height="56dp"
         android:layout_below="@id/head"
         android:layout_marginLeft="6dp"
         android:layout_marginTop="18dp"
-        android:src="@mipmap/ic_volunteer_recruiting" />
+        android:src="@mipmap/ic_volunteer_recruiting2" />
 
 </RelativeLayout>

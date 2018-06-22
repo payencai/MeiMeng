@@ -2,7 +2,6 @@ package com.example.meimeng.fragment;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,7 +13,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -30,7 +28,6 @@ import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
 import com.baidu.mapapi.map.InfoWindow;
-import com.baidu.mapapi.map.MapPoi;
 import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
@@ -39,17 +36,6 @@ import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.model.LatLng;
-import com.baidu.mapapi.navi.BaiduMapNavigation;
-import com.baidu.mapapi.search.route.BikingRouteResult;
-import com.baidu.mapapi.search.route.DrivingRouteResult;
-import com.baidu.mapapi.search.route.IndoorRouteResult;
-import com.baidu.mapapi.search.route.MassTransitRouteResult;
-import com.baidu.mapapi.search.route.OnGetRoutePlanResultListener;
-import com.baidu.mapapi.search.route.PlanNode;
-import com.baidu.mapapi.search.route.RoutePlanSearch;
-import com.baidu.mapapi.search.route.TransitRouteResult;
-import com.baidu.mapapi.search.route.WalkingRoutePlanOption;
-import com.baidu.mapapi.search.route.WalkingRouteResult;
 import com.baidu.mapapi.utils.DistanceUtil;
 import com.baidu.mapapi.walknavi.WalkNavigateHelper;
 import com.baidu.mapapi.walknavi.adapter.IWEngineInitListener;
@@ -71,6 +57,7 @@ import com.example.meimeng.constant.PlatformContans;
 import com.example.meimeng.http.HttpProxy;
 import com.example.meimeng.http.ICallBack;
 import com.example.meimeng.service.LocationService;
+import com.example.meimeng.test.BNaviMainActivity;
 import com.example.meimeng.util.CustomPopWindow;
 import com.example.meimeng.util.LoginSharedUilt;
 import com.example.meimeng.util.MLog;
@@ -558,10 +545,14 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         view.findViewById(R.id.beginNavigation).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                LatLng startPt = new LatLng(lat, lon);
-//                LatLng endPt = new LatLng(latNumber, lonNumber);
-////                walkParam = new WalkNaviLaunchParam().stPt(startPt).endPt(endPt);
-////                startWalkNavi();
+                LoginSharedUilt intance = LoginSharedUilt.getIntance(getContext());
+                double lat = intance.getLat();
+                double lon = intance.getLon();
+                if (lat == 0 || lon == 0) {
+                    ToaskUtil.showToast(getContext(), "正在定位中...");
+                    return;
+                }
+                LatLng startPt = new LatLng(lat, lon);
                 Intent intent = new Intent();
                 Bundle bundle = new Bundle();
                 intent.putExtra("bundle", bundle);
@@ -569,7 +560,9 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
                 bundle.putDouble("lonNumber", lonNumber);
                 intent.setClass(getActivity(), PathPlanActivity.class);
                 startActivity(intent);
-
+//                if (customPopWindow != null) {
+//                    customPopWindow.dissmiss();
+//                }
             }
         });
         ((TextView) view.findViewById(R.id.distance)).setText("AED距离" + distance + "米");

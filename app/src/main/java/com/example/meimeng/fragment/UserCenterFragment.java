@@ -117,21 +117,21 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
     }
 
     private void serverInitView(View view) {
-        server_head=view.findViewById(R.id.server_cv_head);
-        mServerUsername=view.findViewById(R.id.tv_server_username);
-        mServerSetting=view.findViewById(R.id.iv_server_settings);
-        mServerAddAed=view.findViewById(R.id.addaed_server_layout);
-        mServerReback=view.findViewById(R.id.reback_server_layout);
-        mServerRecord=view.findViewById(R.id.record_server_layout);
-        mServerShengji=view.findViewById(R.id.shengji_server_layout);
-        mServerUserinfo=view.findViewById(R.id.userinfo_server_layout);
-        if(APP.getInstance().getServerUserInfo().getNickname()==null){
+        server_head = view.findViewById(R.id.server_cv_head);
+        mServerUsername = view.findViewById(R.id.tv_server_username);
+        mServerSetting = view.findViewById(R.id.iv_server_settings);
+        mServerAddAed = view.findViewById(R.id.addaed_server_layout);
+        mServerReback = view.findViewById(R.id.reback_server_layout);
+        mServerRecord = view.findViewById(R.id.record_server_layout);
+        mServerShengji = view.findViewById(R.id.shengji_server_layout);
+        mServerUserinfo = view.findViewById(R.id.userinfo_server_layout);
+        if (APP.getInstance().getServerUserInfo().getNickname() == null) {
             mServerUsername.setText("朵雪花,你好");
-        }else{
-            mServerUsername.setText(APP.getInstance().getServerUserInfo().getName()+",你好");
+        } else {
+            mServerUsername.setText(APP.getInstance().getServerUserInfo().getName() + ",你好");
         }
 
-        Log.e("image",APP.getInstance().getServerUserInfo().getImage());
+        Log.e("image", APP.getInstance().getServerUserInfo().getImage());
         Glide.with(this).load(APP.getInstance().getServerUserInfo().getImage()).into(server_head);
         //server_head.setAdapter();
     }
@@ -150,8 +150,8 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
     }
 
     private void clientInitView(View view) {
-        mClientQrcode=view.findViewById(R.id.layout_qrcode);
-        client_head=view.findViewById(R.id.client_cv_head);
+        mClientQrcode = view.findViewById(R.id.layout_qrcode);
+        client_head = view.findViewById(R.id.client_cv_head);
         mClientSetting = view.findViewById(R.id.iv_client_settings);
         mClientUsername = view.findViewById(R.id.tv_client_username);
         mClientUserinfo = view.findViewById(R.id.userinfo_client_layout);
@@ -163,47 +163,51 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
         mClientAboutus = view.findViewById(R.id.aboutus_client_layout);
         UserInfo userInfo = APP.getInstance().getUserInfo();
         if (userInfo != null) {
-            if (userInfo.getNickname()!=null)
-            mClientUsername.setText(userInfo.getNickname() + ",你好");
-            else{
+            if (userInfo.getNickname() != null)
+                mClientUsername.setText(userInfo.getNickname() + ",你好");
+            else {
                 mClientUsername.setText("朵雪花，你好");
             }
         }
         //mAdapter = new PictureAdapter(getActivity(), client_selected);
-        Glide.with(this).load(userInfo.getImage()).into(client_head);
+        if (userInfo != null) {
+            Glide.with(this).load(userInfo.getImage()).into(client_head);
+        }
     }
-    String clientimgurl="";
-    String serveriamge="";
-    private void updateClientUserInfo(String image){
-        Map<String,Object> params=new HashMap<>();
-        UserInfo userInfo=APP.getInstance().getUserInfo();
+
+    String clientimgurl = "";
+    String serveriamge = "";
+
+    private void updateClientUserInfo(String image) {
+        Map<String, Object> params = new HashMap<>();
+        UserInfo userInfo = APP.getInstance().getUserInfo();
         Gson gson = new GsonBuilder().enableComplexMapKeySerialization().create();
-        String token=APP.getInstance().getUserInfo().getToken();
+        String token = APP.getInstance().getUserInfo().getToken();
         //params.put("accountType ",userInfo.getAccountType()+"");
-        params.put("province",userInfo.getProvince()+"");
-        params.put("area",userInfo.getArea()+"");
-        params.put("city",userInfo.getCity()+"");
-        params.put("image",image);
-        params.put("address",userInfo.getAddress());
-        params.put("longitude",userInfo.getLongitude());
-        params.put("latitude",userInfo.getLatitude());
-        String data=gson.toJson(params);
-        Log.e("json",data);
+        params.put("province", userInfo.getProvince() + "");
+        params.put("area", userInfo.getArea() + "");
+        params.put("city", userInfo.getCity() + "");
+        params.put("image", image);
+        params.put("address", userInfo.getAddress());
+        params.put("longitude", userInfo.getLongitude());
+        params.put("latitude", userInfo.getLatitude());
+        String data = gson.toJson(params);
+        Log.e("json", data);
         HttpProxy.obtain().post(PlatformContans.UseUser.sUpdateUseUser, token, data, new ICallBack() {
             @Override
             public void OnSuccess(String result) {
 
-                JSONObject jsonObject= null;
+                JSONObject jsonObject = null;
                 try {
                     jsonObject = new JSONObject(result);
-                    String message=jsonObject.getString("message");
-                    Log.e("error",message);
-                    int code=jsonObject.getInt("resultCode");
-                    if(code==0){
+                    String message = jsonObject.getString("message");
+                    Log.e("error", message);
+                    int code = jsonObject.getInt("resultCode");
+                    if (code == 0) {
                         File file = new File(clientimgurl);
                         Glide.with(getActivity()).load(file).into(client_head);
                     }
-                    if(code==9999){
+                    if (code == 9999) {
                         //Log.e("error","error");
                     }
                 } catch (JSONException e) {
@@ -213,14 +217,15 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
 
             @Override
             public void onFailure(String error) {
-                 Log.e("error",error);
+                Log.e("error", error);
             }
         });
     }
-    public void upImage(String url,  File file,String imgurl) {
+
+    public void upImage(String url, File file, String imgurl) {
         OkHttpClient mOkHttpClent = new OkHttpClient();
-        clientimgurl=imgurl;
-        serveriamge=imgurl;
+        clientimgurl = imgurl;
+        serveriamge = imgurl;
         MultipartBody.Builder builder = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("image", "image",
@@ -249,13 +254,13 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
                 try {
                     JSONObject object = new JSONObject(string);
                     int resultCode = object.getInt("resultCode");
-                     final String data = object.getString("data");
+                    final String data = object.getString("data");
                     if (resultCode == 0) {
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                if(APP.sUserType==0)
-                                   updateClientUserInfo(data);
+                                if (APP.sUserType == 0)
+                                    updateClientUserInfo(data);
                                 else
                                     updateServerUserInfo(data);
                             }
@@ -270,27 +275,28 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
         });
     }
 
-    private String returnServer(String image){
-        Map<String,Object> params=new HashMap<>();
-        params.put("image",image);
+    private String returnServer(String image) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("image", image);
         Gson gson = new GsonBuilder().enableComplexMapKeySerialization().create();
         return gson.toJson(params);
     }
-    public void updateServerUserInfo(String image){
-        String token =APP.getInstance().getServerUserInfo().getToken();
-        String data=returnServer(image);
+
+    public void updateServerUserInfo(String image) {
+        String token = APP.getInstance().getServerUserInfo().getToken();
+        String data = returnServer(image);
         HttpProxy.obtain().post(PlatformContans.Serveruser.sUpdateServerUser, token, data, new ICallBack() {
             @Override
             public void OnSuccess(String result) {
-                JSONObject jsonObject= null;
+                JSONObject jsonObject = null;
                 try {
                     jsonObject = new JSONObject(result);
-                    int code=jsonObject.getInt("resultCode");
-                    if(code==0){
+                    int code = jsonObject.getInt("resultCode");
+                    if (code == 0) {
                         File file = new File(serveriamge);
                         Glide.with(getActivity()).load(file).into(server_head);
                     }
-                    if(code==9999){
+                    if (code == 9999) {
 
                     }
                 } catch (JSONException e) {
@@ -304,6 +310,7 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
             }
         });
     }
+
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -353,10 +360,10 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
                 break;
             case R.id.client_cv_head:
                 //Log.e("tag",getActivity().toString());
-                ImageSelectorUtils.openPhoto(getActivity(),0,false,1,client_selected);
+                ImageSelectorUtils.openPhoto(getActivity(), 0, false, 1, client_selected);
                 break;
             case R.id.server_cv_head:
-                ImageSelectorUtils.openPhoto(getActivity(),1,false,1,server_selected);
+                ImageSelectorUtils.openPhoto(getActivity(), 1, false, 1, server_selected);
                 break;
             case R.id.layout_qrcode:
                 startActivity(new Intent(getActivity(), QRCodeActivity.class));

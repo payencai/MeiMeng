@@ -56,12 +56,28 @@
         </LinearLayout>
     </LinearLayout>
 
-
-    <com.baidu.mapapi.map.MapView
-        android:id="@+id/bmapView"
+    <RelativeLayout
+        android:id="@+id/baiduMapLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/head"
-        android:clickable="true"></com.baidu.mapapi.map.MapView>
+        android:layout_below="@id/head">
+
+        <com.baidu.mapapi.map.MapView
+            android:id="@+id/bmapView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clickable="true"></com.baidu.mapapi.map.MapView>
+
+        <Button
+            android:id="@+id/begin"
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="12dp"
+            android:layout_marginLeft="@dimen/margin_12dp"
+            android:layout_marginRight="@dimen/margin_12dp"
+            android:background="@drawable/shape_roundrect_black_roundrect_cyan_bg"
+            android:text="开始导航" />
+    </RelativeLayout>
 
 </LinearLayout>

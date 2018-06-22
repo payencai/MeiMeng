@@ -40,6 +40,16 @@ import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ServerMainActivity extends BaseActivity {
+    @BindView(R.id.sun1)
+    ImageView sun1;
+    @BindView(R.id.sun2)
+    ImageView sun2;
+    @BindView(R.id.sun3)
+    ImageView sun3;
+    @BindView(R.id.sun4)
+    ImageView sun4;
+    @BindView(R.id.sun5)
+    ImageView sun5;
     @BindView(R.id.tv_help_time)
     TextView time;
     @BindView(R.id.tv_help_count)
@@ -93,13 +103,34 @@ public class ServerMainActivity extends BaseActivity {
                 startActivityForResult(intent,1);
             }
         });
+        int level=userInfo.getLevel();
+        Log.e("level",level+"");
+        if(level==1){
+            sun2.setVisibility(View.GONE);
+            sun3.setVisibility(View.GONE);
+            sun4.setVisibility(View.GONE);
+            sun5.setVisibility(View.GONE);
+        }else if(level==2){
+            sun3.setVisibility(View.GONE);
+            sun4.setVisibility(View.GONE);
+            sun5.setVisibility(View.GONE);
 
+        }else if(level==3){
+            sun4.setVisibility(View.GONE);
+            sun5.setVisibility(View.GONE);
+
+        }else if(level==4){
+            sun5.setVisibility(View.GONE);
+        }else if(level==5){
+
+        }
         adapter= new RVBaseAdapter<CurrentHelpInfo>() {
             @Override
             protected void onViewHolderBound(RVBaseViewHolder holder, int position) {
                 //holder.setText(R.id.);
             }
-        };getCurrentHelp();
+        };
+        getCurrentHelp();
         saveImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

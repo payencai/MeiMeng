@@ -35,12 +35,54 @@
                     android:layout_height="wrap_content"/>
             </LinearLayout>
             <TextView
-                android:layout_marginLeft="@dimen/margin_40dp"
+                android:layout_marginLeft="@dimen/margin_35dp"
                 style="@style/font_14sp_333"
                 android:layout_gravity="center"
                 android:text="当前等级"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
+            <LinearLayout
+                android:layout_marginRight="@dimen/margin_5dp"
+                android:layout_marginLeft="@dimen/margin_40dp"
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent">
+                <ImageView
+                    android:id="@+id/sun1"
+                    android:layout_marginTop="@dimen/margin_30dp"
+                    android:src="@mipmap/ic_dengji"
+                    android:layout_width="15dp"
+                    android:layout_height="16dp"/>
+                <ImageView
+                    android:id="@+id/sun2"
+                    android:layout_marginTop="10dp"
+
+                    android:src="@mipmap/ic_dengji"
+                    android:layout_width="15dp"
+                    android:layout_height="16dp"/>
+                <ImageView
+                    android:id="@+id/sun3"
+                    android:layout_marginTop="@dimen/margin_30dp"
+
+                    android:src="@mipmap/ic_dengji"
+                    android:layout_width="15dp"
+                    android:layout_height="16dp"/>
+                <ImageView
+                    android:id="@+id/sun4"
+                    android:layout_marginTop="@dimen/margin_10dp"
+
+                    android:src="@mipmap/ic_dengji"
+                    android:layout_width="15dp"
+                    android:layout_height="16dp"/>
+                <ImageView
+                    android:id="@+id/sun5"
+                    android:layout_marginTop="@dimen/margin_30dp"
+
+                    android:src="@mipmap/ic_dengji"
+                    android:layout_width="15dp"
+                    android:layout_height="16dp"/>
+
+            </LinearLayout>
         </LinearLayout>
         <View
             android:background="@color/bg_f2f2f2"
@@ -52,7 +94,7 @@
             android:layout_height="64dp">
             <LinearLayout
                 android:orientation="vertical"
-                android:layout_width="250dp"
+                android:layout_width="230dp"
                 android:layout_height="wrap_content">
                 <LinearLayout
                     android:orientation="horizontal"
@@ -60,7 +102,7 @@
                     android:layout_height="wrap_content">
                     <TextView
                         android:layout_marginTop="@dimen/margin_10dp"
-                        android:layout_marginLeft="@dimen/margin_20dp"
+                        android:layout_marginLeft="@dimen/margin_15dp"
                         android:layout_weight="1"
                         android:text="救援次数"
                         android:textColor="#999999"
@@ -68,7 +110,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"/>
                     <TextView
-                        android:layout_marginLeft="@dimen/margin_10dp"
+                        android:layout_marginLeft="@dimen/margin_5dp"
                         android:layout_marginTop="@dimen/margin_10dp"
                         android:layout_weight="1"
                         android:text="累计救援距离"
@@ -77,9 +119,9 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"/>
                     <TextView
-                        android:layout_marginLeft="@dimen/margin_20dp"
+                       android:layout_marginLeft="@dimen/margin_20dp"
                         android:layout_marginTop="@dimen/margin_10dp"
-                        android:layout_weight="1"
+                        android:layout_weight="1.5"
                         android:text="在线累计时间"
                         android:textColor="#999999"
                         android:textSize="@dimen/text_size_10sp"
@@ -88,7 +130,7 @@
                 </LinearLayout>
                 <LinearLayout
                     android:orientation="horizontal"
-                    android:layout_width="250dp"
+                    android:layout_width="230dp"
                     android:layout_height="wrap_content">
                     <LinearLayout
                         android:orientation="horizontal"
@@ -124,7 +166,7 @@
                         <TextView
                             android:id="@+id/tv_help_distance"
                             android:layout_marginTop="@dimen/margin_10dp"
-                            android:layout_marginLeft="@dimen/margin_20dp"
+                            android:layout_marginLeft="@dimen/margin_10dp"
                             android:text="300"
                             android:textColor="#333333"
                             android:textSize="24sp"
@@ -149,7 +191,7 @@
                         <TextView
                             android:id="@+id/tv_help_time"
                             android:layout_marginTop="@dimen/margin_10dp"
-                            android:layout_marginLeft="@dimen/margin_20dp"
+                            android:layout_marginLeft="@dimen/margin_10dp"
                             android:text="300"
                             android:textColor="#333333"
                             android:textSize="24sp"
@@ -177,6 +219,7 @@
                 android:layout_width="2dp"
                 android:layout_height="match_parent"></View>
             <LinearLayout
+                android:layout_marginLeft="@dimen/margin_10dp"
                 android:id="@+id/enter_main"
                 android:layout_gravity="center"
                 android:layout_width="wrap_content"
@@ -185,8 +228,8 @@
                     android:id="@+id/iv_main_head"
                     android:src="@mipmap/ic_me_head"
                     android:layout_gravity="center"
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"/>
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"/>
                 <ImageView
                     android:layout_marginLeft="@dimen/margin_10dp"
                     android:src="@mipmap/ic_arrows_right"

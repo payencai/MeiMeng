@@ -157,7 +157,7 @@ public class ServerCenterActivity extends BaseActivity {
     }
 
     private void serverInitView() {
-        String image = getIntent().getExtras().getString("image");
+        String image = getIntent().getExtras().getString("image")+"";
 
         if (APP.getInstance().getServerUserInfo().getNickname() == null) {
             mServerUsername.setText("朵雪花,你好");

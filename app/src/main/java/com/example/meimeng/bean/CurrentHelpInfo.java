@@ -105,7 +105,7 @@ public class CurrentHelpInfo extends RVBaseCell {
         nowhelp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                context.startActivity(new Intent(context, ServerCenterActivity.class));
+                //context.startActivity(new Intent(context, ServerCenterActivity.class));
             }
         });
     }

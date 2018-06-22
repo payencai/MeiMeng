@@ -188,7 +188,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 }
                 if (APP.IS_DEBUG) {
                     if (userLoginState == 0) {
-                        tel = "13480197692";
+                        tel = "17306676089";
                         psw = "123456";
                     } else {
                         tel = "13480197692";

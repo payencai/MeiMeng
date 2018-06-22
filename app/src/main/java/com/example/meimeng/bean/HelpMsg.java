@@ -8,7 +8,10 @@ import com.example.meimeng.R;
 import com.example.meimeng.common.rv.base.RVBaseCell;
 import com.example.meimeng.common.rv.base.RVBaseViewHolder;
 
+
+
 public class HelpMsg extends RVBaseCell {
+
     private String createTime;
     private String address;
     private String telephone;

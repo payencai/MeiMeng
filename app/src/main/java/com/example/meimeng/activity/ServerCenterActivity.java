@@ -111,7 +111,7 @@ public class ServerCenterActivity extends BaseActivity {
         params.alpha = (float) 0.3;
         window.setAttributes(params);
         //mPop.getAnimationStyle()
-        mPop.showAtLocation(ServerCenterActivity.this.findViewById(R.id.popup_layout), Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
+        mPop.showAtLocation(ServerCenterActivity.this.findViewById(R.id.server_popup_layout), Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
         //window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
         mPop.setOnDismissListener(new PopupWindow.OnDismissListener() {
             @Override

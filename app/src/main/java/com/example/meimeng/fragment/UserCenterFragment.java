@@ -14,6 +14,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -149,7 +150,11 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
             }
         }
         //mAdapter = new PictureAdapter(getActivity(), client_selected);
-        Glide.with(this).load(userInfo.getImage()).into(client_head);
+        String image = userInfo.getImage();
+        Log.d("clientInitView", "clientInitView: " + image);
+        if (!TextUtils.isEmpty(image)) {
+            Glide.with(this).load(image).into(client_head);
+        }
     }
     String clientimgurl="";
     private void updateClientUserInfo(String image){

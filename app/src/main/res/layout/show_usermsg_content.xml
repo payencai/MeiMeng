@@ -270,10 +270,10 @@
                     android:textSize="@dimen/text_size_14sp" />
 
                 <LinearLayout
-                    android:layout_marginRight="@dimen/margin_10dp"
                     android:id="@+id/blood_layout"
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/margin_35dp"
+                    android:layout_marginRight="@dimen/margin_10dp"
                     android:background="@drawable/shape_blood_bg"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
@@ -285,12 +285,13 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="A"
-                        android:textSize="14sp"/>
+                        android:textSize="14sp" />
+
                     <ImageView
-                        android:layout_marginLeft="@dimen/margin_20dp"
-                        android:src="@mipmap/ic_triangle_down"
                         android:layout_width="12dp"
-                        android:layout_height="12dp"/>
+                        android:layout_height="12dp"
+                        android:layout_marginLeft="@dimen/margin_20dp"
+                        android:src="@mipmap/ic_triangle_down" />
 
                 </LinearLayout>
 
@@ -298,22 +299,25 @@
 
 
         </LinearLayout>
+
         <TextView
-            android:paddingRight="@dimen/margin_12dp"
-            android:layout_marginTop="@dimen/margin_10dp"
-            android:paddingTop="@dimen/margin_10dp"
-            android:paddingLeft="15dp"
-            android:background="@color/white"
-            android:textColor="#999999"
-            android:textSize="@dimen/text_size_13sp"
-            android:text="“请填写真实完整的信息，错误的信息会影响志愿者和医生对您的病情判断”"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/margin_50dp"/>
+            android:layout_height="@dimen/margin_50dp"
+            android:layout_marginTop="@dimen/margin_10dp"
+            android:background="@color/white"
+            android:paddingLeft="15dp"
+            android:paddingRight="@dimen/margin_12dp"
+            android:paddingTop="@dimen/margin_10dp"
+            android:text="“请填写真实完整的信息，错误的信息会影响志愿者和医生对您的病情判断”"
+            android:textColor="#999999"
+            android:textSize="@dimen/text_size_13sp" />
+
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginLeft="@dimen/margin_15dp"
             android:background="@color/bg_f2f2f2"></View>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="110dp"
@@ -340,7 +344,6 @@
                     android:textSize="@dimen/text_size_14sp" />
 
                 <EditText
-
                     android:id="@+id/et_userinfo_sicken"
                     android:layout_width="200dp"
                     android:layout_height="wrap_content"
@@ -398,6 +401,7 @@
             android:orientation="vertical">
 
             <LinearLayout
+                android:id="@+id/contacts1"
                 android:layout_width="match_parent"
                 android:layout_height="55dp"
                 android:focusable="true"
@@ -433,6 +437,7 @@
                 android:background="@color/bg_f2f2f2"></View>
 
             <LinearLayout
+                android:id="@+id/contacts2"
                 android:layout_width="match_parent"
                 android:layout_height="55dp"
                 android:focusable="true"
@@ -468,6 +473,7 @@
                 android:background="@color/bg_f2f2f2"></View>
 
             <LinearLayout
+                android:id="@+id/contacts3"
                 android:layout_width="match_parent"
                 android:layout_height="55dp"
                 android:focusable="true"

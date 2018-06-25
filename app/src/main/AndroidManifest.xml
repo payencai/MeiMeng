@@ -85,7 +85,7 @@
         <activity android:name=".activity.ServerUserInfoActivity" />
         <activity android:name=".activity.ServerRecordActivity" />
         <activity android:name=".activity.AddGaojiActivity" />
-        <activity android:name=".activity.QRCodeActivity"/>
+        <activity android:name=".activity.QRCodeActivity" />
         <!-- 图片框架地址：https://github.com/donkingliang/ImageSelector -->
         <!-- 图片选择Activity -->
         <!-- 去掉Activity的ActionBar。 -->
@@ -135,14 +135,11 @@
         <activity
             android:name=".activity.SearchPOIActivity"
             android:theme="@style/TranslucentTheme" />
-        <activity android:name=".activity.PathPlanActivity"></activity>
+        <activity android:name=".activity.PathPlanActivity" />
         <activity android:name=".activity.WNaviGuideActivity" />
-        <activity android:name=".activity.ServerMainActivity">
-        </activity>
-        <activity android:name=".activity.ServerCenterActivity">
-        </activity>
-        <activity android:name=".activity.HelpMsgActivity">
-        </activity>
+        <activity android:name=".activity.ServerMainActivity"></activity>
+        <activity android:name=".activity.ServerCenterActivity"></activity>
+        <activity android:name=".activity.HelpMsgActivity"></activity>
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -151,8 +148,10 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/filepaths"/>
+                android:resource="@xml/filepaths" />
         </provider>
+
+        <activity android:name=".activity.MakeContactsActivity"></activity>
     </application>
 
 </manifest>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:orientation="vertical"
+    tools:context=".activity.MakeContactsActivity">
+
+    <include layout="@layout/toobar_head_layout" />
+
+    <EditText
+        android:id="@+id/contactsName"
+        android:layout_width="match_parent"
+        android:hint="请输入名称"
+        android:layout_height="48dp"
+        android:background="@color/color_white_100"
+        android:maxLines="1"
+        android:paddingLeft="@dimen/margin_12dp"
+        android:text=""
+        android:textColor="@color/text_333"
+        android:textCursorDrawable="@null"
+        android:textSize="@dimen/text_size_16sp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.75dp"
+        android:background="@color/line_gray" />
+
+    <EditText
+        android:id="@+id/contactsTel"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:hint="请输入号码"
+        android:background="@color/color_white_100"
+        android:inputType="number"
+        android:maxLength="11"
+        android:maxLines="1"
+        android:paddingLeft="@dimen/margin_12dp"
+        android:text=""
+        android:textColor="@color/text_333"
+        android:textCursorDrawable="@null"
+        android:textSize="@dimen/text_size_16sp" />
+</LinearLayout>

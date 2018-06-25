@@ -148,8 +148,9 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
                 mClientUsername.setText("朵雪花，你好");
             }
         }
+        Log.e("aaaa",userInfo.getImage());
         //mAdapter = new PictureAdapter(getActivity(), client_selected);
-        Glide.with(this).load(userInfo.getImage()).into(client_head);
+        Glide.with(getActivity()).load(userInfo.getImage()).into(client_head);
     }
     String clientimgurl="";
     private void updateClientUserInfo(String image){

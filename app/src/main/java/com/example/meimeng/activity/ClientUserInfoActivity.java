@@ -17,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -49,9 +50,9 @@ public class ClientUserInfoActivity extends BaseActivity {
     private SpinerPopWindow<String> mSpinerPopWindow;
     private List<String> list;
     @BindView(R.id.tv_value)
-     TextView tvValue;
+    TextView tvValue;
     @BindView(R.id.blood_layout)
-     LinearLayout bloodLayout;
+    LinearLayout bloodLayout;
 
     //定义一个String类型的List数组作为数据源
     private List<String> dataList;
@@ -60,7 +61,7 @@ public class ClientUserInfoActivity extends BaseActivity {
     private ArrayAdapter<String> adapter;
 
     @BindView(R.id.layout_address)
-    LinearLayout address;
+    RelativeLayout address;
     @BindView(R.id.title)
     TextView tv_title;
     @BindView(R.id.btn_userinfo_save)
@@ -76,17 +77,17 @@ public class ClientUserInfoActivity extends BaseActivity {
     @BindView(R.id.et_userinfo_age)
     EditText et_age;
 
-   TextView tv_bloodType;
+    TextView tv_bloodType;
     @BindView(R.id.et_userinfo_sicken)
     EditText et_sicken;
     @BindView(R.id.et_userinfo_othersicken)
     EditText et_othersicken;
     @BindView(R.id.et_userinfo_lianxi2)
-    EditText et_lianxi2;
+    TextView et_lianxi2;
     @BindView(R.id.et_userinfo_lianxi3)
-    EditText et_lianxi3;
+    TextView et_lianxi3;
     @BindView(R.id.et_userinfo_lianxi1)
-    EditText et_lianxi1;
+    TextView et_lianxi1;
     @BindView(R.id.rb_userinfo_man)
     RadioButton rb_man;
     @BindView(R.id.rb_userinfo_nv)
@@ -94,28 +95,27 @@ public class ClientUserInfoActivity extends BaseActivity {
     @BindView(R.id.rg_userinfo_sex)
     RadioGroup rg_sex;
     private UserInfo userInfo;
+
     @Override
     protected void initView() {
 
         ButterKnife.bind(this);
 
-        userInfo=APP.getInstance().getUserInfo();
+        userInfo = APP.getInstance().getUserInfo();
         tv_title.setText("个人资料");
-        Drawable drawable= getResources().getDrawable(R.drawable.sex_selector);
-        drawable.setBounds(0,0,30,30);//将drawable设置为宽100 高100固定大小
-        rb_man.setCompoundDrawables(drawable,null,null,null);
-        Drawable drawable2= getResources().getDrawable(R.drawable.sex_selector);
-        drawable2.setBounds(0,0,30,30);//将drawable设置为宽100 高100固定大小
-        rb_nv.setCompoundDrawables(drawable2,null,null,null);
-        //rb_nv.setChecked(true);
+        Drawable drawable = getResources().getDrawable(R.drawable.sex_selector);
+        drawable.setBounds(0, 0, 30, 30);//将drawable设置为宽100 高100固定大小
+        rb_man.setCompoundDrawables(drawable, null, null, null);
+        Drawable drawable2 = getResources().getDrawable(R.drawable.sex_selector);
+        drawable2.setBounds(0, 0, 30, 30);//将drawable设置为宽100 高100固定大小
+        rb_nv.setCompoundDrawables(drawable2, null, null, null);
         setValue();
-
         initData();
         bloodLayout.setOnClickListener(clickListener);
-        mSpinerPopWindow = new SpinerPopWindow<String>(this, list,itemClickListener);
-       // mSpinerPopWindow.setOnDismissListener(dismissListener);
+        mSpinerPopWindow = new SpinerPopWindow<String>(this, list, itemClickListener);
+        // mSpinerPopWindow.setOnDismissListener(dismissListener);
         ImageView back;
-        back=findViewById(R.id.back);
+        back = findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -125,18 +125,17 @@ public class ClientUserInfoActivity extends BaseActivity {
         address.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SelectAddressActivity.startSelectAddressActivity(ClientUserInfoActivity.this, "address", 0, et_address.getText().toString()+"");
+                SelectAddressActivity.startSelectAddressActivity(ClientUserInfoActivity.this, "address", 0, et_address.getText().toString() + "");
             }
         });
         mBtnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String data=returnJsonString();
-                String token=userInfo.getToken();
-                updateUserInfo(data,token);
+                String data = returnJsonString();
+                String token = userInfo.getToken();
+                updateUserInfo(data, token);
             }
         });
-
 
 
     }
@@ -147,11 +146,11 @@ public class ClientUserInfoActivity extends BaseActivity {
         if (data != null) {
             if (requestCode == 0) {
                 AddressBean address = (AddressBean) data.getSerializableExtra("address");
-                if(address!=null){
+                if (address != null) {
                     String addressStr = address.getAddress();
                     if (!TextUtils.isEmpty(addressStr)) {
                         et_address.setText(addressStr);
-                        et_address.setTextColor(ContextCompat.getColor(this,R.color.text_333));
+                        et_address.setTextColor(ContextCompat.getColor(this, R.color.text_333));
                     }
                 }
 
@@ -159,20 +158,20 @@ public class ClientUserInfoActivity extends BaseActivity {
         }
     }
 
-    private void updateUserInfo(String data, String token){
+    private void updateUserInfo(String data, String token) {
         HttpProxy.obtain().post(PlatformContans.UseUser.sUpdateUseUser, token, data, new ICallBack() {
             @Override
             public void OnSuccess(String result) {
 
-                JSONObject jsonObject= null;
+                JSONObject jsonObject = null;
                 try {
                     jsonObject = new JSONObject(result);
-                    int code=jsonObject.getInt("resultCode");
-                    if(code==0){
-                        Toast.makeText(ClientUserInfoActivity.this,"更新成功",Toast.LENGTH_LONG).show();
+                    int code = jsonObject.getInt("resultCode");
+                    if (code == 0) {
+                        Toast.makeText(ClientUserInfoActivity.this, "更新成功", Toast.LENGTH_LONG).show();
                         finish();
                     }
-                    if(code==9999){
+                    if (code == 9999) {
 
                     }
                 } catch (JSONException e) {
@@ -192,65 +191,68 @@ public class ClientUserInfoActivity extends BaseActivity {
         return R.layout.show_usermsg_content;
     }
 
-    public String returnJsonString(){
+    public String returnJsonString() {
 
-        Map<String,Object> params=new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         Gson gson = new GsonBuilder().enableComplexMapKeySerialization().create();
-        String nickname=et_name.getEditableText().toString();
-        String telephone =et_phone.getEditableText().toString();
-        String fixedLineTelephone =et_fixphone.getEditableText().toString();
-        String address=et_address.getText().toString();
-        String sex="女";
-        if(rb_man.isChecked()){
-             sex="男";
+        String nickname = et_name.getEditableText().toString();
+        String telephone = et_phone.getEditableText().toString();
+        String fixedLineTelephone = et_fixphone.getEditableText().toString();
+        String address = et_address.getText().toString();
+        String sex = "女";
+        if (rb_man.isChecked()) {
+            sex = "男";
         }
 
-        String sickenHistory =et_sicken.getEditableText().toString();
-        String otherSicken=et_othersicken.getEditableText().toString();
-        String linkman1 =et_lianxi1.getEditableText().toString();
-        String linkman2 =et_lianxi2.getEditableText().toString();
-        String linkman3 =et_lianxi3.getEditableText().toString();
-        int age=Integer.parseInt(et_age.getEditableText().toString());
-        String area=userInfo.getArea();
-        String city=userInfo.getCity();
-        String province=userInfo.getProvince();
-        String latitude=userInfo.getLatitude();
-        String longitude=userInfo.getLongitude();
-        if(area==null){
-            area="";
-        }if (city==null){
-            city="";
+        String sickenHistory = et_sicken.getEditableText().toString();
+        String otherSicken = et_othersicken.getEditableText().toString();
+        String linkman1 = et_lianxi1.getText().toString();
+        String linkman2 = et_lianxi2.getText().toString();
+        String linkman3 = et_lianxi3.getText().toString();
+        int age = Integer.parseInt(et_age.getEditableText().toString());
+        String area = userInfo.getArea();
+        String city = userInfo.getCity();
+        String province = userInfo.getProvince();
+        String latitude = userInfo.getLatitude();
+        String longitude = userInfo.getLongitude();
+        if (area == null) {
+            area = "";
         }
-        if(province==null){
-            province="";
+        if (city == null) {
+            city = "";
         }
-        if (latitude==null){
-            latitude="1";
+        if (province == null) {
+            province = "";
         }
-        if(longitude==null){
-            longitude="1";
+        if (latitude == null) {
+            latitude = "1";
+        }
+        if (longitude == null) {
+            longitude = "1";
         }
 
-        params.put("age",age);
-        params.put("bloodType",tvValue.getText().toString());
-        params.put("fixedLineTelephone",fixedLineTelephone);
-        params.put("linkman1",linkman1);
-        params.put("linkman2",linkman2);
-        params.put("linkman3",linkman3);
-        params.put("nickname",nickname);
-        params.put("otherSicken",otherSicken);
-        params.put("sickenHistory",sickenHistory);
-        params.put("telephone",telephone);
-        params.put("province",province);
-        params.put("area",area);
-        params.put("city",city);
-        params.put("address",address);
-        params.put("longitude",longitude);
-        params.put("latitude",latitude);
+        params.put("age", age);
+        params.put("bloodType", tvValue.getText().toString());
+        params.put("fixedLineTelephone", fixedLineTelephone);
+        params.put("linkman1", linkman1);
+        params.put("linkman2", linkman2);
+        params.put("linkman3", linkman3);
+        params.put("nickname", nickname);
+        params.put("otherSicken", otherSicken);
+        params.put("sickenHistory", sickenHistory);
+        params.put("telephone", telephone);
+        params.put("province", province);
+        params.put("area", area);
+        params.put("city", city);
+        params.put("address", address);
+        params.put("longitude", longitude);
+        params.put("latitude", latitude);
         return gson.toJson(params);
     }
-    private String bloodtype="";
-    public void setValue(){
+
+    private String bloodtype = "";
+
+    public void setValue() {
         HttpProxy.obtain().get(PlatformContans.UseUser.sGetUseUser, APP.getInstance().getUserInfo().getToken(), new ICallBack() {
             @Override
             public void OnSuccess(String result) {
@@ -260,28 +262,28 @@ public class ClientUserInfoActivity extends BaseActivity {
                     int resultCode = object.getInt("resultCode");
                     if (resultCode == 0) {
                         JSONObject data = object.getJSONObject("data");
-                        et_name.setText(data.getString("name")+"");
+                        et_name.setText(data.getString("name") + "");
                         et_fixphone.setText(data.getString("fixedLineTelephone"));
-                        bloodtype=data.getString("bloodType");
-                        tvValue.setText(bloodtype+"");
-                        et_address.setText(data.getString("address")+"");
-                        et_address.setTextColor(ContextCompat.getColor(ClientUserInfoActivity.this,R.color.text_333));
-                        et_phone.setText(data.getString("telephone")+"");
-                        et_age.setText(data.getInt("age")+"");
-                        String sex=data.getString("sex");
+                        bloodtype = data.getString("bloodType");
+                        tvValue.setText(bloodtype + "");
+                        et_address.setText(data.getString("address") + "");
+                        et_address.setTextColor(ContextCompat.getColor(ClientUserInfoActivity.this, R.color.text_333));
+                        et_phone.setText(data.getString("telephone") + "");
+                        et_age.setText(data.getInt("age") + "");
+                        String sex = data.getString("sex");
                         rg_sex.setEnabled(false);
                         rb_nv.setEnabled(false);
                         rb_man.setEnabled(false);
-                        if(sex.equals("男")){
+                        if (sex.equals("男")) {
                             rb_man.setChecked(true);
-                        }else{
+                        } else {
                             rb_nv.setChecked(false);
                         }
-                        et_sicken.setText(data.getString("sickenHistory")+"");
-                        et_othersicken.setText(data.getString("otherSicken")+"");
-                        et_lianxi1.setText(data.getString("linkman1")+"");
-                        et_lianxi2.setText(data.getString("linkman2")+"");
-                        et_lianxi3.setText(data.getString("linkman3")+"");
+                        et_sicken.setText(data.getString("sickenHistory") + "");
+                        et_othersicken.setText(data.getString("otherSicken") + "");
+                        et_lianxi1.setText(data.getString("linkman1") + "");
+                        et_lianxi2.setText(data.getString("linkman2") + "");
+                        et_lianxi3.setText(data.getString("linkman3") + "");
 
                     }
                 } catch (JSONException e) {
@@ -292,13 +294,11 @@ public class ClientUserInfoActivity extends BaseActivity {
 
             @Override
             public void onFailure(String error) {
-              Log.e("user",error);
+                Log.e("user", error);
             }
         });
 
     }
-
-
 
 
     /**
@@ -306,10 +306,10 @@ public class ClientUserInfoActivity extends BaseActivity {
      */
     private AdapterView.OnItemClickListener itemClickListener = new AdapterView.OnItemClickListener() {
         @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position,long id) {
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             mSpinerPopWindow.dismiss();
             tvValue.setText(list.get(position));
-           // tvValue.setTextSize(14);
+            // tvValue.setTextSize(14);
 
         }
     };
@@ -346,11 +346,12 @@ public class ClientUserInfoActivity extends BaseActivity {
 
     /**
      * 给TextView右边设置图片
+     *
      * @param resId
      */
     private void setTextImage(int resId) {
         Drawable drawable = getResources().getDrawable(resId);
-        drawable.setBounds(0, 0, drawable.getMinimumWidth(),drawable.getMinimumHeight());// 必须设置图片大小，否则不显示
+        drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());// 必须设置图片大小，否则不显示
         tvValue.setCompoundDrawables(null, null, drawable, null);
     }
 }

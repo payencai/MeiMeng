@@ -401,6 +401,7 @@
             android:orientation="vertical">
 
             <RelativeLayout
+                android:id="@+id/contacts1"
                 android:layout_width="match_parent"
                 android:layout_height="55dp"
                 >
@@ -435,6 +436,7 @@
                 android:background="@color/bg_f2f2f2"></View>
 
             <RelativeLayout
+                android:id="@+id/contacts2"
                 android:layout_width="match_parent"
                 android:layout_height="55dp"
                 >
@@ -469,6 +471,7 @@
                 android:background="@color/bg_f2f2f2"></View>
 
             <RelativeLayout
+                android:id="@+id/contacts3"
                 android:layout_width="match_parent"
                 android:layout_height="55dp"
                 >

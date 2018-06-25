@@ -95,7 +95,12 @@ public class ClientUserInfoActivity extends BaseActivity {
     @BindView(R.id.rg_userinfo_sex)
     RadioGroup rg_sex;
     private UserInfo userInfo;
-
+    @BindView(R.id.contacts1)
+    RelativeLayout contacts1;
+    @BindView(R.id.contacts2)
+    RelativeLayout contacts2;
+    @BindView(R.id.contacts3)
+    RelativeLayout contacts3;
     @Override
     protected void initView() {
 
@@ -136,6 +141,25 @@ public class ClientUserInfoActivity extends BaseActivity {
                 updateUserInfo(data, token);
             }
         });
+        contacts1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MakeContactsActivity.startMakeContactsActivity(ClientUserInfoActivity.this, 1);
+            }
+        });
+        contacts2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MakeContactsActivity.startMakeContactsActivity(ClientUserInfoActivity.this, 2);
+            }
+        });
+        contacts3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MakeContactsActivity.startMakeContactsActivity(ClientUserInfoActivity.this, 3);
+
+            }
+        });
 
 
     }
@@ -154,6 +178,23 @@ public class ClientUserInfoActivity extends BaseActivity {
                     }
                 }
 
+            }
+            else if (requestCode == 1) {
+                String name = data.getStringExtra("name");
+                String tel = data.getStringExtra("tel");
+                String showString = name + ": " + tel;
+                et_lianxi1.setText(showString);
+            } else if (requestCode == 2) {
+                String name = data.getStringExtra("name");
+                String tel = data.getStringExtra("tel");
+                String showString = name + ": " + tel;
+                et_lianxi2.setText(showString);
+
+            } else if (requestCode == 3) {
+                String name = data.getStringExtra("name");
+                String tel = data.getStringExtra("tel");
+                String showString = name + ": " + tel;
+                et_lianxi3.setText(showString);
             }
         }
     }

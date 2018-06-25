@@ -127,7 +127,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         findViewById(R.id.back).setVisibility(View.GONE);
 
 
-
         headLayout.setBackgroundColor(Color.parseColor("#00ffffff"));
 
         title = (TextView) findViewById(R.id.title);

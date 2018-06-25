@@ -47,20 +47,18 @@ public class UpdateNameActivity extends BaseActivity {
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String token="";
+
                 String name=et_updatename.getEditableText().toString();
-                Intent intent=new Intent();
-                Bundle bundle=new Bundle();
-                bundle.putString("name",name);
-                intent.putExtras(bundle);
-                setResult(RESULT_OK,intent);
-                finish();
+
+                String token=APP.getInstance().getUserInfo().getToken();
+                updateNickname(name,token);
+                //finish();
 //                if(APP.sUserType==0){
-//                    token=APP.getInstance().getUserInfo().getToken();
+
 //                }else{
 //                    token=APP.getInstance().getServerUserInfo().getToken();
 //                }
-                //updateNickname(name,token);
+
             }
         });
         ImageView back;
@@ -77,7 +75,7 @@ public class UpdateNameActivity extends BaseActivity {
     protected int getContentId() {
         return R.layout.show_updatename_content;
     }
-    public void updateNickname(String name,String token){
+    public void updateNickname(final String name, String token){
         if(APP.sUserType==0){
             HttpProxy.obtain().post(PlatformContans.UseUser.sUpdateUseUser, token, returnJsonString(name), new ICallBack() {
                 @Override
@@ -87,6 +85,11 @@ public class UpdateNameActivity extends BaseActivity {
                         jsonObject = new JSONObject(result);
                         int code=jsonObject.getInt("resultCode");
                         if(code==0){
+                            Intent intent=new Intent();
+                            Bundle bundle=new Bundle();
+                            bundle.putString("name",name);
+                            intent.putExtras(bundle);
+                            setResult(RESULT_OK,intent);
                             Toast.makeText(UpdateNameActivity.this,"修改成功",Toast.LENGTH_LONG).show();
                             finish();
                         }

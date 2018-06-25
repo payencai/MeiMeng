@@ -130,7 +130,7 @@ public class ServerUserInfoActivity extends BaseActivity implements View.OnClick
         }
 
     }
-
+    String name="";
     @Override
     public void onClick(View view) {
         switch (view.getId()){
@@ -170,16 +170,13 @@ public class ServerUserInfoActivity extends BaseActivity implements View.OnClick
                                  tv_time.setText("");
                                  break;
                              case R.id.pop_right:
-                                 tv_time.setText("单休");
                                  mPop.dismiss();
                                  break;
                              case R.id.tv_dan:
                                  tv_time.setText("单休");
-                                 mPop.dismiss();
                                  break;
                              case R.id.tv_shuang:
                                  tv_time.setText("双休");
-                                 mPop.dismiss();
                                  break;
 
                          }
@@ -196,6 +193,13 @@ public class ServerUserInfoActivity extends BaseActivity implements View.OnClick
                             jsonObject = new JSONObject(result);
                             int code=jsonObject.getInt("resultCode");
                             if(code==0){
+                                JSONObject object=jsonObject.getJSONObject("data");
+                                name=object.getString("nickname");
+                                Intent intent=new Intent();
+                                Bundle bundle=new Bundle();
+                                bundle.putString("name",name);
+                                intent.putExtras(bundle);
+                                setResult(RESULT_OK,intent);
                                 Toast.makeText(ServerUserInfoActivity.this,"修改成功",Toast.LENGTH_LONG).show();
                                 finish();
                             }
@@ -218,6 +222,9 @@ public class ServerUserInfoActivity extends BaseActivity implements View.OnClick
 
         }
     }
+
+
+
     private String returnServer(){
         Map<String,Object> params=new HashMap<>();
         //ServerUserInfo serverUserInfo=APP.getInstance().getServerUserInfo();

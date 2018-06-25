@@ -12,6 +12,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -23,7 +24,9 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.donkingliang.imageselector.utils.ImageSelectorUtils;
+import com.example.meimeng.APP;
 import com.example.meimeng.R;
 import com.example.meimeng.base.BaseActivity;
 import com.example.meimeng.constant.PlatformContans;
@@ -31,7 +34,12 @@ import com.example.meimeng.fragment.FirstAidFragment;
 import com.example.meimeng.fragment.HomeFragment;
 import com.example.meimeng.fragment.UsFragment;
 import com.example.meimeng.fragment.UserCenterFragment;
+import com.example.meimeng.http.HttpProxy;
+import com.example.meimeng.http.ICallBack;
 import com.example.meimeng.util.ToaskUtil;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -308,7 +316,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         FragmentManager fragmentManager=getSupportFragmentManager();
-        UserCenterFragment fragment= (UserCenterFragment) fragmentManager.getFragments().get(3);
+        final UserCenterFragment fragment= (UserCenterFragment) fragmentManager.getFragments().get(3);
         if (requestCode == 1 && resultCode == RESULT_OK) {
             Log.e("request",1+"");
             fragment.cropPhoto(fragment.getPhotoUri());
@@ -327,7 +335,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 Toast.makeText(this, "找不到照片", Toast.LENGTH_SHORT).show();
             }
         }
+        if(requestCode==4 && data!=null){
+            Log.e("aaa","aaa");
+            String name=data.getExtras().getString("name");
+            Log.e("name",name);
+            if(!TextUtils.isEmpty(name)){
+                fragment.getValue().setText(name+",你好");
+            }
+        }
 
     }
+
 
 }

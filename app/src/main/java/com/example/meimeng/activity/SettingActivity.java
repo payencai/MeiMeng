@@ -3,6 +3,7 @@ package com.example.meimeng.activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -40,7 +41,7 @@ public class SettingActivity extends BaseActivity {
         mLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(SettingActivity.this, UpdateNameActivity.class));
+                startActivityForResult(new Intent(SettingActivity.this, UpdateNameActivity.class),1);
             }
         });
         ImageView back;
@@ -48,6 +49,12 @@ public class SettingActivity extends BaseActivity {
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Intent intent=new Intent();
+                Bundle bundle=new Bundle();
+                bundle.putString("name",name);
+                intent.putExtras(bundle);
+                setResult(RESULT_OK,intent);
+                Log.e("name",name);
                 finish();
             }
         });
@@ -65,6 +72,27 @@ public class SettingActivity extends BaseActivity {
             case R.id.tv_logout:
                 logout();
                 break;
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent=new Intent();
+        Bundle bundle=new Bundle();
+        bundle.putString("name",name);
+        intent.putExtras(bundle);
+        setResult(RESULT_OK,intent);
+        finish();
+
+    }
+    String name="";
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==1&&data!=null){
+              name=data.getExtras().getString("name");
+              Log.e("name",name);
         }
     }
 

@@ -135,6 +135,23 @@ public class AddressBean extends RVBaseCell implements Serializable{
     }
 
     @Override
+    public String toString() {
+        return "AddressBean{" +
+                "name='" + name + '\'' +
+                ", address='" + address + '\'' +
+                ", uid='" + uid + '\'' +
+                ", province='" + province + '\'' +
+                ", city='" + city + '\'' +
+                ", area='" + area + '\'' +
+                ", street_id='" + street_id + '\'' +
+                ", phoneNum='" + phoneNum + '\'' +
+                ", postCode='" + postCode + '\'' +
+                ", lat=" + lat +
+                ", lon=" + lon +
+                '}';
+    }
+
+    @Override
     public int getItemType() {
         return 0;
     }

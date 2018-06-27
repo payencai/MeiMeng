@@ -66,4 +66,38 @@ public class LoginSharedUilt {
         return v;
     }
 
+    public void saveCity(String cityName) {
+        mPreferences.edit().putString("cityName", cityName).commit();
+    }
+
+    public String getCity() {
+        return mPreferences.getString("cityName", "");
+    }
+
+    public void saveAddr(String addr) {
+        mPreferences.edit().putString("addr", addr).commit();
+    }
+
+    public String getAddr() {
+        return mPreferences.getString("addr", "");
+    }
+
+    //groupid
+    public void saveGroupId(String groupid) {
+        mPreferences.edit().putString("groupid", groupid).commit();
+    }
+
+    public String getGroupId() {
+        return mPreferences.getString("groupid", "");
+    }
+
+    //保存开始救援时间
+    public void saveStartHelpTime(long startTime) {
+        mPreferences.edit().putLong("startTime", startTime).commit();
+    }
+
+    public long getStartHelpTime() {
+        return mPreferences.getLong("startTime", 0);
+    }
+
 }

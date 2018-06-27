@@ -13,10 +13,11 @@ import retrofit2.http.GET;
 
 public class PlatformContans {
 
-    public static String root = "http://47.106.164.34/";//正式地址
-    public static String rootUrl = root + "memen/";//
-//    public static String root = "http://192.168.1.18:8080/";//诗安测试地址
+    //    public static String root = "http://47.106.164.34/";//正式地址
 //    public static String rootUrl = root + "memen/";//
+//    public static String root = "http://192.168.1.4:8080/";//诗安测试地址
+    public static String root = "http://10.1.2.66:8080/";//诗安测试地址
+    public static String rootUrl = root + "memen/";//
 
     public static class UseUser {
         public static final String sHead = rootUrl + "useuser/";
@@ -63,13 +64,17 @@ public class PlatformContans {
         public static final String sHead = rootUrl + "forhelp/";
         public static final String sGetCompleteHelpByServerUser = sHead + "getCompleteHelpByServerUser";
         public static final String sGetCompleteHelpByUseUser = sHead + "getCompleteHelpByUseUser";
-        public static final String sGetServerMedicine=sHead+"getServerMedicine";
-        public static final String sGetCurrentHelp=sHead+"getCurrentHelp";
+        public static final String sGetServerMedicine = sHead + "getServerMedicine";
+        public static final String sGetCurrentHelp = sHead + "getCurrentHelp";
+        public static final String sAddForHelpInfo = sHead + "addForHelpInfo";
+        public static final String sUpdateForHelpInfoToCancel = sHead + "updateForHelpInfoToCancel";//取消求救
     }
+
     public static class PutMessage {
         public static final String sHead = rootUrl + "putmessage/";
-        public static final String sGetPutMessageByManage=sHead+"getPutMessageByManage";
+        public static final String sGetPutMessageByManage = sHead + "getPutMessageByManage";
     }
+
     public static class Medicine {
         public static final String sHead = rootUrl + "medicine/";
         public static final String sGetMedicineByUserId = sHead + "getMedicineByUserId";

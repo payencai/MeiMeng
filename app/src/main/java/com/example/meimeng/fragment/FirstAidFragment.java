@@ -75,7 +75,7 @@ public class FirstAidFragment extends BaseFragment implements View.OnClickListen
         view.findViewById(R.id.back).setVisibility(View.GONE);
         ((TextView) view.findViewById(R.id.title)).setText("急救知识");
         saveImg = ((ImageView) view.findViewById(R.id.saveImg));
-        saveImg.setVisibility(View.VISIBLE);
+        saveImg.setVisibility(View.GONE);
         saveImg.setImageResource(R.mipmap.ic_common_nav_normal_messag);
         saveImg.setOnClickListener(this);
         getActivity().getSupportFragmentManager().beginTransaction().add(R.id.skillRvFrameLayout, new FirstAidSkillragment()).commit();

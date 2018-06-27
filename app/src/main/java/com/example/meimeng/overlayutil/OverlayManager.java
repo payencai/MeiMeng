@@ -20,10 +20,10 @@ import static com.baidu.mapapi.map.BaiduMap.OnMarkerClickListener;
  * </p>
  * <p>
  * 通过
- * {@link BaiduMap#setOnMarkerClickListener(OnMarkerClickListener)}
+ * {@link com.baidu.mapapi.map.BaiduMap#setOnMarkerClickListener(com.baidu.mapapi.map.BaiduMap.OnMarkerClickListener)}
  * 将覆盖物点击事件传递给OverlayManager后，OverlayManager才能响应点击事件。
  * <p>
- * 复写{@link #onMarkerClick(Marker)} 处理Marker点击事件
+ * 复写{@link #onMarkerClick(com.baidu.mapapi.map.Marker)} 处理Marker点击事件
  * </p>
  */
 public abstract class OverlayManager implements OnMarkerClickListener, OnPolylineClickListener {

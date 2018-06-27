@@ -253,7 +253,6 @@ public class AddressSelectionActivity extends BaseActivity implements View.OnCli
         mMapView.onDestroy();
         mSearch.destroy();
         mPoiSearch.destroy();
-        mSearch.destroy();
     }
 
     @Override

@@ -33,6 +33,12 @@
     <!-- 允许程序访问额外的定位提供者指令获取模拟定位信息 -->
     <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
 
+    <!-- 环信 Required -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
     <application
         android:name=".APP"
         android:allowBackup="true"
@@ -41,6 +47,34 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <!-- 环信 -->
+        <!-- 设置环信应用的AppKey -->
+        <meta-data
+            android:name="EASEMOB_APPKEY"
+            android:value="1131180503177119#memen" />
+        <!-- 声明SDK所需的service SDK核心功能 -->
+        <service
+            android:name="com.hyphenate.chat.EMChatService"
+            android:exported="true" />
+        <service
+            android:name="com.hyphenate.chat.EMJobService"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+        <!-- 声明SDK所需的receiver -->
+        <receiver android:name="com.hyphenate.chat.EMMonitorReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_REMOVED" />
+
+                <data android:scheme="package" />
+            </intent-filter>
+            <!-- 可选filter -->
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.USER_PRESENT" />
+            </intent-filter>
+        </receiver>
+
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="ljlX9oSuUeIxGcd8GTy81Xp9XvQDOmc2" />
@@ -56,6 +90,9 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity android:name=".chat.LongConnectActivity">
+
         </activity>
         <activity android:name=".activity.WaitSoSActivity" />
         <activity android:name=".activity.TestActivity" />
@@ -137,9 +174,9 @@
             android:theme="@style/TranslucentTheme" />
         <activity android:name=".activity.PathPlanActivity" />
         <activity android:name=".activity.WNaviGuideActivity" />
-        <activity android:name=".activity.ServerMainActivity"></activity>
-        <activity android:name=".activity.ServerCenterActivity"></activity>
-        <activity android:name=".activity.HelpMsgActivity"></activity>
+        <activity android:name=".activity.ServerMainActivity" />
+        <activity android:name=".activity.ServerCenterActivity" />
+        <activity android:name=".activity.HelpMsgActivity" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -151,7 +188,17 @@
                 android:resource="@xml/filepaths" />
         </provider>
 
-        <activity android:name=".activity.MakeContactsActivity"></activity>
+        <activity android:name=".activity.MakeContactsActivity" />
+        <activity android:name=".test.BNaviGuideActivity" />
+        <activity android:name=".test.TestWNaviGuideActivity" />
+        <activity
+            android:name=".test.RoutePlanDemo"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/demo_name_route"
+            android:screenOrientation="portrait"></activity>
+
+        <service android:name=".chat.BackService" />
+
     </application>
 
 </manifest>

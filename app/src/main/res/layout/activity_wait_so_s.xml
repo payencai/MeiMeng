@@ -25,6 +25,7 @@
         android:src="@mipmap/ic_sos_wait" />
 
     <TextView
+        android:id="@+id/cancel"
         android:layout_width="95dp"
         android:layout_height="42dp"
         android:layout_alignParentBottom="true"

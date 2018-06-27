@@ -25,7 +25,15 @@ import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.search.core.PoiInfo;
+import com.baidu.mapapi.search.core.SearchResult;
+import com.baidu.mapapi.search.geocode.GeoCodeResult;
+import com.baidu.mapapi.search.geocode.GeoCoder;
+import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
+import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
+import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
 import com.baidu.mapapi.search.route.BikingRouteResult;
+import com.baidu.mapapi.search.route.DrivingRoutePlanOption;
 import com.baidu.mapapi.search.route.DrivingRouteResult;
 import com.baidu.mapapi.search.route.IndoorRouteResult;
 import com.baidu.mapapi.search.route.MassTransitRouteResult;
@@ -42,11 +50,15 @@ import com.baidu.mapapi.walknavi.model.WalkRoutePlanError;
 import com.baidu.mapapi.walknavi.params.WalkNaviLaunchParam;
 import com.example.meimeng.R;
 import com.example.meimeng.base.BaseActivity;
+import com.example.meimeng.bean.AddressBean;
 import com.example.meimeng.test.BNaviGuideActivity;
+import com.example.meimeng.test.RoutePlanDemo;
 import com.example.meimeng.test.TestWNaviGuideActivity;
 import com.example.meimeng.util.LoginSharedUilt;
+import com.example.meimeng.util.ToaskUtil;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -77,10 +89,13 @@ public class PathPlanActivity extends BaseActivity implements OnGetRoutePlanResu
     BikeNaviLaunchParam param;//骑行导航
 
     private RoutePlanSearch mSearch;
+    private GeoCoder mGeoCoderSearch;
 
     private static boolean isPermissionRequested = false;
     private double lat;
     private double lon;
+    private String mCity1;
+    private String mCity2;
 
     @Override
     protected void initView() {
@@ -90,11 +105,16 @@ public class PathPlanActivity extends BaseActivity implements OnGetRoutePlanResu
 
         //开启定位图层
         mBaiduMap = mMapView.getMap();
+        //创建驾车线路规划检索实例；
         mSearch = RoutePlanSearch.newInstance();
         mSearch.setOnGetRoutePlanResultListener(this);
+
+        mGeoCoderSearch = GeoCoder.newInstance();
+        mGeoCoderSearch.setOnGetGeoCodeResultListener(mGeoCoderListener);
+
         try {
-            mWNaviHelper = WalkNavigateHelper.getInstance();
             mNaviHelper = BikeNavigateHelper.getInstance();
+            mWNaviHelper = WalkNavigateHelper.getInstance();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -112,6 +132,7 @@ public class PathPlanActivity extends BaseActivity implements OnGetRoutePlanResu
         LoginSharedUilt intance = LoginSharedUilt.getIntance(this);
         lat = intance.getLat();
         lon = intance.getLon();
+        mCity1 = intance.getCity();
         LatLng startPt = new LatLng(lat, lon);
         if (lat != 0 && lon != 0) {
             setMarker();
@@ -232,6 +253,11 @@ public class PathPlanActivity extends BaseActivity implements OnGetRoutePlanResu
         });
     }
 
+    //发起地理编码检索；
+    private void reverseGeoCode(LatLng lng) {
+        mGeoCoderSearch.reverseGeoCode(new ReverseGeoCodeOption()
+                .location(lng));
+    }
 
     @Override
     protected int getContentId() {
@@ -272,6 +298,20 @@ public class PathPlanActivity extends BaseActivity implements OnGetRoutePlanResu
 
     }
 
+    private void setPath() {
+        PlanNode stNode = PlanNode.withCityNameAndPlaceName("广州", "广州大学城信息枢纽楼");
+        PlanNode enNode = PlanNode.withCityNameAndPlaceName("广州", "大学城南地铁口");
+//        PlanNode stNode = PlanNode.withCityNameAndPlaceName("广州", "马场路南");
+//        PlanNode enNode = PlanNode.withCityNameAndPlaceName("广州", "冼村路北");
+//        mSearch.drivingSearch((new DrivingRoutePlanOption())
+//                .from(stNode)
+//                .to(enNode));
+        mSearch.walkingSearch((new WalkingRoutePlanOption())
+
+                .from(stNode)
+                .to(enNode));
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -280,6 +320,7 @@ public class PathPlanActivity extends BaseActivity implements OnGetRoutePlanResu
 //        mSearch.transitSearch(new TransitRoutePlanOption().from(stNode).to(enNode).city("广州"));
 //        mSearch.walkingSearch((new WalkingRoutePlanOption()).from(stNode).to(enNode));
         mMapView.onResume();
+//        setPath();
     }
 
     @Override
@@ -294,6 +335,7 @@ public class PathPlanActivity extends BaseActivity implements OnGetRoutePlanResu
         super.onDestroy();
         mMapView.onDestroy();
         mSearch.destroy();
+        mGeoCoderSearch.destroy();
     }
 
 
@@ -328,6 +370,64 @@ public class PathPlanActivity extends BaseActivity implements OnGetRoutePlanResu
 
     }
 
+    OnGetGeoCoderResultListener mGeoCoderListener = new OnGetGeoCoderResultListener() {
+
+        public void onGetGeoCodeResult(GeoCodeResult result) {
+
+            if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
+                return;
+                //没有检索到结果
+            }
+            //获取地理编码结果
+
+        }
+
+        @Override
+
+        public void onGetReverseGeoCodeResult(ReverseGeoCodeResult result) {
+
+            if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
+                //没有找到检索结果
+                return;
+            }
+            String address1 = result.getAddress();
+            //获取反向地理编码结果
+            List<PoiInfo> poiList = result.getPoiList();
+            List<AddressBean> list = new ArrayList<>();
+            if (poiList != null) {
+                for (PoiInfo poiInfo : poiList) {
+                    String address = poiInfo.address;
+                    String name = poiInfo.name;
+                    LatLng location = poiInfo.location;
+                    double longitude = location.longitude;//经度
+                    double latitude = location.latitude;//维度
+                    String uid = poiInfo.uid;
+                    String province = poiInfo.province;
+                    String city = poiInfo.city;
+                    String area = poiInfo.area;
+                    String street_id = poiInfo.street_id;
+                    String phoneNum = poiInfo.phoneNum;
+                    String postCode = poiInfo.postCode;
+                    AddressBean bean = new AddressBean();
+                    bean.setLon(longitude);//经度
+                    bean.setLat(latitude);//维度
+                    bean.setAddress(address);
+                    bean.setName(name);
+                    bean.setUid(uid);
+                    bean.setProvince(province);
+                    bean.setCity(city);
+                    bean.setArea(area);
+                    bean.setStreet_id(street_id);
+                    bean.setPhoneNum(phoneNum);
+                    bean.setPostCode(postCode);
+                    list.add(bean);
+
+                }
+
+            }
+        }
+    };
+
 
     @OnClick({R.id.drive, R.id.walk, R.id.bus, R.id.begin})
     public void onViewClicked(View view) {
@@ -342,6 +442,7 @@ public class PathPlanActivity extends BaseActivity implements OnGetRoutePlanResu
                 resetView(2);
                 break;
             case R.id.begin:
+//                ToaskUtil.showToast(this, "点击了" + mNavigationType);
                 switch (mNavigationType) {
                     case 0:
                         startBikeNavi();
@@ -350,6 +451,7 @@ public class PathPlanActivity extends BaseActivity implements OnGetRoutePlanResu
                         startWalkNavi();
                         break;
                     case 2:
+                        startActivity(new Intent(this, RoutePlanDemo.class));
                         break;
                     default:
                         break;

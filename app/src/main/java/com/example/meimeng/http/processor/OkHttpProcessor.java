@@ -127,7 +127,6 @@ public class OkHttpProcessor implements IHttpProcessor {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 final String result = response.body().string();
-                Log.d("nei", ": " + result);
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {

@@ -54,6 +54,7 @@
                 android:textSize="14sp" />
 
         </LinearLayout>
+
     </LinearLayout>
 
     <RelativeLayout
@@ -75,7 +76,7 @@
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="12dp"
             android:layout_marginLeft="@dimen/margin_12dp"
-            android:layout_marginRight="@dimen/margin_12dp"
+            android:layout_marginRight="72dp"
             android:background="@drawable/shape_roundrect_black_roundrect_cyan_bg"
             android:text="开始导航" />
     </RelativeLayout>

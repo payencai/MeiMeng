@@ -81,7 +81,7 @@ public class IndoorPoiOverlay extends OverlayManager {
      *
      * @param i
      *            被点击的poi在
-     *            {@link PoiIndoorResult#getmArrayPoiInfo()} } 中的索引
+     *            {@link com.baidu.mapapi.search.poi.PoiIndoorResult#getmArrayPoiInfo()} } 中的索引
      * @return
      */
     public boolean onPoiClick(int i) {

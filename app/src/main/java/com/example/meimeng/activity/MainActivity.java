@@ -3,15 +3,20 @@ package com.example.meimeng.activity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.Application;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -24,16 +29,23 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.donkingliang.imageselector.utils.ImageSelectorUtils;
+import com.example.meimeng.APP;
 import com.example.meimeng.R;
 import com.example.meimeng.base.BaseActivity;
+import com.example.meimeng.bean.LoginAccount.ServerUserInfo;
+import com.example.meimeng.bean.LoginAccount.UserInfo;
 import com.example.meimeng.constant.PlatformContans;
 import com.example.meimeng.fragment.FirstAidFragment;
 import com.example.meimeng.fragment.HomeFragment;
 import com.example.meimeng.fragment.UsFragment;
 import com.example.meimeng.fragment.UserCenterFragment;
+import com.example.meimeng.manager.ActivityManager;
 import com.example.meimeng.util.ToaskUtil;
+import com.hyphenate.EMCallBack;
+import com.hyphenate.chat.EMClient;
 
 import java.io.File;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,6 +76,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private PopupWindow mSoSPw;
     private PopupWindow mTypeSelectPw;
     private static final int MY_PERMISSIONS_REQUEST_CALL_PHONE = 1;
+
+    private MyHandler mHandler = new MyHandler(this);
 
     private List<Fragment> fragments;
     private FragmentManager fm;
@@ -122,19 +136,23 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         fragments.add(mUserCenterFragment);
 
         for (Fragment fragment : fragments) {
-            if(!fragment.isAdded())
-              fm.beginTransaction().add(R.id.fragment_container, fragment).commit();
+            if (!fragment.isAdded())
+                fm.beginTransaction().add(R.id.fragment_container, fragment).commit();
         }
         //显示主页
         resetStateForTagbar(R.id.home);
         hideAllFragment();
         showFragment(0);
     }
-    int i=0;
+
+    int i = 0;
+
     @Override
     protected void initView() {
+        //请求登录环信
+//        loginHx();
         i++;
-        Log.e("i",i+"");
+        Log.e("i", i + "");
         imgSos = (ImageView) findViewById(R.id.imgSos);
         home = (LinearLayout) findViewById(R.id.home);
         firstAid = (LinearLayout) findViewById(R.id.firstAid);
@@ -248,11 +266,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 showPopupW(v);
                 break;
             case R.id.callFirstAidImg:
-                ToaskUtil.showToast(this, "打开搜救界面");
                 if (mSoSPw != null) {
                     mSoSPw.dismiss();
                 }
-                startActivity(new Intent(this, com.example.meimeng.activity.WaitSoSActivity.class));
+                startActivity(new Intent(this, WaitSoSActivity.class));
                 break;
             case R.id.call120:
 //                ToaskUtil.showToast(this, "打120");
@@ -304,18 +321,19 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private void initLoginView(View shareview) {
 
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        FragmentManager fragmentManager=getSupportFragmentManager();
-        UserCenterFragment fragment= (UserCenterFragment) fragmentManager.getFragments().get(3);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        UserCenterFragment fragment = (UserCenterFragment) fragmentManager.getFragments().get(3);
         if (requestCode == 1 && resultCode == RESULT_OK) {
-            Log.e("request",1+"");
+            Log.e("request", 1 + "");
             fragment.cropPhoto(fragment.getPhotoUri());
 
         }
         if (requestCode == 2 && resultCode == RESULT_OK) {
-            Log.e("request",2+"");
+            Log.e("request", 2 + "");
             Uri uri = data.getData();
             fragment.cropPhoto(uri);
         }
@@ -328,6 +346,29 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             }
         }
 
+    }
+
+
+
+    private static class MyHandler extends Handler {
+
+        private WeakReference<Activity> activity;
+        private int count = 0;
+
+        public MyHandler(Activity activity) {
+            this.activity = new WeakReference<>(activity);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            MainActivity activity = (MainActivity) this.activity.get();
+            if (activity == null) {
+                return;
+            }
+            switch (msg.what) {
+
+            }
+        }
     }
 
 }

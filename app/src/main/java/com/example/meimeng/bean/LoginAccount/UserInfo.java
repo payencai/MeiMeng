@@ -384,4 +384,47 @@ public class UserInfo  {
     public void setServerUser(String serverUser) {
         this.serverUser = serverUser;
     }
+
+    @Override
+    public String toString() {
+        return "UserInfo{" +
+                "id='" + id + '\'' +
+                ", account='" + account + '\'' +
+                ", password='" + password + '\'' +
+                ", name='" + name + '\'' +
+                ", sex='" + sex + '\'' +
+                ", idNumber='" + idNumber + '\'' +
+                ", fixedLineTelephone='" + fixedLineTelephone + '\'' +
+                ", telephone='" + telephone + '\'' +
+                ", num=" + num +
+                ", age=" + age +
+                ", bloodType='" + bloodType + '\'' +
+                ", province='" + province + '\'' +
+                ", city='" + city + '\'' +
+                ", area='" + area + '\'' +
+                ", address='" + address + '\'' +
+                ", helpNum=" + helpNum +
+                ", helpType=" + helpType +
+                ", accountType=" + accountType +
+                ", createTime='" + createTime + '\'' +
+                ", isCancel=" + isCancel +
+                ", token='" + token + '\'' +
+                ", openId='" + openId + '\'' +
+                ", sickenHistory='" + sickenHistory + '\'' +
+                ", otherSicken='" + otherSicken + '\'' +
+                ", linkman1='" + linkman1 + '\'' +
+                ", linkman2='" + linkman2 + '\'' +
+                ", linkman3='" + linkman3 + '\'' +
+                ", nickname='" + nickname + '\'' +
+                ", image='" + image + '\'' +
+                ", imageKey='" + imageKey + '\'' +
+                ", hxPwd='" + hxPwd + '\'' +
+                ", pushAlias='" + pushAlias + '\'' +
+                ", longitude='" + longitude + '\'' +
+                ", latitude='" + latitude + '\'' +
+                ", geohash='" + geohash + '\'' +
+                ", serverType='" + serverType + '\'' +
+                ", serverUser='" + serverUser + '\'' +
+                '}';
+    }
 }

@@ -95,7 +95,7 @@ public class CommonViewPager<T> extends RelativeLayout {
      */
     public void setPageTransformer(boolean reverseDrawingOrder, ViewPager.PageTransformer transformer,
                                    int pageLayerType) {
-        mViewPager.setPageTransformer(reverseDrawingOrder, transformer, pageLayerType);
+//        mViewPager.setPageTransformer(reverseDrawingOrder, transformer, pageLayerType);
     }
 
     /**

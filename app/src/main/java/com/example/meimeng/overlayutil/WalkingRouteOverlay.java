@@ -143,7 +143,7 @@ public class WalkingRouteOverlay extends OverlayManager {
      * 
      * @param i
      *            被点击的step在
-     *            {@link WalkingRouteLine#getAllStep()}
+     *            {@link com.baidu.mapapi.search.route.WalkingRouteLine#getAllStep()}
      *            中的索引
      * @return 是否处理了该点击事件
      */

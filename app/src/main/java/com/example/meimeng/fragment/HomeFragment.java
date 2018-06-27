@@ -36,6 +36,13 @@ import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.search.core.PoiInfo;
+import com.baidu.mapapi.search.core.SearchResult;
+import com.baidu.mapapi.search.geocode.GeoCodeResult;
+import com.baidu.mapapi.search.geocode.GeoCoder;
+import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
+import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
+import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
 import com.baidu.mapapi.utils.DistanceUtil;
 import com.baidu.mapapi.walknavi.WalkNavigateHelper;
 import com.baidu.mapapi.walknavi.adapter.IWEngineInitListener;
@@ -52,12 +59,13 @@ import com.example.meimeng.activity.VolunteerActivity;
 import com.example.meimeng.activity.WNaviGuideActivity;
 import com.example.meimeng.base.BaseFragment;
 import com.example.meimeng.bean.AEDInfo;
+import com.example.meimeng.bean.AddressBean;
 import com.example.meimeng.bean.ServerUser;
 import com.example.meimeng.constant.PlatformContans;
 import com.example.meimeng.http.HttpProxy;
 import com.example.meimeng.http.ICallBack;
 import com.example.meimeng.service.LocationService;
-import com.example.meimeng.test.BNaviMainActivity;
+import com.example.meimeng.test.RoutePlanDemo;
 import com.example.meimeng.util.CustomPopWindow;
 import com.example.meimeng.util.LoginSharedUilt;
 import com.example.meimeng.util.MLog;
@@ -100,7 +108,10 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
     private WalkNavigateHelper mWNaviHelper;//步行
     BikeNaviLaunchParam param;
     WalkNaviLaunchParam walkParam;
+    String startNodeStr = "";//起始点
+    String mCurrentCity = "";//当前城市
 
+    private GeoCoder mGeoCoderSearch;
 
     private double lat;
     private double lon;
@@ -132,7 +143,8 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         volunteerRecruiting = (ImageView) view.findViewById(R.id.volunteerRecruiting);
         //获取地图控件引用
         mMapView = (MapView) view.findViewById(R.id.bmapView);
-
+        mGeoCoderSearch = GeoCoder.newInstance();
+        mGeoCoderSearch.setOnGetGeoCodeResultListener(mGeoCoderListener);
         //开启定位图层
         mBaiduMap = mMapView.getMap();
         mBaiduMap.setOnMarkerClickListener(onMarkerClicklistener);
@@ -144,6 +156,76 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         searchTypeSelect.setOnClickListener(this);
 
     }
+
+    //发起地理编码检索；
+    private void reverseGeoCode(LatLng lng) {
+        mGeoCoderSearch.reverseGeoCode(new ReverseGeoCodeOption().location(lng));
+    }
+
+    OnGetGeoCoderResultListener mGeoCoderListener = new OnGetGeoCoderResultListener() {
+
+        public void onGetGeoCodeResult(GeoCodeResult result) {
+
+            if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
+                return;
+                //没有检索到结果
+            }
+            String address = result.getAddress();
+            Log.d("onGetGeoCodeResult", "onGetGeoCodeResult: " + address);
+            //获取地理编码结果
+
+        }
+
+        @Override
+
+        public void onGetReverseGeoCodeResult(ReverseGeoCodeResult result) {
+
+            if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
+                //没有找到检索结果
+                return;
+            }
+            String address1 = result.getAddress();
+            //获取反向地理编码结果
+            List<PoiInfo> poiList = result.getPoiList();
+            List<AddressBean> list = new ArrayList<>();
+            if (poiList != null) {
+                for (PoiInfo poiInfo : poiList) {
+                    String address = poiInfo.address;
+                    String name = poiInfo.name;
+                    LatLng location = poiInfo.location;
+                    double longitude = location.longitude;//经度
+                    double latitude = location.latitude;//维度
+                    String uid = poiInfo.uid;
+                    String province = poiInfo.province;
+                    String city = poiInfo.city;
+                    String area = poiInfo.area;
+                    String street_id = poiInfo.street_id;
+                    String phoneNum = poiInfo.phoneNum;
+                    String postCode = poiInfo.postCode;
+                    AddressBean bean = new AddressBean();
+                    bean.setLon(longitude);//经度
+                    bean.setLat(latitude);//维度
+                    bean.setAddress(address);
+                    bean.setName(name);
+                    bean.setUid(uid);
+                    bean.setProvince(province);
+                    bean.setCity(city);
+                    bean.setArea(area);
+                    bean.setStreet_id(street_id);
+                    bean.setPhoneNum(phoneNum);
+                    bean.setPostCode(postCode);
+                    list.add(bean);
+                }
+
+            }
+            if (list.size() > 0) {
+                AddressBean bean = list.get(0);
+                String name = bean.getName();
+                startNodeStr = name;
+                mCurrentCity = bean.getCity();
+            }
+        }
+    };
 
     @Override
     public void onResume() {
@@ -342,6 +424,9 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if (mGeoCoderSearch != null) {
+            mGeoCoderSearch.destroy();
+        }
         //在activity执行onDestroy时执行mMapView.onDestroy()，实现地图生命周期管理
         locationService.unregisterListener(myListener); //注销掉监听
         locationService.stop(); //停止定位服务
@@ -370,10 +455,13 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         ToaskUtil.showToast(getContext(), s);
     }
 
-    public void location() {
+    public void location(String city, String addr) {
         LoginSharedUilt intance = LoginSharedUilt.getIntance(getContext());
         intance.saveLat(lat);
         intance.saveLon(lon);
+        intance.saveCity(city);
+        intance.saveAddr(addr);
+        reverseGeoCode(new LatLng(lat, lon));
         setMarker();
         setUserMapCenter();
     }
@@ -394,7 +482,6 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         //在地图上添加Marker，并显示
         mBaiduMap.addOverlay(option);
     }
-
 
     /**
      * @param list 批量添加 覆盖物
@@ -501,7 +588,6 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         }
     }
 
-
     /**
      * 设置中心点
      */
@@ -552,17 +638,24 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
                     ToaskUtil.showToast(getContext(), "正在定位中...");
                     return;
                 }
+                if (TextUtils.isEmpty(startNodeStr) || TextUtils.isEmpty(mCurrentCity)) {
+                    ToaskUtil.showToast(getContext(), "正在定位中...");
+                    return;
+                }
+
                 LatLng startPt = new LatLng(lat, lon);
                 Intent intent = new Intent();
                 Bundle bundle = new Bundle();
                 intent.putExtra("bundle", bundle);
                 bundle.putDouble("latNumber", latNumber);
                 bundle.putDouble("lonNumber", lonNumber);
-                intent.setClass(getActivity(), PathPlanActivity.class);
+                bundle.putString("currentCity", mCurrentCity);
+                bundle.putString("startNodeStr", startNodeStr);
+                intent.setClass(getActivity(), RoutePlanDemo.class);
                 startActivity(intent);
-//                if (customPopWindow != null) {
-//                    customPopWindow.dissmiss();
-//                }
+                if (customPopWindow != null) {
+                    customPopWindow.dissmiss();
+                }
             }
         });
         ((TextView) view.findViewById(R.id.distance)).setText("AED距离" + distance + "米");
@@ -626,6 +719,7 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         @Override
         public boolean onMarkerClick(final Marker marker) {
             Bundle bundle = marker.getExtraInfo();
+
             int type = bundle.getInt("type");
             int distance = bundle.getInt("distance");
             String telephone = bundle.getString("telephone");
@@ -701,12 +795,6 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
 
         @Override
         public void onReceiveLocation(BDLocation location) {
-            lat = location.getLatitude();
-            lon = location.getLongitude();
-            Log.d("onReceiveLocation", "onReceiveLocation: 定位");
-            location();
-            locationService.setLocationOption(locationService.getSingleLocationClientOption());
-            // TODO Auto-generated method stub
             String addr = location.getAddrStr();    //获取详细地址信息
             String country = location.getCountry();    //获取国家
             String province = location.getProvince();    //获取省份
@@ -714,6 +802,12 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
             String district = location.getDistrict();    //获取区县
             String street = location.getStreet();    //获取街道信息
             int LocType = location.getLocType();    //返回码
+            lat = location.getLatitude();
+            lon = location.getLongitude();
+            Log.d("onReceiveLocation", "onReceiveLocation: 定位");
+            location(city,addr);
+            locationService.setLocationOption(locationService.getSingleLocationClientOption());
+            // TODO Auto-generated method stub
 
 
             if (null != location && location.getLocType() != BDLocation.TypeServerError) {

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -46,81 +45,37 @@
         android:textColor="#333333"
         android:textSize="14sp" />
 
-
-    <RelativeLayout
-        android:id="@+id/bottomBar"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_alignParentBottom="true"
-        android:background="#f7f7f9"
-        android:focusable="true"
-        android:focusableInTouchMode="true">
-
-        <ImageView
-            android:id="@+id/msgTypeBtn"
-            android:layout_width="33dp"
-            android:layout_height="33dp"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="16dp"
-            android:src="@mipmap/ic_speak_btn" />
-
-        <ImageView
-            android:id="@+id/photoBtn"
-            android:layout_width="33dp"
-            android:layout_height="33dp"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="16dp"
-            android:src="@mipmap/ic_photo_btn" />
-
-        <EditText
-            android:id="@+id/rescueEdit"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="@dimen/margin_6dp"
-            android:layout_toLeftOf="@+id/photoBtn"
-            android:layout_toRightOf="@+id/msgTypeBtn"
-            android:background="@drawable/shape_annulus_edittext_bg"
-            android:hint="sdfsdfsfsdfsffsdf"
-            android:padding="@dimen/margin_7dp"
-            android:textColor="#333333"
-            android:textCursorDrawable="@null"
-            android:textSize="@dimen/text_size_14sp"
-            android:visibility="gone" />
-
-        <TextView
-            android:id="@+id/voiceBtn"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="@dimen/margin_6dp"
-            android:layout_toLeftOf="@+id/photoBtn"
-            android:layout_toRightOf="@+id/msgTypeBtn"
-            android:background="@drawable/shape_annulus_edittext_bg"
-            android:gravity="center"
-            android:hint="按住   说话"
-            android:padding="@dimen/margin_7dp"
-            android:textColor="@color/color_white_100"
-            android:textSize="@dimen/text_size_14sp" />
-    </RelativeLayout>
-
-
-    <FrameLayout
-        android:id="@+id/rescueContainer"
+    <com.baidu.mapapi.map.MapView
+        android:id="@+id/bmapView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/bottomBar"
         android:layout_below="@+id/showRescueState"
-        android:background="#ddd"
-        android:orientation="horizontal"></FrameLayout>
+        android:clickable="true"></com.baidu.mapapi.map.MapView>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/chatRv"
+
+    <RelativeLayout
+        android:id="@+id/contentContainer"
         android:layout_width="match_parent"
-        android:layout_height="250dp"
-        android:layout_above="@id/bottomBar"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/showRescueState"></RelativeLayout>
+
+    <ImageView
+        android:id="@+id/showContent"
+        android:layout_width="30dp"
+        android:layout_height="42dp"
         android:layout_alignParentRight="true"
-        android:layout_marginLeft="24dp"
-        android:layout_marginRight="24dp"
-        android:background="#00ffffff"></android.support.v7.widget.RecyclerView>
+        android:layout_centerVertical="true"
+        android:scaleType="fitXY"
+        android:src="@mipmap/icon_show_left"
+        android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/hideContent"
+        android:layout_width="30dp"
+        android:layout_height="42dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:scaleType="fitXY"
+        android:src="@mipmap/icon_hide_right" />
 
 </RelativeLayout>

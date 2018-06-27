@@ -156,7 +156,7 @@ public class TransitRouteOverlay extends OverlayManager {
      * 
      * @param i
      *            被点击的step在
-     *            {@link TransitRouteLine#getAllStep()}
+     *            {@link com.baidu.mapapi.search.route.TransitRouteLine#getAllStep()}
      *            中的索引
      * @return 是否处理了该点击事件
      */

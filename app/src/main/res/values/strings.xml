@@ -52,6 +52,6 @@
     <string name="hour">时</string>
     <string name="minute">分</string>
     <string name="first_aid_desc"></string>
-
+    <string name="demo_name_route">路径规划功能</string>
 
 </resources>

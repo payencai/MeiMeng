@@ -1,6 +1,5 @@
 package com.example.meimeng.fragment.guide;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -11,43 +10,18 @@ import android.view.ViewGroup;
 
 import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
-import com.baidu.mapapi.bikenavi.BikeNavigateHelper;
-import com.baidu.mapapi.bikenavi.params.BikeNaviLaunchParam;
 import com.baidu.mapapi.map.BaiduMap;
-import com.baidu.mapapi.map.BitmapDescriptor;
-import com.baidu.mapapi.map.BitmapDescriptorFactory;
 import com.baidu.mapapi.map.MapStatus;
-import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
-import com.baidu.mapapi.map.MarkerOptions;
-import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.model.LatLng;
-import com.baidu.mapapi.search.route.BikingRouteResult;
-import com.baidu.mapapi.search.route.DrivingRouteResult;
-import com.baidu.mapapi.search.route.IndoorRouteResult;
-import com.baidu.mapapi.search.route.MassTransitRouteResult;
-import com.baidu.mapapi.search.route.OnGetRoutePlanResultListener;
-import com.baidu.mapapi.search.route.PlanNode;
-import com.baidu.mapapi.search.route.RoutePlanSearch;
-import com.baidu.mapapi.search.route.TransitRoutePlanOption;
-import com.baidu.mapapi.search.route.TransitRouteResult;
-import com.baidu.mapapi.search.route.WalkingRoutePlanOption;
-import com.baidu.mapapi.search.route.WalkingRouteResult;
 import com.baidu.mapapi.walknavi.WalkNavigateHelper;
-import com.baidu.mapapi.walknavi.adapter.IWEngineInitListener;
-import com.baidu.mapapi.walknavi.adapter.IWRoutePlanListener;
-import com.baidu.mapapi.walknavi.model.WalkRoutePlanError;
 import com.baidu.mapapi.walknavi.params.WalkNaviLaunchParam;
 import com.example.meimeng.APP;
 import com.example.meimeng.R;
-import com.example.meimeng.activity.PathPlanActivity;
 import com.example.meimeng.base.BaseFragment;
 import com.example.meimeng.service.LocationService;
-import com.example.meimeng.test.TestWNaviGuideActivity;
 import com.example.meimeng.util.LoginSharedUilt;
-
-import butterknife.BindView;
 
 /**
  * 作者：凌涛 on 2018/6/20 14:44
@@ -92,7 +66,6 @@ public class WalkFragment extends BaseFragment implements View.OnClickListener {
 //        PlanNode enNode = PlanNode.withCityNameAndPlaceName("北京", "百度科技园");
 
     }
-
 
     @Override
     public void onPause() {
@@ -148,7 +121,9 @@ public class WalkFragment extends BaseFragment implements View.OnClickListener {
         public void onReceiveLocation(BDLocation location) {
             lat = location.getLatitude();
             lon = location.getLongitude();
-            location();
+            String addr = location.getAddrStr();    //获取详细地址信息
+            String city = location.getCity();
+            location(city, addr);
             locationService.setLocationOption(locationService.getSingleLocationClientOption());
             // TODO Auto-generated method stub
 //            String addr = location.getAddrStr();    //获取详细地址信息
@@ -163,10 +138,12 @@ public class WalkFragment extends BaseFragment implements View.OnClickListener {
 
     };
 
-    public void location() {
+    public void location(String city,String addr) {
         LoginSharedUilt intance = LoginSharedUilt.getIntance(getContext());
         intance.saveLat(lat);
         intance.saveLon(lon);
+        intance.saveCity(city);
+        intance.saveAddr(addr);
     }
 
 

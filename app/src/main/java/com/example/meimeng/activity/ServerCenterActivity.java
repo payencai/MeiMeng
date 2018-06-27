@@ -91,7 +91,8 @@ public class ServerCenterActivity extends BaseActivity {
     @BindView(R.id.record_server_layout)
     LinearLayout mServerRecord;
     private ImageSelectPopWindow mImageSelectPopWindow;
-
+    String name;
+    String image;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -155,25 +156,43 @@ public class ServerCenterActivity extends BaseActivity {
     protected int getContentId() {
         return R.layout.server_usercenter;
     }
+    public void getServerUser(){
+        HttpProxy.obtain().get(PlatformContans.Serveruser.sGetServerUser, APP.getInstance().getServerUserInfo().getToken(), new ICallBack() {
+            @Override
+            public void OnSuccess(String result) {
+                JSONObject jsonObject= null;
+                try {
+                    jsonObject = new JSONObject(result);
+                    int code=jsonObject.getInt("resultCode");
+                    if(code==0){
+                        JSONObject object=jsonObject.getJSONObject("data");
+                        name=object.getString("nickname");
+                        image=object.getString("image");
+                        if (name == null) {
+                            mServerUsername.setText("朵雪花,你好");
+                        } else {
+                            mServerUsername.setText(name + ",你好");
+                        }
+                        if (!TextUtils.isEmpty(image)) {
+                            Glide.with(ServerCenterActivity.this).load(image).into(server_head);
+                        }
+                    }
+                    if(code==9999){
 
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(String error) {
+
+            }
+        });
+    }
     private void serverInitView() {
-        String image = getIntent().getExtras().getString("image")+"";
-
-        if (APP.getInstance().getServerUserInfo().getNickname() == null) {
-            mServerUsername.setText("朵雪花,你好");
-        } else {
-            mServerUsername.setText(APP.getInstance().getServerUserInfo().getNickname() + ",你好");
-        }
-
-        Log.e("image", image);
-        if (!TextUtils.isEmpty(image)) {
-            Glide.with(this).load(image).into(server_head);
-
-        } else {
-            Glide.with(this).load(APP.getInstance().getServerUserInfo().getImage()).into(server_head);
-        }
-
-
+         getServerUser();
     }
 
     @OnClick({R.id.shengji_server_layout, R.id.addaed_server_layout, R.id.reback_server_layout, R.id.iv_server_settings,
@@ -190,7 +209,7 @@ public class ServerCenterActivity extends BaseActivity {
                 startActivity(new Intent(this, RebackActivity.class));
                 break;
             case R.id.userinfo_server_layout:
-                startActivity(new Intent(this, ServerUserInfoActivity.class));
+                startActivityForResult(new Intent(this, ServerUserInfoActivity.class),4);
                 break;
             case R.id.record_server_layout:
                 startActivity(new Intent(this, ServerRecordActivity.class));
@@ -441,6 +460,11 @@ public class ServerCenterActivity extends BaseActivity {
                 upImage(PlatformContans.Image.sUpdateImage, file);
             } else {
                 Toast.makeText(this, "找不到照片", Toast.LENGTH_SHORT).show();
+            }
+        }
+        if (requestCode == 4&& data != null) {
+            if(!TextUtils.isEmpty(data.getExtras().getString("name"))){
+                mServerUsername.setText(data.getExtras().getString("name")+",你好");
             }
         }
     }

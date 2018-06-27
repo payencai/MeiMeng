@@ -39,6 +39,7 @@ public class PlatformContans {
         public static final String sUpdateServerUser = sHead + "updateServerUser";//修改服务用户个人信息
         public static final String sServerUserUpgrade = sHead + "serverUserUpgrade";//升级高级急救人员
         public static final String sAddServerUserByUseUser = sHead + "addServerUserByUseUser";
+        public static final String sGetServerUser=sHead+"getServerUser";
     }
 
     public static class AidKnowController {

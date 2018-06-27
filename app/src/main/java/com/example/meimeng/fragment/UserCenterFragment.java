@@ -141,20 +141,50 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
         mClientRecord = view.findViewById(R.id.record_client_layout);
         mClientReback = view.findViewById(R.id.reback_client_layout);
         mClientAboutus = view.findViewById(R.id.aboutus_client_layout);
-        UserInfo userInfo = APP.getInstance().getUserInfo();
-        if (userInfo != null) {
-            if (userInfo.getNickname()!=null)
-                mClientUsername.setText(userInfo.getNickname() + ",你好");
-            else{
-                mClientUsername.setText("朵雪花，你好");
-            }
-        }
+        //UserInfo userInfo = APP.getInstance().getUserInfo();
+        getUserInfo();
         //mAdapter = new PictureAdapter(getActivity(), client_selected);
-        String image = userInfo.getImage();
-        Log.d("clientInitView", "clientInitView: " + image);
-        if (!TextUtils.isEmpty(image)) {
-            Glide.with(this).load(image).into(client_head);
-        }
+        //String image = userInfo.getImage();
+        //Log.d("clientInitView", "clientInitView: " + image);
+
+    }
+
+    public void getUserInfo(){
+        HttpProxy.obtain().get(PlatformContans.UseUser.sGetUseUser, APP.getInstance().getUserInfo().getToken(), new ICallBack() {
+            @Override
+            public void OnSuccess(String result) {
+                JSONObject jsonObject= null;
+                try {
+                    jsonObject = new JSONObject(result);
+                    int code=jsonObject.getInt("resultCode");
+                    if(code==0){
+                        JSONObject object=jsonObject.getJSONObject("data");
+                        String name=object.getString("nickname");
+                        String  image=object.getString("image");
+                        if (name == null) {
+                            mClientUsername.setText("朵雪花,你好");
+                        } else {
+                            mClientUsername.setText(name + ",你好");
+                        }
+                        if (!TextUtils.isEmpty(image)) {
+                            Glide.with(getActivity()).load(image).into(client_head);
+                        }
+                    }
+                    if(code==9999){
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+            }
+
+            @Override
+            public void onFailure(String error) {
+
+            }
+        });
     }
     String clientimgurl="";
     private void updateClientUserInfo(String image){
@@ -407,9 +437,25 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
-
+    public TextView getValue(){
+        return  mClientUsername;
+    }
     Uri photoUri;
     Uri photoOutputUri;
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==4 && data!=null){
+            Log.e("aaa","aaa");
+            String name=data.getExtras().getString("name");
+            Log.e("name",name);
+            if(!TextUtils.isEmpty(name)){
+               mClientUsername.setText(name+",你好");
+            }
+        }
+    }
+
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -417,7 +463,7 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
                 startActivity(new Intent(getActivity(), ClientRecordActivity.class));
                 break;
             case R.id.iv_client_settings:
-                startActivity(new Intent(getActivity(), SettingActivity.class));
+                startActivityForResult(new Intent(getActivity(), SettingActivity.class),4);
                 break;
             case R.id.userinfo_client_layout:
                 startActivity(new Intent(getActivity(), ClientUserInfoActivity.class));

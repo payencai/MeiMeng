@@ -13,11 +13,10 @@ import retrofit2.http.GET;
 
 public class PlatformContans {
 
-    //    public static String root = "http://47.106.164.34/";//正式地址
-//    public static String rootUrl = root + "memen/";//
-//    public static String root = "http://192.168.1.4:8080/";//诗安测试地址
-    public static String root = "http://10.1.2.66:8080/";//诗安测试地址
+        public static String root = "http://47.106.164.34/";//正式地址
     public static String rootUrl = root + "memen/";//
+//    public static String root = "http://10.1.2.66:8080/";//诗安测试地址
+//    public static String rootUrl = root + "memen/";//
 
     public static class UseUser {
         public static final String sHead = rootUrl + "useuser/";
@@ -31,7 +30,6 @@ public class PlatformContans {
         public static final String sGetServerUserByUser = sHead + "getServerUserByUser";//获取附近救援人员信息。
 
     }
-
 
     public static class Serveruser {
         public static final String sHead = rootUrl + "serveruser/";

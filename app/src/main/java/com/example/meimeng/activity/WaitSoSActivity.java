@@ -43,13 +43,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -65,15 +68,33 @@ public class WaitSoSActivity extends BaseActivity implements View.OnClickListene
     private TextView cancel;
 
     private MyHandler mHandler = new MyHandler(this);
-    private static final int CREATE_GROUP_FAILURE = 1;
-    private static final int LOGIN_HX = 2;
+
+    private static final int LOGIN_HX = 1 << 7;
     public static final int REQUE_LOGINHX_MAX_COUNT = 3;//请求登录环信的最大次数
+    private int createGroupType = 0;//创建聊天窗口类型
 
     @Override
     protected void initView() {
         cancel = (TextView) findViewById(R.id.cancel);
         cancel.setOnClickListener(this);
-        loginHx();
+//        loginHx();
+        LoginSharedUilt intance = LoginSharedUilt.getIntance(WaitSoSActivity.this);
+        String groupId = intance.getGroupId();
+        String helpId = intance.getHelpId();
+        if (TextUtils.isEmpty(helpId)) {
+            if (TextUtils.isEmpty(groupId)) {
+                createGroupChat();
+            } else {
+                requestHelpInfo(groupId);
+            }
+        } else {
+            if (TextUtils.isEmpty(groupId)) {
+                createGroupChat2();
+            } else {
+                mHandler.sendEmptyMessage(0);
+            }
+        }
+
     }
 
     @Override
@@ -102,7 +123,7 @@ public class WaitSoSActivity extends BaseActivity implements View.OnClickListene
     private static class MyHandler extends Handler {
 
         private WeakReference<Activity> activity;
-        private int count = 0;
+        private int requstLoginCount = 0;
 
         public MyHandler(Activity activity) {
             this.activity = new WeakReference<>(activity);
@@ -119,16 +140,14 @@ public class WaitSoSActivity extends BaseActivity implements View.OnClickListene
                     activity.startActivity(new Intent(activity, WaitSalvationActivity.class));
                     activity.finish();
                     break;
-                case CREATE_GROUP_FAILURE:
-                    break;
                 case LOGIN_HX:
-                    count++;
-                    if (count > REQUE_LOGINHX_MAX_COUNT) {
+                    requstLoginCount++;
+                    if (requstLoginCount > REQUE_LOGINHX_MAX_COUNT) {
                         ToaskUtil.showToast(activity, "无法连接服务器,请检查网络");
-                        count = 0;
+                        requstLoginCount = 0;
                         return;
                     }
-                    activity.loginHx();
+                    activity.loginHx(activity.createGroupType);
                     break;
             }
         }
@@ -170,7 +189,7 @@ public class WaitSoSActivity extends BaseActivity implements View.OnClickListene
         JSONObject json = null;
         try {
             json = new JSONObject();
-            json.put("groupid ", groupid);
+            json.put("groupid", groupid);
             json.put("latitude", lat + "");//维度
             json.put("longitude", lon + "");//经度
             json.put("userAddress", addr);//求救所在地
@@ -182,7 +201,9 @@ public class WaitSoSActivity extends BaseActivity implements View.OnClickListene
         if (TextUtils.isEmpty(tokenString)) {
             return;
         }
-        addHelper(PlatformContans.ForHelp.sAddForHelpInfo, tokenString, jsonString);
+        String url = PlatformContans.ForHelp.sAddForHelpInfo;
+        Log.d("asyncCreateGroup", "requestHelpInfo: " + url);
+        addHelper(url, tokenString, jsonString);
 //        addHelper(PlatformContans.ForHelp.sAddForHelpInfo, tokenString, jsonString, new ICallBack() {
 //            @Override
 //            public void OnSuccess(String result) {
@@ -271,12 +292,24 @@ public class WaitSoSActivity extends BaseActivity implements View.OnClickListene
     }
 
     public void addHelper(String url, String token, String json) {
+
+
         OkHttpClient client = new OkHttpClient();
-        MediaType jsonType = MediaType.parse("application/json;charset=utf-8");
+//        MediaType jsonType = MediaType.parse("application/json;charset=utf-8");
+        MediaType jsonType = MediaType.parse("application/json;charset=UTF-8");
         RequestBody body = RequestBody.create(jsonType, json);
-        Request request = new Request.Builder()
-                .post(body)
+
+//        try {
+//            body = RequestBody.create(jsonType, URLEncoder.encode(json, "utf-8"));
+//        } catch (UnsupportedEncodingException e) {
+//            e.printStackTrace();
+//            Log.d("asyncCreateGroup", "addHelper: 解析出错");
+//            body = RequestBody.create(jsonType, json);
+//        }
+        final Request request = new Request.Builder()
                 .url(url)
+                .post(body)
+//                .method("POST", body)
                 .addHeader("token", token)
                 .build();
         client.newCall(request).enqueue(new Callback() {
@@ -288,15 +321,61 @@ public class WaitSoSActivity extends BaseActivity implements View.OnClickListene
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.isSuccessful()) {
-//                    Log.d("asyncCreateGroup", "onResponse: " + response.body().string());
-                    Log.d("asyncCreateGroup", "onResponse: 请求成功，但是不知道是啥");
+                    String result = response.body().string();
+                    Log.d("asyncCreateGroup", "onResponse: " + result);
+                    try {
+                        JSONObject object = new JSONObject(result);
+                        int resultCode = object.getInt("resultCode");
+                        String data = object.getString("data");
+                        if (!TextUtils.isEmpty(data)) {
+                            LoginSharedUilt intance = LoginSharedUilt.getIntance(WaitSoSActivity.this);
+                            intance.saveHelpId(data);
+                            if (resultCode == 0) {
+                                mHandler.sendEmptyMessage(0);
+                            }
+                        } else {
+                            ToaskUtil.showToast(WaitSoSActivity.this, "求救发起失败");
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    ToaskUtil.showToast(WaitSoSActivity.this, "请求失败");
                 }
             }
         });
     }
 
-    private void loginHx() {
-        Log.d("asyncCreateGroup", "loginHx: 登录hx");
+    private void createGroupChat() {
+        String[] allMembers = new String[]{};
+        EMGroupOptions option = new EMGroupOptions();
+        option.maxUsers = 200;
+        option.style = EMGroupManager.EMGroupStyle.EMGroupStylePublicOpenJoin;
+        long l = System.currentTimeMillis();
+        EMClient.getInstance().groupManager().asyncCreateGroup("" + l, "救援互动群", allMembers, "创建群", option, new EMValueCallBack<EMGroup>() {
+            @Override
+            public void onSuccess(EMGroup emGroup) {
+                Log.d("asyncCreateGroup", "onSuccess: 创建成功," + Thread.currentThread().getName());
+                String groupId = emGroup.getGroupId();
+                LoginSharedUilt intance = LoginSharedUilt.getIntance(WaitSoSActivity.this);
+                intance.saveGroupId(groupId);
+                requestHelpInfo(groupId);
+            }
+
+            @Override
+            public void onError(int i, final String s) {
+                Log.d("asyncCreateGroup", "onSuccess: 创建失败," + Thread.currentThread().getName() + "," + s);
+                String tmpe = "Userisnotlogin";
+                String replace = s.replace(" ", "");
+                if (tmpe.equals(replace)) {
+                    loginHx(0);
+                }
+            }
+        });
+    }
+
+    private void loginHx(final int tag) {
+        createGroupType = tag;
         String userName = null;
         String password = null;
         if (APP.sUserType == 0) {
@@ -318,12 +397,10 @@ public class WaitSoSActivity extends BaseActivity implements View.OnClickListene
             public void onSuccess() {
                 EMClient.getInstance().groupManager().loadAllGroups();
                 EMClient.getInstance().chatManager().loadAllConversations();
-                LoginSharedUilt intance = LoginSharedUilt.getIntance(WaitSoSActivity.this);
-                String groupId = intance.getGroupId();
-                if (TextUtils.isEmpty(groupId)) {
+                if (tag == 0) {
                     createGroupChat();
                 } else {
-                    requestHelpInfo(groupId);
+                    createGroupChat2();
                 }
             }
 
@@ -340,29 +417,12 @@ public class WaitSoSActivity extends BaseActivity implements View.OnClickListene
         });
     }
 
-    private void createGroupChat() {
-        //创建群组
-        //@param groupName 群组名称
-        //@param desc 群组简介
-        //@param allMembers 群组初始成员，如果只有自己传空数组即可
-        //@param reason 邀请成员加入的reason
-        //@param option 群组类型选项，可以设置群组最大用户数(默认200)及群组类型@see {@link EMGroupStyle}
-        //              option.inviteNeedConfirm表示邀请对方进群是否需要对方同意，默认是需要用户同意才能加群的。
-        //              option.extField创建群时可以为群组设定扩展字段，方便个性化订制。
-        //@return 创建好的group
-        //@throws HyphenateException
-        //
-        //EMGroupStylePrivateOnlyOwnerInvite——私有群，只有群主可以邀请人；
-        //EMGroupStylePrivateMemberCanInvite——私有群，群成员也能邀请人进群；
-        //EMGroupStylePublicJoinNeedApproval——公开群，加入此群除了群主邀请，只能通过申请加入此群；
-        //EMGroupStylePublicOpenJoin ——公开群，任何人都能加入此群。
-        //
+    private void createGroupChat2() {
         String[] allMembers = new String[]{};
         EMGroupOptions option = new EMGroupOptions();
         option.maxUsers = 200;
         option.style = EMGroupManager.EMGroupStyle.EMGroupStylePublicOpenJoin;
         long l = System.currentTimeMillis();
-//        EMGroup group = EMClient.getInstance().groupManager().createGroup("" + l, "救援互动群", allMembers, "创建群", option);
         EMClient.getInstance().groupManager().asyncCreateGroup("" + l, "救援互动群", allMembers, "创建群", option, new EMValueCallBack<EMGroup>() {
             @Override
             public void onSuccess(EMGroup emGroup) {
@@ -370,87 +430,19 @@ public class WaitSoSActivity extends BaseActivity implements View.OnClickListene
                 String groupId = emGroup.getGroupId();
                 LoginSharedUilt intance = LoginSharedUilt.getIntance(WaitSoSActivity.this);
                 intance.saveGroupId(groupId);
-                requestHelpInfo(groupId);
+                mHandler.sendEmptyMessage(0);
             }
 
             @Override
             public void onError(int i, final String s) {
-                mHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        ToaskUtil.showToast(WaitSoSActivity.this, "创建失败," + s);
-                    }
-                });
                 Log.d("asyncCreateGroup", "onSuccess: 创建失败," + Thread.currentThread().getName() + "," + s);
+                String tmpe = "Userisnotlogin";
+                String replace = s.replace(" ", "");
+                if (tmpe.equals(replace)) {
+                    loginHx(1);
+                }
             }
         });
     }
-
-    //添加管理员权限
-    private void addGroupAdmin() {
-        /**
-         * 增加群组管理员，需要owner权限
-         * @param groupId
-         * @param admin
-         * @return
-         * @throws HyphenateException
-         */
-//        EMClient.getInstance().groupManager().addGroupAdmin(String groupId, final String admin);//需异部处理
-    }
-
-    //移除管理员权限
-    private void removeGroupAdmin() {
-        /**
-         * 删除群组管理员，需要owner权限
-         * @param groupId
-         * @param admin
-         * @return
-         * @throws HyphenateException
-         */
-//        EMClient.getInstance().groupManager().removeGroupAdmin(String groupId, String admin);//需异部处理
-    }
-
-    //群组加人
-    private void addMember() {
-        //群主加人调用此方法
-//        EMClient.getInstance().groupManager().addUsersToGroup(groupId, newmembers);//需异步处理
-        //私有群里，如果开放了群成员邀请，群成员邀请调用下面方法
-//        EMClient.getInstance().groupManager().inviteUser(groupId, newmembers, null);//需异步处理
-    }
-
-    //群组踢人
-    private void removeUser() {
-        //把username从群组里删除
-//        EMClient.getInstance().groupManager().removeUserFromGroup(groupId, username);//需异步处理
-    }
-
-    //加入某个群组
-    //只能用于加入公开群。
-    private void applyGroup() {
-        //如果群开群是自由加入的，即group.isMembersOnly()为false，直接join
-//        EMClient.getInstance().groupManager().joinGroup(groupid);//需异步处理
-//需要申请和验证才能加入的，即group.isMembersOnly()为true，调用下面方法
-//        EMClient.getInstance().groupManager().applyJoinToGroup(groupid, "求加入");//需异步处理
-    }
-
-    //获取完整的群成员列表
-    private void obtionGroupUserInfo() {
-        //如果群成员较多，需要多次从服务器获取完成
-
-//        List<String> memberList = new ArrayList<String>();
-//        EMCursorResult<String> result = null;
-//        final int pageSize = 20;
-//        do {
-//            result = EMClient.getInstance().groupManager().fetchGroupMembers(groupId,
-//                    result != null ? result.getCursor() : "", pageSize);
-//            memberList.addAll(result.getData());
-//        } while (!TextUtils.isEmpty(result.getCursor()) && result.getData().size() == pageSize);
-    }
-
-    //更新群扩展字段
-    private void updataChatInfo() {
-//        EMClient.getInstance().groupManager().updateGroupExtension(groupId, extension);
-    }
-
 
 }

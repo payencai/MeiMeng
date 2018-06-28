@@ -40,9 +40,15 @@ import com.example.meimeng.fragment.HomeFragment;
 import com.example.meimeng.fragment.UsFragment;
 import com.example.meimeng.fragment.UserCenterFragment;
 import com.example.meimeng.manager.ActivityManager;
+import com.example.meimeng.util.LoginSharedUilt;
 import com.example.meimeng.util.ToaskUtil;
 import com.hyphenate.EMCallBack;
+import com.hyphenate.EMMultiDeviceListener;
+import com.hyphenate.EMValueCallBack;
 import com.hyphenate.chat.EMClient;
+import com.hyphenate.chat.EMGroup;
+import com.hyphenate.chat.EMGroupManager;
+import com.hyphenate.chat.EMGroupOptions;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -77,12 +83,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private PopupWindow mTypeSelectPw;
     private static final int MY_PERMISSIONS_REQUEST_CALL_PHONE = 1;
 
+    private static final int LOGIN_HX = 2;
+    public static final int REQUE_LOGINHX_MAX_COUNT = 3;//请求登录环信的最大次数
+
     private MyHandler mHandler = new MyHandler(this);
 
     private List<Fragment> fragments;
     private FragmentManager fm;
     //当前打电话的号码
     private String curCallTel = "";
+    private MyMultiDeviceListener myMultiDeviceListener = new MyMultiDeviceListener();
     //当前显示的Fragment
 
     private void checkPower() {
@@ -145,14 +155,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         showFragment(0);
     }
 
-    int i = 0;
-
     @Override
     protected void initView() {
         //请求登录环信
 //        loginHx();
-        i++;
-        Log.e("i", i + "");
         imgSos = (ImageView) findViewById(R.id.imgSos);
         home = (LinearLayout) findViewById(R.id.home);
         firstAid = (LinearLayout) findViewById(R.id.firstAid);
@@ -178,6 +184,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         userCenter.setOnClickListener(this);
 
         initFragment();
+        loginHx();
+        //注册监听,监听多设备登录问题
+        //class MyMultiDeviceListener implements EMMultiDeviceListener
+        EMClient.getInstance().addMultiDeviceListener(myMultiDeviceListener);
 
     }
 
@@ -239,6 +249,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.home:
@@ -269,7 +284,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 if (mSoSPw != null) {
                     mSoSPw.dismiss();
                 }
+                LoginSharedUilt intance = LoginSharedUilt.getIntance(this);
+                String groupId = intance.getGroupId();
                 startActivity(new Intent(this, WaitSoSActivity.class));
+//                if (!TextUtils.isEmpty(groupId)) {
+//                } else {
+//                    ToaskUtil.showToast(this, "数据加载中...");
+//                }
                 break;
             case R.id.call120:
 //                ToaskUtil.showToast(this, "打120");
@@ -322,6 +343,96 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     }
 
+    private void loginHx() {
+        Log.d("asyncCreateGroup", "loginHx: 登录hx");
+        String userName = null;
+        String password = null;
+        if (APP.sUserType == 0) {
+            UserInfo userInfo = APP.getInstance().getUserInfo();
+            userName = userInfo.getId();
+            password = userInfo.getHxPwd();
+        } else {
+            ServerUserInfo serverUserInfo = APP.getInstance().getServerUserInfo();
+            userName = serverUserInfo.getId();
+            password = serverUserInfo.getHxPwd();
+        }
+        if (TextUtils.isEmpty(userName) || TextUtils.isEmpty(userName)) {
+            ToaskUtil.showToast(this, "数据获取失败");
+            ActivityManager.getInstance().finishAllActivity();
+            return;
+        }
+        EMClient.getInstance().login(userName, password, new EMCallBack() {//回调
+            @Override
+            public void onSuccess() {
+                EMClient.getInstance().groupManager().loadAllGroups();
+                EMClient.getInstance().chatManager().loadAllConversations();
+                LoginSharedUilt intance = LoginSharedUilt.getIntance(MainActivity.this);
+                String groupId = intance.getGroupId();
+                if (TextUtils.isEmpty(groupId)) {
+                    createGroupChat();
+                } else {
+                    Log.d("onSuccess", "onSuccess: 已有聊天窗口");
+                }
+            }
+
+            @Override
+            public void onProgress(int progress, String status) {
+
+            }
+
+            @Override
+            public void onError(int code, String message) {
+                Log.d("asyncCreateGroup", "登录聊天服务器失败！");
+                mHandler.sendEmptyMessageDelayed(LOGIN_HX, 1000);
+            }
+        });
+    }
+
+    private void createGroupChat() {
+        //创建群组
+        //@param groupName 群组名称
+        //@param desc 群组简介
+        //@param allMembers 群组初始成员，如果只有自己传空数组即可
+        //@param reason 邀请成员加入的reason
+        //@param option 群组类型选项，可以设置群组最大用户数(默认200)及群组类型@see {@link EMGroupStyle}
+        //              option.inviteNeedConfirm表示邀请对方进群是否需要对方同意，默认是需要用户同意才能加群的。
+        //              option.extField创建群时可以为群组设定扩展字段，方便个性化订制。
+        //@return 创建好的group
+        //@throws HyphenateException
+        //
+        //EMGroupStylePrivateOnlyOwnerInvite——私有群，只有群主可以邀请人；
+        //EMGroupStylePrivateMemberCanInvite——私有群，群成员也能邀请人进群；
+        //EMGroupStylePublicJoinNeedApproval——公开群，加入此群除了群主邀请，只能通过申请加入此群；
+        //EMGroupStylePublicOpenJoin ——公开群，任何人都能加入此群。
+        //
+        String[] allMembers = new String[]{};
+        EMGroupOptions option = new EMGroupOptions();
+        option.maxUsers = 200;
+        option.style = EMGroupManager.EMGroupStyle.EMGroupStylePublicOpenJoin;
+        long l = System.currentTimeMillis();
+//        EMGroup group = EMClient.getInstance().groupManager().createGroup("" + l, "救援互动群", allMembers, "创建群", option);
+        EMClient.getInstance().groupManager().asyncCreateGroup("" + l, "救援互动群", allMembers, "创建群", option, new EMValueCallBack<EMGroup>() {
+            @Override
+            public void onSuccess(EMGroup emGroup) {
+                Log.d("asyncCreateGroup", "onSuccess: 创建成功," + Thread.currentThread().getName());
+                String groupId = emGroup.getGroupId();
+                LoginSharedUilt intance = LoginSharedUilt.getIntance(MainActivity.this);
+                intance.saveGroupId(groupId);
+            }
+
+            @Override
+            public void onError(int i, final String s) {
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        ToaskUtil.showToast(MainActivity.this, "创建失败," + s);
+                    }
+                });
+                Log.d("asyncCreateGroup", "onSuccess: 创建失败," + Thread.currentThread().getName() + "," + s);
+            }
+        });
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -348,12 +459,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     }
 
-
-
     private static class MyHandler extends Handler {
 
         private WeakReference<Activity> activity;
         private int count = 0;
+        private int requstLoginCount = 0;
 
         public MyHandler(Activity activity) {
             this.activity = new WeakReference<>(activity);
@@ -366,9 +476,36 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 return;
             }
             switch (msg.what) {
-
+                case LOGIN_HX:
+                    requstLoginCount++;
+                    if (requstLoginCount > REQUE_LOGINHX_MAX_COUNT) {
+                        ToaskUtil.showToast(activity, "无法连接服务器,请检查网络");
+                        requstLoginCount = 0;
+                        return;
+                    }
+                    activity.loginHx();
+                    break;
             }
         }
     }
+
+    private class MyMultiDeviceListener implements EMMultiDeviceListener {
+
+        @Override
+        public void onContactEvent(int i, String s, String s1) {
+            Log.d("onContactEvent", "onContactEvent: " + i + ",s=" + s + ",s1=" + s1);
+        }
+
+        @Override
+        public void onGroupEvent(int i, String s, List<String> list) {
+            Log.d("onContactEvent", "onGroupEvent: " + i + ",s=" + s);
+            Log.d("onContactEvent", "onGroupEvent: -------------------------");
+            for (String s1 : list) {
+                Log.d("onContactEvent", "onGroupEvent: " + s1);
+            }
+
+        }
+    }
+
 
 }

@@ -96,7 +96,9 @@
         </activity>
         <activity android:name=".activity.WaitSoSActivity" />
         <activity android:name=".activity.TestActivity" />
-        <activity android:name=".activity.WaitSalvationActivity" />
+        <activity
+            android:name=".activity.WaitSalvationActivity"
+            android:launchMode="singleTask" />
         <activity
             android:name=".activity.CityPickerActivity"
             android:theme="@style/DefaultCityPickerTheme" />

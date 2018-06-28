@@ -35,7 +35,7 @@ public class LoginSharedUilt {
     /**
      * 保存上次的登录状态
      */
-    public void saveLastLoginType( int value) {
+    public void saveLastLoginType(int value) {
         mPreferences.edit().putInt("lastLoginType", value).commit();
     }
 
@@ -54,6 +54,7 @@ public class LoginSharedUilt {
         double v = Double.parseDouble(lon);
         return v;
     }
+
     //保存维度
     public void saveLat(double lat) {
         String latStr = lat + "";
@@ -92,12 +93,28 @@ public class LoginSharedUilt {
     }
 
     //保存开始救援时间
-    public void saveStartHelpTime(long startTime) {
-        mPreferences.edit().putLong("startTime", startTime).commit();
+    public void saveHelpTime(int startTime) {
+        mPreferences.edit().putInt("startTime", startTime).commit();
     }
 
-    public long getStartHelpTime() {
-        return mPreferences.getLong("startTime", 0);
+    public int getHelpTime() {
+        return mPreferences.getInt("startTime", 0);
+    }
+
+    public void saveHelpId(String helpId) {
+        mPreferences.edit().putString("helpId", helpId).commit();
+    }
+
+    public String getHelpId() {
+        return mPreferences.getString("helpId", "");
+    }
+
+    public void saveIsCanBack(boolean isCanBack) {
+        mPreferences.edit().putBoolean("isCanBack", isCanBack).commit();
+    }
+
+    public boolean getIsCanBack() {
+        return mPreferences.getBoolean("isCanBack", false);
     }
 
 }

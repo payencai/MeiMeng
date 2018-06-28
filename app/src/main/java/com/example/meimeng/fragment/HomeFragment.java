@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -17,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
@@ -52,6 +54,7 @@ import com.baidu.mapapi.walknavi.params.WalkNaviLaunchParam;
 import com.example.meimeng.APP;
 import com.example.meimeng.R;
 import com.example.meimeng.activity.AddAEDActivity;
+import com.example.meimeng.activity.CityPickerActivity;
 import com.example.meimeng.activity.PathPlanActivity;
 import com.example.meimeng.activity.SearchActivity;
 import com.example.meimeng.activity.SystemMsgActivity;
@@ -71,6 +74,12 @@ import com.example.meimeng.util.LoginSharedUilt;
 import com.example.meimeng.util.MLog;
 import com.example.meimeng.util.ToaskUtil;
 import com.google.gson.Gson;
+import com.zaaach.citypicker.CityPicker;
+import com.zaaach.citypicker.adapter.OnPickListener;
+import com.zaaach.citypicker.model.City;
+import com.zaaach.citypicker.model.HotCity;
+import com.zaaach.citypicker.model.LocateState;
+import com.zaaach.citypicker.model.LocatedCity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -271,7 +280,12 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
 //                closeAEDHint();
                 break;
             case R.id.searchBar:
-                SearchActivity.startSearchActivity(getContext(), searchType);
+                if(searchType==0){
+                    //init();
+                    startActivityForResult(new Intent(getActivity(), CityPickerActivity.class),5);
+                }
+                else
+                    SearchActivity.startSearchActivity(getContext(), searchType);
                 break;
             case R.id.volunteerRecruiting:
                 startActivity(new Intent(getActivity(), VolunteerActivity.class));
@@ -280,6 +294,51 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         }
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode==5 && data!=null){
+            City city= (City) data.getSerializableExtra("city");
+            Log.e("city",city.getName());
+
+        }
+
+    }
+
+    private  void init(){
+
+        List<HotCity> hotCities=new ArrayList<>();
+        hotCities.add(new HotCity("北京", "北京", "101010100"));
+        hotCities.add(new HotCity("上海", "上海", "101020100"));
+        hotCities.add(new HotCity("广州", "广东", "101280101"));
+        hotCities.add(new HotCity("深圳", "广东", "101280601"));
+        hotCities.add(new HotCity("杭州", "浙江", "101210101"));
+        CityPicker.getInstance()
+                .setFragmentManager(getActivity().getSupportFragmentManager())	//此方法必须调用
+                .enableAnimation(false)	//启用动画效果
+                .setLocatedCity(new LocatedCity("杭州", "浙江", "101210101"))
+                .setHotCities(hotCities)
+                .setOnPickListener(new OnPickListener() {
+                    @Override
+                    public void onPick(int position, City data) {
+                        // finish();
+                        Toast.makeText(getContext(), data.getCode(), Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onLocate() {
+                        //开始定位，这里模拟一下定位
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+
+                                CityPicker.getInstance()
+                                        .locateComplete(new LocatedCity("深圳", "广东", "101280601"), LocateState.SUCCESS);
+                            }
+                        }, 2000);
+                    }
+                })
+                .show();
+    }
 
     /**
      * 获取自愿者位置信息

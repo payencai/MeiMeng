@@ -86,11 +86,11 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
             case R.id.searchBtn:
                 ToaskUtil.showToast(this, "搜索");
                 String name=searchEdit.getEditableText().toString();
-               // if(!TextUtils.isEmpty(name))
-                    search(name,intoType);
-//                else{
-//                    ToaskUtil.showToast(this, "请输入搜索字段");
-//                }
+               if(!TextUtils.isEmpty(name))
+                   search(name,intoType);
+               else{
+
+                }
                 break;
         }
     }
@@ -102,7 +102,7 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
         }
     }
     private void searchCity(String cityname){
-
+        startActivity(new Intent(this,CityPickerActivity.class));
     }
     private void searchMedicine(String medname){
         Map<String,Object> params=new HashMap<>();

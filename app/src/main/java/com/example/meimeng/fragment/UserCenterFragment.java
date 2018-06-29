@@ -447,9 +447,7 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode==4 && data!=null){
-            Log.e("aaa","aaa");
             String name=data.getExtras().getString("name");
-            Log.e("name",name);
             if(!TextUtils.isEmpty(name)){
                mClientUsername.setText(name+",你好");
             }

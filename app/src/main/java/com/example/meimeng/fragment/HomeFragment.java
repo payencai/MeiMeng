@@ -124,23 +124,28 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
 
     private double lat;
     private double lon;
+    private double selectlat;
+    private double selectlon;
+    private boolean isSelect=false;
+    private int count=0;
 //    private Snackbar snackbar;
-
+    private TextView locationName;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-        initView(view);
         //在使用SDK各组件之前初始化context信息，传入ApplicationContext
         //注意该方法要再setContentView方法之前实现
         locationService = ((APP) getActivity().getApplication()).locationService;
         //获取locationservice实例，建议应用中只初始化1个location实例，
         // 然后使用，可以参考其他示例的activity，都是通过此种方式获取locationservice实例的
         locationService.registerListener(myListener);
+        initView(view);
         return view;
     }
 
     private void initView(View view) {
+        locationName=view.findViewById(R.id.actionBarAreaName);
         addAED = (LinearLayout) view.findViewById(R.id.addAED);
         view.findViewById(R.id.searchBar).setOnClickListener(this);
         firstAidSite = (LinearLayout) view.findViewById(R.id.firstAidSite);
@@ -163,6 +168,9 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         firstAidSite.setOnClickListener(this);
         positioning.setOnClickListener(this);
         searchTypeSelect.setOnClickListener(this);
+
+        locationService.start();
+        licationCircle();
 
     }
 
@@ -241,16 +249,20 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         super.onResume();
         //在activity执行onResume时执行mMapView. onResume ()，实现地图生命周期管理
         mMapView.onResume();
+        getServerUserByUser();
+
+    }
+
+    private void licationCircle() {
         LoginSharedUilt intance = LoginSharedUilt.getIntance(getContext());
         lat = intance.getLat();
         lon = intance.getLon();
-        locationService.start();
         if (lat != 0 && lon != 0) {
             setMarker();
             setUserMapCenter();
         }
-        getServerUserByUser();
     }
+
 
     @Override
     public void onPause() {
@@ -259,7 +271,8 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         mMapView.onPause();
 
     }
-
+    private String locationcity;
+    private String locationprovince;
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -282,7 +295,12 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
             case R.id.searchBar:
                 if(searchType==0){
                     //init();
-                    startActivityForResult(new Intent(getActivity(), CityPickerActivity.class),5);
+                    Intent intent= new Intent(getActivity(), CityPickerActivity.class);
+                    Bundle bundle=new Bundle();
+                    bundle.putString("city",locationcity);
+                    bundle.putString("province",locationprovince);
+                    intent.putExtras(bundle);
+                    startActivityForResult(intent,5);
                 }
                 else
                     SearchActivity.startSearchActivity(getContext(), searchType);
@@ -293,17 +311,49 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
                 break;
         }
     }
-
+    private void setSelectMarker(){
+        //定义Maker坐标点
+        LatLng point = new LatLng(selectlat, selectlon);
+        //构建Marker图标
+        BitmapDescriptor bitmap = BitmapDescriptorFactory
+                .fromResource(R.mipmap.ic_location);
+        //构建MarkerOption，用于在地图上添加Marker
+        OverlayOptions option = new MarkerOptions()
+                .position(point)
+                .icon(bitmap);
+        //在地图上添加Marker，并显示
+        mBaiduMap.addOverlay(option);
+    }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode==5 && data!=null){
             City city= (City) data.getSerializableExtra("city");
-            Log.e("city",city.getName());
-
+            locationName.setText(city.getName());
+            Log.e("tag",city.getName());
+            selectlat=data.getExtras().getDouble("lat");
+            selectlon= data.getExtras().getDouble("lon");
+            Log.e("bbb",selectlat+"： "+selectlon);
+            setSelectMarker();
+            setSelectMapCenter();
+            lat=selectlat;
+            lon=selectlon;
+            //count++;
+            //Log.e("tag",count+"");
+            getServerUserByUser();
         }
 
     }
-
+    private void setSelectMapCenter(){
+        LatLng cenpt = new LatLng(selectlat, selectlon);
+        //定义地图状态
+        MapStatus mMapStatus = new MapStatus.Builder()
+                .target(cenpt)
+                .zoom(18)
+                .build();
+        MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
+        //改变地图状态
+        mBaiduMap.setMapStatus(mMapStatusUpdate);
+    }
     private  void init(){
 
         List<HotCity> hotCities=new ArrayList<>();
@@ -521,8 +571,10 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         intance.saveCity(city);
         intance.saveAddr(addr);
         reverseGeoCode(new LatLng(lat, lon));
+        locationName.setText(city);
         setMarker();
         setUserMapCenter();
+        getServerUserByUser();
     }
 
     /**
@@ -854,6 +906,8 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
 
         @Override
         public void onReceiveLocation(BDLocation location) {
+            locationcity=location.getCity();
+            locationprovince=location.getProvince();
             String addr = location.getAddrStr();    //获取详细地址信息
             String country = location.getCountry();    //获取国家
             String province = location.getProvince();    //获取省份

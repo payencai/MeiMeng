@@ -170,16 +170,16 @@ public class ServerMainActivity extends BaseActivity {
                     if(code==0){
                         JSONArray beanlist=jsonObject.getJSONArray("data");
                         if(beanlist.length()==0){
-                            for(int i=0;i<20;i++){
-                                CurrentHelpInfo currentHelpInfo=new CurrentHelpInfo();
-                                currentHelpInfo.setUseUserName("小明");
-                                currentHelpInfo.setUserAddress("广东省云浮跟复古风格市大小县福30号01户");
-                                currentHelpInfo.setCreateTime("2018-12-03 21:23:12");
-                                currentHelpInfo.setDistance(500);
-                                currentHelpInfo.setHelpNum(3);
-                                currentHelpInfo.setImage("http://seopic.699pic.com/photo/40005/1721.jpg_wh1200.jpg");
-                                list.add(currentHelpInfo);
-                            }
+//                            for(int i=0;i<20;i++){
+//                                CurrentHelpInfo currentHelpInfo=new CurrentHelpInfo();
+//                                currentHelpInfo.setUseUserName("小明");
+//                                currentHelpInfo.setUserAddress("广东省云浮跟复古风格市大小县福30号01户");
+//                                currentHelpInfo.setCreateTime("2018-12-03 21:23:12");
+//                                currentHelpInfo.setDistance(500);
+//                                currentHelpInfo.setHelpNum(3);
+//                                currentHelpInfo.setImage("http://seopic.699pic.com/photo/40005/1721.jpg_wh1200.jpg");
+//                                list.add(currentHelpInfo);
+//                            }
                             adapter.setData(list);
                             mRecyclerView.setLayoutManager(new LinearLayoutManager(ServerMainActivity.this));
                             mRecyclerView.setAdapter(adapter);

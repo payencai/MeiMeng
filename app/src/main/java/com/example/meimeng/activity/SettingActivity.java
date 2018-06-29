@@ -54,7 +54,7 @@ public class SettingActivity extends BaseActivity {
                 bundle.putString("name",name);
                 intent.putExtras(bundle);
                 setResult(RESULT_OK,intent);
-                Log.e("name",name);
+                //Log.e("name",name);
                 finish();
             }
         });

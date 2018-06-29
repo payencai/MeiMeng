@@ -280,11 +280,10 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
 //                closeAEDHint();
                 break;
             case R.id.searchBar:
-                if(searchType==0){
+                if (searchType == 0) {
                     //init();
-                    startActivityForResult(new Intent(getActivity(), CityPickerActivity.class),5);
-                }
-                else
+                    startActivityForResult(new Intent(getActivity(), CityPickerActivity.class), 5);
+                } else
                     SearchActivity.startSearchActivity(getContext(), searchType);
                 break;
             case R.id.volunteerRecruiting:
@@ -296,25 +295,25 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode==5 && data!=null){
-            City city= (City) data.getSerializableExtra("city");
-            Log.e("city",city.getName());
+        if (requestCode == 5 && data != null) {
+            City city = (City) data.getSerializableExtra("city");
+            Log.e("city", city.getName());
 
         }
 
     }
 
-    private  void init(){
+    private void init() {
 
-        List<HotCity> hotCities=new ArrayList<>();
+        List<HotCity> hotCities = new ArrayList<>();
         hotCities.add(new HotCity("北京", "北京", "101010100"));
         hotCities.add(new HotCity("上海", "上海", "101020100"));
         hotCities.add(new HotCity("广州", "广东", "101280101"));
         hotCities.add(new HotCity("深圳", "广东", "101280601"));
         hotCities.add(new HotCity("杭州", "浙江", "101210101"));
         CityPicker.getInstance()
-                .setFragmentManager(getActivity().getSupportFragmentManager())	//此方法必须调用
-                .enableAnimation(false)	//启用动画效果
+                .setFragmentManager(getActivity().getSupportFragmentManager())    //此方法必须调用
+                .enableAnimation(false)    //启用动画效果
                 .setLocatedCity(new LocatedCity("杭州", "浙江", "101210101"))
                 .setHotCities(hotCities)
                 .setOnPickListener(new OnPickListener() {
@@ -864,7 +863,7 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
             lat = location.getLatitude();
             lon = location.getLongitude();
             Log.d("onReceiveLocation", "onReceiveLocation: 定位");
-            location(city,addr);
+            location(city, addr);
             locationService.setLocationOption(locationService.getSingleLocationClientOption());
             // TODO Auto-generated method stub
 

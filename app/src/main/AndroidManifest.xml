@@ -200,6 +200,7 @@
             android:screenOrientation="portrait"></activity>
 
         <service android:name=".chat.BackService" />
+        <receiver android:name=".mywebsocket.NetStatusReceiver" />
 
     </application>
 

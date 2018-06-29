@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
@@ -29,9 +28,6 @@ import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.model.LatLng;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.RequestBuilder;
-import com.bumptech.glide.request.target.SimpleTarget;
 import com.example.meimeng.APP;
 import com.example.meimeng.R;
 import com.example.meimeng.base.BaseActivity;
@@ -42,9 +38,9 @@ import com.example.meimeng.fragment.ContentFragment;
 import com.example.meimeng.http.HttpProxy;
 import com.example.meimeng.http.ICallBack;
 import com.example.meimeng.manager.ActivityManager;
+import com.example.meimeng.mywebsocket.WsManager;
 import com.example.meimeng.util.LoginSharedUilt;
 import com.example.meimeng.util.ToaskUtil;
-import com.google.gson.JsonObject;
 import com.koushikdutta.async.ByteBufferList;
 import com.koushikdutta.async.DataEmitter;
 import com.koushikdutta.async.callback.DataCallback;
@@ -62,12 +58,9 @@ import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.TimerTask;
 
 public class WaitSalvationActivity extends BaseActivity implements View.OnClickListener {
 
@@ -109,6 +102,7 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
 
     @Override
     protected void initView() {
+        WsManager.getInstance().init();
         LoginSharedUilt intance = LoginSharedUilt.getIntance(this);
         lon = intance.getLon();
         lat = intance.getLat();
@@ -319,7 +313,7 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
                         webSocket.send(new byte[10]);
                         webSocket.setStringCallback(new WebSocket.StringCallback() {
                             public void onStringAvailable(String s) {
-                                Log.d(TAG, "onStringAvailable: " + s);
+                                Log.d("onStringAvailable", "onStringAvailable: " + s);
                                 disposeWebData(s);
                             }
                         });
@@ -349,7 +343,7 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
                     return;
                 }
             }
-            mLocationMap.put(userId, new Point(longitude, latitude, image, imageKey));
+            mLocationMap.put(userId, new Point(longitude, latitude, image, userId));
             mHandler.sendEmptyMessage(UPDATA_OVERLAY);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -374,7 +368,7 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
             json.put("toUserId", userInfo.getId());
             json.put("image", userInfo.getImage());
             json.put("imageKey", userInfo.getImageKey());
-            json.put("rescuepersonnum", count);
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -481,10 +475,10 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
         Log.d("handleMessage", "setMarkerByNet: lat:" + loPoint.latitude + ",lon:" + loPoint.longitude);
         BitmapDescriptor bitmap = BitmapDescriptorFactory
                 .fromResource(R.mipmap.ic_high_volunteer);
-        BitmapDescriptor bitmap1 = BitmapDescriptorFactory.fromBitmap(getBitmap(point.image, point.imageKey));
-        if (bitmap1 == null) {
-            bitmap1 = bitmap;
-        }
+//        BitmapDescriptor bitmap1 = BitmapDescriptorFactory.fromBitmap(getBitmap(point.image, point.imageKey));
+//        if (bitmap1 == null) {
+//            bitmap1 = bitmap;
+//        }
         //方法中设置asBitmap可以设置回调类型
         //构建MarkerOption，用于在地图上添加Marker
         OverlayOptions option = new MarkerOptions()
@@ -570,6 +564,7 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
         mLocationMap.clear();
         mLocationMap = null;
         mHandler.removeCallbacksAndMessages(null);
+        WsManager.getInstance().disconnect();
         ToaskUtil.showToast(this, "已完成救援");
         finish();
     }

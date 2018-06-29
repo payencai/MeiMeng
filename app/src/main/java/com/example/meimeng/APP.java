@@ -13,6 +13,8 @@ import com.example.meimeng.bean.LoginAccount.ServerUserInfo;
 import com.example.meimeng.bean.LoginAccount.UserInfo;
 import com.example.meimeng.http.HttpProxy;
 import com.example.meimeng.http.processor.OkHttpProcessor;
+import com.example.meimeng.mywebsocket.ForegroundCallbacks;
+import com.example.meimeng.mywebsocket.WsManager;
 import com.example.meimeng.service.LocationService;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMOptions;
@@ -98,6 +100,7 @@ public class APP extends Application {
 
         //在做打包混淆时，关闭debug模式，避免消耗不必要的资源
         EMClient.getInstance().setDebugMode(true);
+        initAppStatusListener();
 
         //init demo helper
 //        DemoHelper.getInstance().init(applicationContext);
@@ -124,6 +127,22 @@ public class APP extends Application {
             }
         }
         return processName;
+    }
+
+    //application中初始化该监听,当应用回到前台的时候尝试重连
+    private void initAppStatusListener() {
+        ForegroundCallbacks.init(this).addListener(new ForegroundCallbacks.Listener() {
+            @Override
+            public void onBecameForeground() {
+                Log.i(TAG, "onBecameForeground: 应用回到前台调用重连方法");
+                WsManager.getInstance().reconnect();
+            }
+
+            @Override
+            public void onBecameBackground() {
+
+            }
+        });
     }
 
 

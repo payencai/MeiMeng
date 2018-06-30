@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:id="@+id/cellhelp_dialog"
+                android:layout_height="wrap_content"
+                android:background="@drawable/shape_circular_bead_while"
+                android:orientation="vertical">
+
+    <View
+        android:id="@+id/line"
+        android:layout_width="match_parent"
+        android:layout_height="0.75dp"
+        android:layout_below="@id/brandHint"
+        android:background="@color/line_gray" />
+
+    <TextView
+        android:id="@+id/brandHint"
+        style="@style/common_font"
+        android:layout_width="match_parent"
+        android:layout_height="42dp"
+        android:text="紧急联系人"/>
+
+    <ListView
+        android:id="@+id/lv_callhelp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/line"
+        android:divider="@null"
+        android:scrollbars="none"></ListView>
+
+
+
+
+</LinearLayout>

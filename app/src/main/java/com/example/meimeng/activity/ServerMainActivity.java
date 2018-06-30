@@ -26,6 +26,8 @@ import com.example.meimeng.constant.PlatformContans;
 import com.example.meimeng.fragment.HelpInfoFragment;
 import com.example.meimeng.http.HttpProxy;
 import com.example.meimeng.http.ICallBack;
+import com.example.meimeng.manager.ActivityManager;
+import com.example.meimeng.util.LoginSharedUilt;
 import com.example.meimeng.util.MLog;
 import com.example.meimeng.util.ToaskUtil;
 import com.google.gson.Gson;
@@ -143,11 +145,9 @@ public class ServerMainActivity extends BaseActivity {
                 holder.getView(R.id.item).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        CurrentHelpInfo currentHelpInfo = mData.get(position);
                         Context context = holder.getItemView().getContext();
-                        Intent intent = new Intent(context, RescueActivity.class);
-                        intent.putExtra("currentHelpInfo", currentHelpInfo);
-                        context.startActivity(intent);
+                        CurrentHelpInfo currentHelpInfo = mData.get(position);
+                        requestLeaveHelp(context, currentHelpInfo);
                     }
                 });
             }
@@ -247,4 +247,60 @@ public class ServerMainActivity extends BaseActivity {
             }
         });
     }
+
+    private void requestLeaveHelp(final Context context, final CurrentHelpInfo currentHelpInfo) {
+        ServerUserInfo serverUserInfo = APP.getInstance().getServerUserInfo();
+        String token = serverUserInfo.getToken();
+        if (TextUtils.isEmpty(token)) {
+            ToaskUtil.showToast(this, "登录异常");
+            ActivityManager.getInstance().finishAllActivity();
+            startActivity(new Intent(this, LoginActivity.class));
+            return;
+        }
+        LoginSharedUilt intance = LoginSharedUilt.getIntance(this);
+        String helpId = currentHelpInfo.getId();
+        double lon = intance.getLon();
+        double lat = intance.getLat();
+        JSONObject json = null;
+        try {
+            json = new JSONObject();
+            json.put("helpId", helpId);
+            json.put("latitude", lat);
+            json.put("longitude", lon);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String jsonString = json.toString();
+        Log.d("ForHelpInfoByGet", "requestLeaveHelp: " + jsonString);
+        HttpProxy.obtain().post(PlatformContans.ForHelp.sUpdateForHelpInfoByGet, token, jsonString, new ICallBack() {
+            @Override
+            public void OnSuccess(String result) {
+                MLog.log("ForHelpInfoByGet", result);
+                try {
+                    JSONObject object = new JSONObject(result);
+                    int resultCode = object.getInt("resultCode");
+                    String message = object.getString("message");
+                    if (resultCode == 0) {
+                        Intent intent = new Intent(context, RescueActivity.class);
+                        intent.putExtra("currentHelpInfo", currentHelpInfo);
+                        context.startActivity(intent);
+                    } else {
+                        if (!TextUtils.isEmpty(message)) {
+                            ToaskUtil.showToast(ServerMainActivity.this, message);
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(String error) {
+
+            }
+        });
+    }
+
+
 }

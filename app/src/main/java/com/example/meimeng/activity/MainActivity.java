@@ -40,6 +40,7 @@ import com.example.meimeng.fragment.HomeFragment;
 import com.example.meimeng.fragment.UsFragment;
 import com.example.meimeng.fragment.UserCenterFragment;
 import com.example.meimeng.manager.ActivityManager;
+import com.example.meimeng.util.CustomPopWindow;
 import com.example.meimeng.util.LoginSharedUilt;
 import com.example.meimeng.util.ToaskUtil;
 import com.hyphenate.EMCallBack;
@@ -84,7 +85,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private Fragment mUsFragment;
     private Fragment mUserCenterFragment;
 
-    private PopupWindow mSoSPw;
+    //    private PopupWindow mSoSPw;
     private PopupWindow mTypeSelectPw;
     private static final int MY_PERMISSIONS_REQUEST_CALL_PHONE = 1;
 
@@ -283,29 +284,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 showFragment(3);
                 break;
             case R.id.imgSos:
-                setBackgroundDrakValue(0.5f);
+//                setBackgroundDrakValue(0.8f);
+//                setBackgroundDrakValue(1f);
                 showPopupW(v);
-                break;
-            case R.id.callFirstAidImg:
-                if (mSoSPw != null) {
-                    mSoSPw.dismiss();
-                }
-                LoginSharedUilt intance = LoginSharedUilt.getIntance(this);
-                String groupId = intance.getGroupId();
-                startActivity(new Intent(this, WaitSoSActivity.class));
-//                if (!TextUtils.isEmpty(groupId)) {
-//                } else {
-//                    ToaskUtil.showToast(this, "数据加载中...");
-//                }
-                break;
-            case R.id.call120:
-//                ToaskUtil.showToast(this, "打120");
-                curCallTel = "10086";
-                checkPower();
-                break;
-            case R.id.callEmergencyContact:
-                curCallTel = "10010";
-                checkPower();
                 break;
 
         }
@@ -315,33 +296,87 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     private void showPopupW(View view) {
 
-        View shareview = LayoutInflater.from(this).inflate(R.layout.popup_call_help, null);
-        handlerView(shareview);
-        mSoSPw = new PopupWindow(shareview,
-                (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 400, getResources().getDisplayMetrics()),
-                (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 230, getResources().getDisplayMetrics()));
-        mSoSPw.setFocusable(true);
-        mSoSPw.setBackgroundDrawable(new BitmapDrawable());
-        mSoSPw.setOutsideTouchable(true);
-        mSoSPw.setAnimationStyle(R.style.CustomPopWindowStyle);
-        mSoSPw.setOnDismissListener(new PopupWindow.OnDismissListener() {
-            @Override
-            public void onDismiss() {
-                setBackgroundDrakValue(1.0f);
-            }
-        });
-        //第一个参数可以取当前页面的任意一个View
-        //第二个参数表示pw从哪一个方向显示出来
-        //3、4表示pw的偏移量
-        mSoSPw.showAtLocation(view, Gravity.CENTER, 0, 0);
+//        View shareview = LayoutInflater.from(this).inflate(R.layout.popup_call_help, null);
+//        handlerView(shareview);
+//        mSoSPw = new PopupWindow(shareview,
+//                (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 400, getResources().getDisplayMetrics()),
+//                (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 230, getResources().getDisplayMetrics()));
+//        mSoSPw.setFocusable(true);
+//        mSoSPw.setBackgroundDrawable(new BitmapDrawable());
+//        mSoSPw.setOutsideTouchable(true);
+//        mSoSPw.setAnimationStyle(R.style.CustomPopWindowStyle);
+//        mSoSPw.setOnDismissListener(new PopupWindow.OnDismissListener() {
+//            @Override
+//            public void onDismiss() {
+//                setBackgroundDrakValue(1.0f);
+//            }
+//        });
+//        //第一个参数可以取当前页面的任意一个View
+//        //第二个参数表示pw从哪一个方向显示出来
+//        //3、4表示pw的偏移量
+//        mSoSPw.showAtLocation(view, Gravity.CENTER, 0, 0);
+        View otherView = LayoutInflater.from(this).inflate(R.layout.popup_call_help, null);
+        CustomPopWindow customPopWindow = new CustomPopWindow.PopupWindowBuilder(this)
+                .setView(otherView)
+                .sizeByPercentage(this, 0.95f, 0)
+                .setOutsideTouchable(true)
+                .enableBackgroundDark(true)
+                .setAnimationStyle(R.style.CustomPopWindowStyle)
+                .setBgDarkAlpha(0.9f)
+                .create();
+        handlerView(otherView, customPopWindow);
+        customPopWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
 
     }
 
-    private void handlerView(View view) {
+    private void handlerView(View view, final CustomPopWindow customPopWindow) {
 
-        view.findViewById(R.id.callFirstAidImg).setOnClickListener(this);
-        view.findViewById(R.id.call120).setOnClickListener(this);
-        view.findViewById(R.id.callEmergencyContact).setOnClickListener(this);
+//        case R.id.callFirstAidImg:
+//
+////                if (!TextUtils.isEmpty(groupId)) {
+////                } else {
+////                    ToaskUtil.showToast(this, "数据加载中...");
+////                }
+//        break;
+//        case R.id.call120:
+////                ToaskUtil.showToast(this, "打120");
+//
+//        break;
+//        case R.id.callEmergencyContact:
+//
+//        break;
+
+        view.findViewById(R.id.callFirstAidImg).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (customPopWindow != null) {
+                    customPopWindow.dissmiss();
+                }
+                LoginSharedUilt intance = LoginSharedUilt.getIntance(MainActivity.this);
+                String groupId = intance.getGroupId();
+                startActivity(new Intent(MainActivity.this, WaitSoSActivity.class));
+            }
+        });
+        view.findViewById(R.id.call120).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (customPopWindow != null) {
+                    customPopWindow.dissmiss();
+                }
+                curCallTel = "10086";
+                checkPower();
+            }
+        });
+        view.findViewById(R.id.callEmergencyContact).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (customPopWindow != null) {
+                    customPopWindow.dissmiss();
+                }
+                curCallTel = "10010";
+                checkPower();
+            }
+        });
 
     }
 

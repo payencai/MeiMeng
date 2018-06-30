@@ -91,7 +91,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".chat.LongConnectActivity"></activity>
+        <activity android:name=".chat.LongConnectActivity" />
         <activity android:name=".activity.WaitSoSActivity" />
         <activity android:name=".activity.TestActivity" />
         <activity
@@ -199,9 +199,10 @@
 
         <service android:name=".chat.BackService" />
 
-        <receiver android:name=".mywebsocket.NetStatusReceiver" />
+        <!--<receiver android:name=".mywebsocket.NetStatusReceiver" />-->
 
-        <activity android:name=".activity.RescueActivity"></activity>
+        <activity android:name=".activity.RescueActivity" />
+        <activity android:name=".activity.ChatActivity"></activity>
     </application>
 
 </manifest>

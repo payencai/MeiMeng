@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/shape_aed_infowindow_bg"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp"
+        android:text="关闭原因"
+        android:textColor="@color/text_333"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/closeCause"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/shape_annulus_edittext_bg"
+        android:gravity="start|top"
+        android:hint="请说明原因"
+        android:padding="6dp"
+        android:text=""
+        android:textCursorDrawable="@null"
+        android:textSize="14sp" />
+
+    <Button
+        android:id="@+id/submitCause"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/length_view_40dp"
+        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="48dp"
+        android:layout_marginRight="48dp"
+        android:background="@drawable/shape_roundrect_black_roundrect_cyan_bg"
+        android:text="提交"
+        android:textColor="@color/color_white_100" />
+
+
+</LinearLayout>

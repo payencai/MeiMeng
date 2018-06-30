@@ -5,72 +5,56 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.bumptech.glide.Glide;
 import com.example.meimeng.R;
-import com.example.meimeng.activity.ServerCenterActivity;
+import com.example.meimeng.activity.RescueActivity;
 import com.example.meimeng.common.rv.base.RVBaseCell;
 import com.example.meimeng.common.rv.base.RVBaseViewHolder;
 
+import java.io.Serializable;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class CurrentHelpInfo extends RVBaseCell {
-    private String image;
-    private String useUserName;
-    private int distance;
-    private String userAddress;
+public class CurrentHelpInfo extends RVBaseCell implements Serializable {
+
+
+    /**
+     * id : b0259267-ac5e-45d5-b6e5-b8fb586163ae
+     * useUserId : ced242067b854b9f9853899f3a70ecfc
+     * longitude : 113.401694
+     * latitude : 23.051105
+     * createTime : 2018-06-29 15:51:29
+     * userAddress : 中国广东省广州市番禺区大学城广工一路
+     * helpNum : 1
+     * openId : null
+     * type : 1
+     * geohash : ws0ehs2d
+     * groupId : 53330877415425
+     * distance : 7659.145146992639
+     * image : http://memen.oss-cn-shenzhen.aliyuncs.com/%E4%B8%8A%E4%BC%A0/2018062518055192?Expires=1530318866&OSSAccessKeyId=LTAIu2UT56nIQWZI&Signature=2ldsriI%2FGGFERmObXgqPRfJj5v0%3D
+     * imageKey : 上传/2018062518055192
+     * useUserName : 蔡华清
+     * useUserTelephone : 13202908144
+     */
+
+    private String id;
+    private String useUserId;
+    private String longitude;
+    private String latitude;
     private String createTime;
+    private String userAddress;
     private int helpNum;
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
-
-    public String getUseUserName() {
-        return useUserName;
-    }
-
-    public void setUseUserName(String useUserName) {
-        this.useUserName = useUserName;
-    }
-
-    public int getDistance() {
-        return distance;
-    }
-
-    public void setDistance(int distance) {
-        this.distance = distance;
-    }
-
-    public String getUserAddress() {
-        return userAddress;
-    }
-
-    public void setUserAddress(String userAddress) {
-        this.userAddress = userAddress;
-    }
-
-    public String getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(String createTime) {
-        this.createTime = createTime;
-    }
-
-    public int getHelpNum() {
-        return helpNum;
-    }
-
-    public void setHelpNum(int helpNum) {
-        this.helpNum = helpNum;
-    }
+    private String openId;
+    private int type;
+    private String geohash;
+    private String groupId;
+    private double distance;
+    private String image;
+    private String imageKey;
+    private String useUserName;
+    private String useUserTelephone;
 
     public CurrentHelpInfo() {
         super(null);
@@ -102,11 +86,145 @@ public class CurrentHelpInfo extends RVBaseCell {
         CircleImageView imageView= (CircleImageView) holder.getImageView(R.id.rv_image);
         final Context context = holder.getItemView().getContext();
         Glide.with(context).load(image).into(imageView);
-        nowhelp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //context.startActivity(new Intent(context, ServerCenterActivity.class));
-            }
-        });
+//        holder.getView(R.id.item).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                context.startActivity(new Intent(context, RescueActivity.class));
+//            }
+//        });
+//        nowhelp.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//
+//            }
+//        });
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getUseUserId() {
+        return useUserId;
+    }
+
+    public void setUseUserId(String useUserId) {
+        this.useUserId = useUserId;
+    }
+
+    public String getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
+    }
+
+    public String getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime;
+    }
+
+    public String getUserAddress() {
+        return userAddress;
+    }
+
+    public void setUserAddress(String userAddress) {
+        this.userAddress = userAddress;
+    }
+
+    public int getHelpNum() {
+        return helpNum;
+    }
+
+    public void setHelpNum(int helpNum) {
+        this.helpNum = helpNum;
+    }
+
+    public String getOpenId() {
+        return openId;
+    }
+
+    public void setOpenId(String openId) {
+        this.openId = openId;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
+
+    public String getGeohash() {
+        return geohash;
+    }
+
+    public void setGeohash(String geohash) {
+        this.geohash = geohash;
+    }
+
+    public String getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
+    }
+
+    public double getDistance() {
+        return distance;
+    }
+
+    public void setDistance(double distance) {
+        this.distance = distance;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public String getImageKey() {
+        return imageKey;
+    }
+
+    public void setImageKey(String imageKey) {
+        this.imageKey = imageKey;
+    }
+
+    public String getUseUserName() {
+        return useUserName;
+    }
+
+    public void setUseUserName(String useUserName) {
+        this.useUserName = useUserName;
+    }
+
+    public String getUseUserTelephone() {
+        return useUserTelephone;
+    }
+
+    public void setUseUserTelephone(String useUserTelephone) {
+        this.useUserTelephone = useUserTelephone;
     }
 }

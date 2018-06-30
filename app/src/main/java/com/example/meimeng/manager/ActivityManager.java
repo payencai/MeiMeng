@@ -1,6 +1,9 @@
 package com.example.meimeng.manager;
 
 import android.app.Activity;
+import android.content.Intent;
+
+import com.example.meimeng.activity.LoginActivity;
 
 import java.util.Iterator;
 import java.util.Stack;
@@ -89,6 +92,10 @@ public class ActivityManager {
         return null;
     }
 
+    public void restartLogin(Activity activity) {
+        finishAllActivity();
+        activity.startActivity(new Intent(activity, LoginActivity.class));
+    }
 
 
 

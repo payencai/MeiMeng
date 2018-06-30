@@ -91,9 +91,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".chat.LongConnectActivity">
-
-        </activity>
+        <activity android:name=".chat.LongConnectActivity"></activity>
         <activity android:name=".activity.WaitSoSActivity" />
         <activity android:name=".activity.TestActivity" />
         <activity
@@ -197,11 +195,13 @@
             android:name=".test.RoutePlanDemo"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/demo_name_route"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
 
         <service android:name=".chat.BackService" />
+
         <receiver android:name=".mywebsocket.NetStatusReceiver" />
 
+        <activity android:name=".activity.RescueActivity"></activity>
     </application>
 
 </manifest>

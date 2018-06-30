@@ -83,14 +83,18 @@ public class WaitSoSActivity extends BaseActivity implements View.OnClickListene
         String helpId = intance.getHelpId();
         if (TextUtils.isEmpty(helpId)) {
             if (TextUtils.isEmpty(groupId)) {
+                Log.d("asyncCreateGroup", "initView: 没有GroupId 和 没有HelpId");
                 createGroupChat();
             } else {
+                Log.d("asyncCreateGroup", "initView: 有GroupId 和 没有HelpId");
                 requestHelpInfo(groupId);
             }
         } else {
             if (TextUtils.isEmpty(groupId)) {
+                Log.d("asyncCreateGroup", "initView: 没有GroupId 和 有HelpId");
                 createGroupChat2();
             } else {
+                Log.d("asyncCreateGroup", "initView: 有GroupId 和 有HelpId");
                 mHandler.sendEmptyMessage(0);
             }
         }

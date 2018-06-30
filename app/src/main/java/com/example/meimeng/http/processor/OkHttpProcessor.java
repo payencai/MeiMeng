@@ -30,6 +30,7 @@ import okhttp3.Response;
 public class OkHttpProcessor implements IHttpProcessor {
 
     public Handler mHandler = new Handler();
+    //{"resultCode":6666,"message":"登录信息已过期,请重新登录"}
 
     @Override
     public void post(String url, Map<String, Object> bodyParams, final ICallBack callBack) {
@@ -107,11 +108,11 @@ public class OkHttpProcessor implements IHttpProcessor {
     @Override
     public void post(String url, String tokenvalue, String jsonString, final ICallBack callBack) {
         OkHttpClient client = new OkHttpClient();
-        MediaType jsonType = MediaType.parse("application/json");
+        MediaType jsonType = MediaType.parse("application/json;charset=UTF-8");
         RequestBody body = RequestBody.create(jsonType, jsonString);
         Map<String, Object> tokenMap = new HashMap<>();
         tokenMap.put("token", tokenvalue);
-        Request request = addHeaders(tokenMap).post(body).url(url).build();
+        Request request = addHeaders(tokenMap).url(url).post(body).build();
         Call call = client.newCall(request);
         call.enqueue(new Callback() {
             @Override

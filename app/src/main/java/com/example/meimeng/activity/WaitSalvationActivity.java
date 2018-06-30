@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.LruCache;
 import android.util.TypedValue;
@@ -31,6 +32,7 @@ import com.baidu.mapapi.model.LatLng;
 import com.example.meimeng.APP;
 import com.example.meimeng.R;
 import com.example.meimeng.base.BaseActivity;
+import com.example.meimeng.bean.LoginAccount.ServerUserInfo;
 import com.example.meimeng.bean.LoginAccount.UserInfo;
 import com.example.meimeng.bean.Point;
 import com.example.meimeng.constant.PlatformContans;
@@ -41,12 +43,18 @@ import com.example.meimeng.manager.ActivityManager;
 import com.example.meimeng.mywebsocket.WsManager;
 import com.example.meimeng.util.LoginSharedUilt;
 import com.example.meimeng.util.ToaskUtil;
+import com.hyphenate.EMCallBack;
+import com.hyphenate.chat.EMClient;
+import com.hyphenate.exceptions.HyphenateException;
 import com.koushikdutta.async.ByteBufferList;
 import com.koushikdutta.async.DataEmitter;
 import com.koushikdutta.async.callback.DataCallback;
+import com.koushikdutta.async.future.Future;
 import com.koushikdutta.async.http.AsyncHttpClient;
 import com.koushikdutta.async.http.WebSocket;
 
+import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -57,6 +65,8 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Locale;
@@ -87,6 +97,8 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
     private int count = 0;//救援人数
     private static final int UPDATA_OVERLAY = 1 << 27;
     private static final int UPDATA_WAIT_TIME = 1;
+    private static final int LOGIN_HX = 1 << 7;
+    public static final int REQUE_LOGINHX_MAX_COUNT = 3;//请求登录环信的最大次数
     private MyHandler mHandler = new MyHandler(this);
 
     private Map<String, Point> mLocationMap = new HashMap<>();
@@ -94,6 +106,8 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
     private TextView waitTime;
     //等待救援的时间
     private int mWaitTimeNumber = 0;
+    private Future<WebSocket> mFuture;
+    private WebSocketClient mWebSocketClient;
 
     @Override
     protected int getContentId() {
@@ -107,6 +121,7 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
         lon = intance.getLon();
         lat = intance.getLat();
         mWaitTimeNumber = intance.getHelpTime();
+        loginHx();
 
         //获取系统给每一个应用所分配的内存大小
         long maxMemory = Runtime.getRuntime().maxMemory();
@@ -145,7 +160,8 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
             mContentFragment = new ContentFragment();
         }
         fm.beginTransaction().add(R.id.contentContainer, mContentFragment).commit();
-        createLongConnect();
+//        createLongConnect();
+        initSockect();
         mHandler.sendEmptyMessage(UPDATA_WAIT_TIME);
     }
 
@@ -297,7 +313,11 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
     private String PORT = "80";
 
     private void createLongConnect() {
-        AsyncHttpClient.getDefaultInstance().websocket(
+        // webSocket地址
+        // 端口
+        // 发送消息的方法
+        // note that this data has been read
+        mFuture = AsyncHttpClient.getDefaultInstance().websocket(
                 address,// webSocket地址
                 PORT,// 端口
                 new AsyncHttpClient.WebSocketConnectCallback() {
@@ -326,6 +346,50 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
                         });
                     }
                 });
+    }
+
+    private URI uri;
+
+    public void initSockect() {
+        try {
+            uri = new URI(address);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        if (null == mWebSocketClient) {
+            mWebSocketClient = new WebSocketClient(uri) {
+                @Override
+                public void onOpen(ServerHandshake serverHandshake) {
+                    Log.i(TAG, "onOpen: ");
+                    String  jsonSrting = getJsonSrting();
+                    mWebSocketClient.send(jsonSrting);
+                }
+
+                @Override
+                public void onMessage(String s) {
+                    Log.i(TAG, "onMessage: " + s);
+                    disposeWebData(s);
+                }
+
+                @Override
+                public void onClose(int i, String s, boolean b) {
+                    Log.i(TAG, "onClose: ");
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    Log.i(TAG, "onError: ");
+                }
+            };
+        }
+        mWebSocketClient.connect();
+    }
+
+    private void closeLongConnect() {
+//        AsyncHttpClient.getDefaultInstance()
+        if (mFuture != null) {
+            mFuture.cancel(true);
+        }
     }
 
     private void disposeWebData(String s) {
@@ -412,6 +476,7 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
 
     public static class MyHandler extends Handler {
         private WeakReference<Activity> activity;
+        private int requstLoginCount = 0;
 
         public MyHandler(Activity activity) {
             this.activity = new WeakReference<>(activity);
@@ -444,6 +509,15 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
                     int l = activity.mWaitTimeNumber++;
                     activity.waitTime.setText(getFormatHMS(l));
                     sendEmptyMessageDelayed(UPDATA_WAIT_TIME, 1000);
+                    break;
+                case LOGIN_HX:
+                    requstLoginCount++;
+                    if (requstLoginCount > REQUE_LOGINHX_MAX_COUNT) {
+                        ToaskUtil.showToast(activity, "无法连接服务器,请检查网络");
+                        requstLoginCount = 0;
+                        return;
+                    }
+                    activity.loginHx();
                     break;
             }
         }
@@ -557,16 +631,60 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
      */
     private void completeHelp() {
         LoginSharedUilt intance = LoginSharedUilt.getIntance(this);
+        mLocationMap.clear();
+        mLocationMap = null;
+        try {
+            EMClient.getInstance().groupManager().destroyGroup(intance.getGroupId());//需异步处理
+        } catch (HyphenateException e) {
+            e.printStackTrace();
+        }
+        mHandler.removeCallbacksAndMessages(null);
+        mFuture = null;
+        ToaskUtil.showToast(this, "已完成救援");
         intance.saveHelpId(null);
         intance.saveHelpTime(0);
         intance.saveGroupId(null);
         intance.saveIsCanBack(true);
-        mLocationMap.clear();
-        mLocationMap = null;
-        mHandler.removeCallbacksAndMessages(null);
-        WsManager.getInstance().disconnect();
-        ToaskUtil.showToast(this, "已完成救援");
+        mWebSocketClient.close();
         finish();
+    }
+
+    private void loginHx() {
+        String userName = null;
+        String password = null;
+        if (APP.sUserType == 0) {
+            UserInfo userInfo = APP.getInstance().getUserInfo();
+            userName = userInfo.getId();
+            password = userInfo.getHxPwd();
+        } else {
+            ServerUserInfo serverUserInfo = APP.getInstance().getServerUserInfo();
+            userName = serverUserInfo.getId();
+            password = serverUserInfo.getHxPwd();
+        }
+        if (TextUtils.isEmpty(userName) || TextUtils.isEmpty(userName)) {
+            ToaskUtil.showToast(this, "数据获取失败");
+            ActivityManager.getInstance().finishAllActivity();
+            return;
+        }
+        EMClient.getInstance().login(userName, password, new EMCallBack() {//回调
+            @Override
+            public void onSuccess() {
+                EMClient.getInstance().groupManager().loadAllGroups();
+                EMClient.getInstance().chatManager().loadAllConversations();
+
+            }
+
+            @Override
+            public void onProgress(int progress, String status) {
+
+            }
+
+            @Override
+            public void onError(int code, String message) {
+                Log.d("asyncCreateGroup", "登录聊天服务器失败！");
+                mHandler.sendEmptyMessageDelayed(LOGIN_HX, 1000);
+            }
+        });
     }
 
 }

@@ -67,6 +67,8 @@ public class PlatformContans {
         public static final String sGetCurrentHelp = sHead + "getCurrentHelp";
         public static final String sAddForHelpInfo = sHead + "addForHelpInfo";
         public static final String sUpdateForHelpInfoToCancel = sHead + "updateForHelpInfoToCancel";//取消求救
+        public static final String sUpdateForHelpInfoToCancelByServerUser = sHead + "updateForHelpInfoToCancelByServerUser";//救援人员取消求救
+        public static final String sUpdateForHelpInfoToEnd = sHead + "updateForHelpInfoToEnd";//救援人员完成救援
     }
 
     public static class PutMessage {

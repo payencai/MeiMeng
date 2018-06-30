@@ -43,19 +43,24 @@ import com.example.meimeng.manager.ActivityManager;
 import com.example.meimeng.util.LoginSharedUilt;
 import com.example.meimeng.util.ToaskUtil;
 import com.hyphenate.EMCallBack;
+import com.hyphenate.EMConnectionListener;
+import com.hyphenate.EMContactListener;
 import com.hyphenate.EMMultiDeviceListener;
 import com.hyphenate.EMValueCallBack;
+import com.hyphenate.chat.EMChatManager;
 import com.hyphenate.chat.EMClient;
+import com.hyphenate.chat.EMContactManager;
 import com.hyphenate.chat.EMGroup;
 import com.hyphenate.chat.EMGroupManager;
 import com.hyphenate.chat.EMGroupOptions;
+import com.hyphenate.exceptions.HyphenateException;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends BaseActivity implements View.OnClickListener {
+public class MainActivity extends BaseActivity implements View.OnClickListener, EMConnectionListener {
 
     private static final String TAG = "MainActivity";
     private ImageView imgSos;
@@ -123,7 +128,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 callPhone();
             } else {
                 // Permission Denied
-                Toast.makeText(MainActivity.this, "权限拒绝", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "权限拒绝", Toast.LENGTH_SHORT).show();
             }
             return;
         }
@@ -185,6 +190,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         initFragment();
         loginHx();
+        setOtherLoginListener();
         //注册监听,监听多设备登录问题
         //class MyMultiDeviceListener implements EMMultiDeviceListener
         EMClient.getInstance().addMultiDeviceListener(myMultiDeviceListener);
@@ -364,6 +370,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         EMClient.getInstance().login(userName, password, new EMCallBack() {//回调
             @Override
             public void onSuccess() {
+                Log.d("asyncCreateGroup", "onSuccess: MainActivity环信登录成功回调");
                 EMClient.getInstance().groupManager().loadAllGroups();
                 EMClient.getInstance().chatManager().loadAllConversations();
                 LoginSharedUilt intance = LoginSharedUilt.getIntance(MainActivity.this);
@@ -507,5 +514,17 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         }
     }
 
+    private void setOtherLoginListener() {
+        EMClient.getInstance().addConnectionListener(this);
+    }
 
+    @Override
+    public void onConnected() {
+        Log.d("onDisconnected", "onConnected: ");
+    }
+
+    @Override
+    public void onDisconnected(int i) {
+        Log.d("onDisconnected", "onDisconnected: " + i);
+    }
 }

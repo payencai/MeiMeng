@@ -1,8 +1,9 @@
 package com.example.meimeng.activity;
 
+import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -17,14 +18,17 @@ import com.example.meimeng.APP;
 import com.example.meimeng.R;
 import com.example.meimeng.base.BaseActivity;
 import com.example.meimeng.bean.CurrentHelpInfo;
-import com.example.meimeng.bean.DrugInfo;
-import com.example.meimeng.bean.HelpMsg;
+
 import com.example.meimeng.bean.LoginAccount.ServerUserInfo;
 import com.example.meimeng.common.rv.base.RVBaseAdapter;
 import com.example.meimeng.common.rv.base.RVBaseViewHolder;
 import com.example.meimeng.constant.PlatformContans;
+import com.example.meimeng.fragment.HelpInfoFragment;
 import com.example.meimeng.http.HttpProxy;
 import com.example.meimeng.http.ICallBack;
+import com.example.meimeng.util.MLog;
+import com.example.meimeng.util.ToaskUtil;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,6 +44,7 @@ import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ServerMainActivity extends BaseActivity {
+    private static final String TAG = ServerMainActivity.class.getSimpleName();
     @BindView(R.id.sun1)
     ImageView sun1;
     @BindView(R.id.sun2)
@@ -72,8 +77,12 @@ public class ServerMainActivity extends BaseActivity {
     ImageView saveImg;
     @BindView(R.id.getcurrenthelp)
     RecyclerView mRecyclerView;
+    @BindView(R.id.base_refresh_layout)
+    SwipeRefreshLayout mSwipeRefreshLayout;
+
     RVBaseAdapter<CurrentHelpInfo> adapter;
-    List<CurrentHelpInfo> list = new ArrayList<>();
+    private HelpInfoFragment mHelpInfoFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,13 +91,13 @@ public class ServerMainActivity extends BaseActivity {
     @Override
     protected void initView() {
         ButterKnife.bind(this);
-        ServerUserInfo userInfo=APP.getInstance().getServerUserInfo();
-        juli_date.setText("距离升星还有"+userInfo.getLevelMessage()+"日");
-        or_help.setText("或救援"+userInfo.getLevelHelp()+"次");
+        ServerUserInfo userInfo = APP.getInstance().getServerUserInfo();
+        juli_date.setText("距离升星还有" + userInfo.getLevelMessage() + "日");
+        or_help.setText("或救援" + userInfo.getLevelHelp() + "次");
         title.setText("美盟全民救援");
-        time.setText(userInfo.getOnlineTime()+"");
-        count.setText(userInfo.getHelpNum()+"");
-        distance.setText(userInfo.getHelpDistance()+"");
+        time.setText(userInfo.getOnlineTime() + "");
+        count.setText(userInfo.getHelpNum() + "");
+        distance.setText(userInfo.getHelpDistance() + "");
         back.setVisibility(View.GONE);
         saveImg.setImageResource(R.mipmap.ic_common_nav_normal_messag);
         saveImg.setVisibility(View.VISIBLE);
@@ -96,55 +105,90 @@ public class ServerMainActivity extends BaseActivity {
         enter_main.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent=new Intent(ServerMainActivity.this,ServerCenterActivity.class);
-                Bundle bundle=new Bundle();
-                bundle.putString("image",image);
+                Intent intent = new Intent(ServerMainActivity.this, ServerCenterActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("image", image);
                 intent.putExtras(bundle);
-                startActivityForResult(intent,1);
+                startActivityForResult(intent, 1);
             }
         });
-        int level=userInfo.getLevel();
-        Log.e("level",level+"");
-        if(level==1){
+        int level = userInfo.getLevel();
+        Log.e("level", level + "");
+        if (level == 1) {
             sun2.setVisibility(View.GONE);
             sun3.setVisibility(View.GONE);
             sun4.setVisibility(View.GONE);
             sun5.setVisibility(View.GONE);
-        }else if(level==2){
+        } else if (level == 2) {
             sun3.setVisibility(View.GONE);
             sun4.setVisibility(View.GONE);
             sun5.setVisibility(View.GONE);
 
-        }else if(level==3){
+        } else if (level == 3) {
             sun4.setVisibility(View.GONE);
             sun5.setVisibility(View.GONE);
 
-        }else if(level==4){
+        } else if (level == 4) {
             sun5.setVisibility(View.GONE);
-        }else if(level==5){
+        } else if (level == 5) {
 
         }
-        adapter= new RVBaseAdapter<CurrentHelpInfo>() {
+        adapter = new RVBaseAdapter<CurrentHelpInfo>() {
             @Override
             protected void onViewHolderBound(RVBaseViewHolder holder, int position) {
-                //holder.setText(R.id.);
+            }
+
+            @Override
+            protected void onClick(final RVBaseViewHolder holder, final int position) {
+                holder.getView(R.id.item).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        CurrentHelpInfo currentHelpInfo = mData.get(position);
+                        Context context = holder.getItemView().getContext();
+                        Intent intent = new Intent(context, RescueActivity.class);
+                        intent.putExtra("currentHelpInfo", currentHelpInfo);
+                        context.startActivity(intent);
+                    }
+                });
             }
         };
-        getCurrentHelp();
         saveImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(ServerMainActivity.this, HelpMsgActivity.class));
             }
         });
+        initRvView();
+
     }
-    String image="";
+
+    private void initRvView() {
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(ServerMainActivity.this));
+        mRecyclerView.setAdapter(adapter);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getCurrentHelp();
+            }
+        });
+//        mHelpInfoFragment = new HelpInfoFragment();
+//        getSupportFragmentManager().beginTransaction().add(R.id.helpInfoContainer, mHelpInfoFragment).commit();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getCurrentHelp();
+    }
+
+    String image = "";
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode==1&&data!=null){
-            image=data.getExtras().getString("image");
-            if(!TextUtils.isEmpty(data.getExtras().getString("image"))){
+        if (requestCode == 1 && data != null) {
+            image = data.getExtras().getString("image");
+            if (!TextUtils.isEmpty(data.getExtras().getString("image"))) {
                 Glide.with(this).load(data.getExtras().getString("image")).into(iv_head);
             }
         }
@@ -154,55 +198,42 @@ public class ServerMainActivity extends BaseActivity {
     protected int getContentId() {
         return R.layout.show_server_main;
     }
-    public void getCurrentHelp(){
-        Map<String ,Object> params=new HashMap<>();
-        params.put("latitude",APP.getInstance().getServerUserInfo().getHomeLatitude());
-        params.put("longitude",APP.getInstance().getServerUserInfo().getHomeLongitude());
-        String token= APP.getInstance().getServerUserInfo().getToken();
-        HttpProxy.obtain().get(PlatformContans.ForHelp.sGetCurrentHelp, params,token,new ICallBack() {
+
+    public void getCurrentHelp() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("latitude", APP.getInstance().getServerUserInfo().getHomeLatitude());
+        params.put("longitude", APP.getInstance().getServerUserInfo().getHomeLongitude());
+        String token = APP.getInstance().getServerUserInfo().getToken();
+        HttpProxy.obtain().get(PlatformContans.ForHelp.sGetCurrentHelp, params, token, new ICallBack() {
             @Override
             public void OnSuccess(String result) {
-                Log.e("msg",result);
-                JSONObject jsonObject= null;
+                MLog.log(TAG, result);
+                JSONObject jsonObject = null;
                 try {
                     jsonObject = new JSONObject(result);
-                    int code=jsonObject.getInt("resultCode");
-                    if(code==0){
-                        JSONArray beanlist=jsonObject.getJSONArray("data");
-                        if(beanlist.length()==0){
-                            for(int i=0;i<20;i++){
-                                CurrentHelpInfo currentHelpInfo=new CurrentHelpInfo();
-                                currentHelpInfo.setUseUserName("小明");
-                                currentHelpInfo.setUserAddress("广东省云浮跟复古风格市大小县福30号01户");
-                                currentHelpInfo.setCreateTime("2018-12-03 21:23:12");
-                                currentHelpInfo.setDistance(500);
-                                currentHelpInfo.setHelpNum(3);
-                                currentHelpInfo.setImage("http://seopic.699pic.com/photo/40005/1721.jpg_wh1200.jpg");
-                                list.add(currentHelpInfo);
-                            }
-                            adapter.setData(list);
-                            mRecyclerView.setLayoutManager(new LinearLayoutManager(ServerMainActivity.this));
-                            mRecyclerView.setAdapter(adapter);
-                        }else{
-                            for(int i=0;i<beanlist.length();i++){
-                                CurrentHelpInfo currentHelpInfo=new CurrentHelpInfo();
-                                JSONObject object= (JSONObject) beanlist.get(i);
-                                currentHelpInfo.setImage(object.getString("image"));
-                                currentHelpInfo.setHelpNum(object.getInt("helpNum"));
-                                currentHelpInfo.setDistance(object.getInt("distance"));
-                                currentHelpInfo.setCreateTime(object.getString("createTime"));
-                                currentHelpInfo.setUseUserName(object.getString("useUserName"));
-                                currentHelpInfo.setUserAddress(object.getString("userAddress"));
-                                list.add(currentHelpInfo);
-                            }
-                            adapter.setData(list);
-                            mRecyclerView.setLayoutManager(new LinearLayoutManager(ServerMainActivity.this));
-                            mRecyclerView.setAdapter(adapter);
+                    int code = jsonObject.getInt("resultCode");
+                    if (code == 0) {
+                        JSONArray beanlist = jsonObject.getJSONArray("data");
+                        List<CurrentHelpInfo> list = new ArrayList<>();
+                        Gson gson = new Gson();
+                        for (int i = 0; i < beanlist.length(); i++) {
+                            JSONObject item = beanlist.getJSONObject(i);
+                            CurrentHelpInfo bean = gson.fromJson(item.toString(), CurrentHelpInfo.class);
+                            list.add(bean);
+//                            CurrentHelpInfo currentHelpInfo = new CurrentHelpInfo();
+//                            JSONObject object = (JSONObject) beanlist.get(i);
+//                            currentHelpInfo.setImage(object.getString("image"));
+//                            currentHelpInfo.setHelpNum(object.getInt("helpNum"));
+//                            currentHelpInfo.setDistance(object.getInt("distance"));
+//                            currentHelpInfo.setCreateTime(object.getString("createTime"));
+//                            currentHelpInfo.setUseUserName(object.getString("useUserName"));
+//                            currentHelpInfo.setUserAddress(object.getString("userAddress"));
+//                            list.add(currentHelpInfo);
                         }
-                        //Toast.makeText(ClientUserInfoActivity.this,"更新成功",Toast.LENGTH_LONG).show();
-                        //finish();
+                        adapter.reset(list);
+                        mSwipeRefreshLayout.setRefreshing(false);
                     }
-                    if(code==9999){
+                    if (code == 9999) {
 
                     }
                 } catch (JSONException e) {
@@ -212,7 +243,7 @@ public class ServerMainActivity extends BaseActivity {
 
             @Override
             public void onFailure(String error) {
-
+                ToaskUtil.showToast(ServerMainActivity.this, "请检查网络");
             }
         });
     }

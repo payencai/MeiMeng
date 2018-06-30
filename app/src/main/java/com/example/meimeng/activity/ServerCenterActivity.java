@@ -78,6 +78,8 @@ public class ServerCenterActivity extends BaseActivity {
     CircleImageView server_head;
     @BindView(R.id.iv_server_settings)
     ImageView mServerSetting;
+    @BindView(R.id.comeBack)
+    ImageView comeBack;
     @BindView(R.id.tv_server_username)
     TextView mServerUsername;
     @BindView(R.id.userinfo_server_layout)
@@ -156,6 +158,7 @@ public class ServerCenterActivity extends BaseActivity {
     protected int getContentId() {
         return R.layout.server_usercenter;
     }
+
     public void getServerUser(){
         HttpProxy.obtain().get(PlatformContans.Serveruser.sGetServerUser, APP.getInstance().getServerUserInfo().getToken(), new ICallBack() {
             @Override
@@ -191,12 +194,13 @@ public class ServerCenterActivity extends BaseActivity {
             }
         });
     }
+
     private void serverInitView() {
          getServerUser();
     }
 
     @OnClick({R.id.shengji_server_layout, R.id.addaed_server_layout, R.id.reback_server_layout, R.id.iv_server_settings,
-            R.id.userinfo_server_layout, R.id.record_server_layout, R.id.server_cv_head})
+            R.id.userinfo_server_layout, R.id.record_server_layout, R.id.server_cv_head,R.id.comeBack})
     void onClick(View view) {
         switch (view.getId()) {
             case R.id.shengji_server_layout:
@@ -224,6 +228,9 @@ public class ServerCenterActivity extends BaseActivity {
                 setPopupWindow();
 //                if (isCameraPermission(ServerCenterActivity.this, 0x007))
 //                    byCamera();
+                break;
+            case R.id.comeBack:
+                finish();
                 break;
         }
     }

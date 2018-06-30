@@ -5,8 +5,58 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <LinearLayout
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="148dp"
+        android:background="@mipmap/ic_me_bg">
 
+        <RelativeLayout
+            android:id="@+id/headLayout"
+            android:layout_width="match_parent"
+            android:layout_height="28dp"
+            android:layout_marginTop="12dp">
+
+            <ImageView
+                android:id="@+id/comeBack"
+                android:layout_width="28dp"
+                android:layout_height="match_parent"
+                android:padding="@dimen/margin_6dp"
+                android:src="@mipmap/ic_back" />
+
+            <ImageView
+                android:id="@+id/iv_server_settings"
+                android:layout_width="21dp"
+                android:layout_height="21dp"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="12dp"
+                android:padding="2dp"
+                android:src="@mipmap/ic_tuichu" />
+
+        </RelativeLayout>
+
+        <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/server_cv_head"
+            android:layout_width="60dp"
+            android:layout_height="55dp"
+            android:layout_centerInParent="true"
+            android:src="@mipmap/ic_me_head"
+            app:civ_border_color="@color/color_red"
+            app:civ_border_width="2dp" />
+
+        <TextView
+            android:id="@+id/tv_server_username"
+            style="@style/font_17sp_fff"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_below="@+id/server_cv_head"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:text="朵雪花，你好" />
+
+    </RelativeLayout>
+
+    <!--<LinearLayout
         android:layout_width="match_parent"
         android:layout_height="120dp"
         android:background="@mipmap/ic_me_bg"
@@ -47,7 +97,7 @@
         </LinearLayout>
 
 
-    </LinearLayout>
+    </LinearLayout>-->
 
     <LinearLayout
 

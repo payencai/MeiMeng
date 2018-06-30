@@ -343,6 +343,7 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         }
 
     }
+
     private void setSelectMapCenter(){
         LatLng cenpt = new LatLng(selectlat, selectlon);
         //定义地图状态
@@ -354,6 +355,7 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         //改变地图状态
         mBaiduMap.setMapStatus(mMapStatusUpdate);
     }
+
     private  void init(){
 
         List<HotCity> hotCities=new ArrayList<>();

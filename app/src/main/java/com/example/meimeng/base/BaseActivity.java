@@ -65,15 +65,14 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     /**
-     * activity 初始化view
-     */
-    protected abstract void initView();
-
-
-    /**
      * @return 每个activity的布局id
      */
     protected abstract int getContentId();
+
+    /**
+     * activity 初始化view
+     */
+    protected abstract void initView();
 
     //需要savedInstanceState的子类自己去重写
     protected void baseOnCreate(Bundle savedInstanceState) {

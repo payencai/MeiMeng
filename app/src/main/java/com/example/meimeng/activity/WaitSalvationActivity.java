@@ -8,15 +8,19 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.util.LruCache;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.baidu.mapapi.map.BaiduMap;
@@ -41,6 +45,7 @@ import com.example.meimeng.http.HttpProxy;
 import com.example.meimeng.http.ICallBack;
 import com.example.meimeng.manager.ActivityManager;
 import com.example.meimeng.mywebsocket.WsManager;
+import com.example.meimeng.util.CustomPopWindow;
 import com.example.meimeng.util.LoginSharedUilt;
 import com.example.meimeng.util.ToaskUtil;
 import com.hyphenate.EMCallBack;
@@ -79,6 +84,7 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
     private PopupWindow mFinishPw;
     private ImageView showContent;
     private ImageView hideContent;
+    private RelativeLayout parent;
 
     private MapView mMapView = null;
     private BaiduMap mBaiduMap;
@@ -134,7 +140,7 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
                 return value.getByteCount();
             }
         };
-
+        parent = (RelativeLayout) findViewById(R.id.parent);
         cancel = (TextView) findViewById(R.id.cancel);
         showContent = (ImageView) findViewById(R.id.showContent);
         hideContent = (ImageView) findViewById(R.id.hideContent);
@@ -295,22 +301,60 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
             hideFragment();
             return;
         }
-        boolean isCanBack = intance.getIsCanBack();
-//        if (!isCanBack) {
-        if (mLocationMap.size() > 0) {
-            ToaskUtil.showToast(this, "已有救援人员赶过来，不可退出");
-            return;
-        } else {
-            String token = APP.getInstance().getUserInfo().getToken();
-            String helpId = intance.getHelpId();
-            cancelHelp(token, helpId);
+        if (mLocationMap != null) {
+            if (mLocationMap.size() > 0) {
+                ToaskUtil.showToast(this, "已有救援人员赶过来，不可退出");
+                return;
+            } else {
+                String token = APP.getInstance().getUserInfo().getToken();
+                String helpId = intance.getHelpId();
+                cancelHelp(token, helpId);
+            }
         }
+        super.onBackPressed();
 //        intance.saveHelpTime(mWaitTimeNumber);
     }
 
 
     private String address = "ws://47.106.164.34:80/memen/websocket";
     private String PORT = "80";
+    private URI uri;
+
+    public void initSockect() {
+        try {
+            uri = new URI(address);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        if (null == mWebSocketClient) {
+            mWebSocketClient = new WebSocketClient(uri) {
+                @Override
+                public void onOpen(ServerHandshake serverHandshake) {
+                    Log.i(TAG, "onOpen: ");
+                    String jsonSrting = getJsonSrting();
+                    mWebSocketClient.send(jsonSrting);
+                }
+
+                @Override
+                public void onMessage(String s) {
+                    Log.i(TAG, "onMessage: " + s);
+                    disposeWebData(s);
+                }
+
+                @Override
+                public void onClose(int i, String s, boolean b) {
+                    Log.i(TAG, "onClose: " + s);
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    e.printStackTrace();
+                    Log.i(TAG, "onError: ");
+                }
+            };
+        }
+        mWebSocketClient.connect();
+    }
 
     private void createLongConnect() {
         // webSocket地址
@@ -348,43 +392,6 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
                 });
     }
 
-    private URI uri;
-
-    public void initSockect() {
-        try {
-            uri = new URI(address);
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-        if (null == mWebSocketClient) {
-            mWebSocketClient = new WebSocketClient(uri) {
-                @Override
-                public void onOpen(ServerHandshake serverHandshake) {
-                    Log.i(TAG, "onOpen: ");
-                    String  jsonSrting = getJsonSrting();
-                    mWebSocketClient.send(jsonSrting);
-                }
-
-                @Override
-                public void onMessage(String s) {
-                    Log.i(TAG, "onMessage: " + s);
-                    disposeWebData(s);
-                }
-
-                @Override
-                public void onClose(int i, String s, boolean b) {
-                    Log.i(TAG, "onClose: ");
-                }
-
-                @Override
-                public void onError(Exception e) {
-                    Log.i(TAG, "onError: ");
-                }
-            };
-        }
-        mWebSocketClient.connect();
-    }
-
     private void closeLongConnect() {
 //        AsyncHttpClient.getDefaultInstance()
         if (mFuture != null) {
@@ -402,8 +409,16 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
             double latitude = object.getDouble("latitude");
             if (object.has("end")) {
                 int end = object.getInt("end");
+                final String closeName = object.getString("closeName");
+                final String closeTelephone = object.getString("closeTelephone");
                 if (end == 1) {
-                    completeHelp();
+                    mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            closeRescue(parent, closeName, closeTelephone);
+                            completeHelp(false);
+                        }
+                    });
                     return;
                 }
             }
@@ -458,7 +473,7 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
                     String message = object.getString("message");
                     if (resultCode == 0) {
                         ToaskUtil.showToast(WaitSalvationActivity.this, message);
-                        completeHelp();
+                        completeHelp(true);
                     } else {
                         ToaskUtil.showToast(WaitSalvationActivity.this, message);
                     }
@@ -626,10 +641,40 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
         return BitmapFactory.decodeFile(new File(file, imgKey).getAbsolutePath());
     }
 
+    private void closeRescue(View view, String closeName, String closeTelephone) {
+        View otherView = LayoutInflater.from(this).inflate(R.layout.pw_hint_helpend_layout, null);
+        CustomPopWindow customPopWindow = new CustomPopWindow.PopupWindowBuilder(this)
+                .setView(otherView)
+                .sizeByPercentage(this, 0.8f, 0f)
+                .setOutsideTouchable(true)
+                .enableBackgroundDark(true)
+                .setAnimationStyle(R.style.CustomPopWindowStyle)
+                .setBgDarkAlpha(0.5f)
+                .create();
+        handlerCloseRescueView(otherView, customPopWindow, closeName, closeTelephone);
+        customPopWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
+    }
+
+    private void handlerCloseRescueView(View view, final CustomPopWindow customPopWindow, String closeName, String closeTelephone) {
+        //有救援人:13480197692\n点击完成救助
+        TextView showContent = (TextView) view.findViewById(R.id.showContent);
+        String content = "有救援人:" + closeName + "\n点击完成救助";
+        showContent.setText(content);
+        view.findViewById(R.id.know).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (customPopWindow != null) {
+                    customPopWindow.dissmiss();
+                }
+                finish();
+            }
+        });
+    }
+
     /**
      * 完成救援的数据处理
      */
-    private void completeHelp() {
+    private void completeHelp(boolean isFinish) {
         LoginSharedUilt intance = LoginSharedUilt.getIntance(this);
         mLocationMap.clear();
         mLocationMap = null;
@@ -646,7 +691,9 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
         intance.saveGroupId(null);
         intance.saveIsCanBack(true);
         mWebSocketClient.close();
-        finish();
+        if (isFinish) {
+            finish();
+        }
     }
 
     private void loginHx() {

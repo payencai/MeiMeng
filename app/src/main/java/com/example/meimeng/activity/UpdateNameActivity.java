@@ -47,17 +47,19 @@ public class UpdateNameActivity extends BaseActivity {
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 String name=et_updatename.getEditableText().toString();
-
-                String token=APP.getInstance().getUserInfo().getToken();
-                updateNickname(name,token);
-                //finish();
-//                if(APP.sUserType==0){
-
-//                }else{
-//                    token=APP.getInstance().getServerUserInfo().getToken();
-//                }
+                String token="";
+                if(APP.sUserType==0){
+                    token=APP.getInstance().getUserInfo().getToken();
+                    updateNickname(name,token);
+                }else{
+                    Intent intent=new Intent();
+                    Bundle bundle=new Bundle();
+                    bundle.putString("name",name);
+                    intent.putExtras(bundle);
+                    setResult(RESULT_OK,intent);
+                    finish();
+                }
 
             }
         });

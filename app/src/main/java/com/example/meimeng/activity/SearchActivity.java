@@ -84,7 +84,7 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
                 finish();
                 break;
             case R.id.searchBtn:
-                ToaskUtil.showToast(this, "搜索");
+                //ToaskUtil.showToast(this, "搜索");
                 String name=searchEdit.getEditableText().toString();
                if(!TextUtils.isEmpty(name))
                    search(name,intoType);
@@ -116,7 +116,7 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
         }
         params.put("latitude",APP.getInstance().getUserInfo().getLatitude());
         params.put("longitude",APP.getInstance().getUserInfo().getLongitude());
-        params.put("name","救心丸");
+        params.put("name",medname);
         HttpProxy.obtain().get(PlatformContans.ForHelp.sGetServerMedicine, params, token, new ICallBack() {
             @Override
             public void OnSuccess(String result) {
@@ -130,15 +130,15 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
                     if(code==0){
                          JSONArray beanlist=jsonObject.getJSONArray("data");
                          if(beanlist.length()==0){
-                             for(int i=0;i<20;i++){
-                                 DrugInfo drugInfo=new DrugInfo();
-                                 drugInfo.setName("小明");
-                                 drugInfo.setAddress("广东省广州市番禺区");
-                                 drugInfo.setTelephone("13202908144");
-                                 drugInfo.setMedicine("救心丸/啊托品");
-                                 drugInfo.setDistance(300);
-                                 list.add(drugInfo);
-                             }
+//                             for(int i=0;i<20;i++){
+//                                 DrugInfo drugInfo=new DrugInfo();
+//                                 drugInfo.setName("小明");
+//                                 drugInfo.setAddress("广东省广州市番禺区");
+//                                 drugInfo.setTelephone("13202908144");
+//                                 drugInfo.setMedicine("救心丸/啊托品");
+//                                 drugInfo.setDistance(300);
+//                                 list.add(drugInfo);
+//                             }
                              adapter.setData(list);
                              drugRv.setLayoutManager(new LinearLayoutManager(SearchActivity.this));
                              drugRv.setAdapter(adapter);

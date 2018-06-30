@@ -94,6 +94,7 @@ public class ServerUserInfoActivity extends BaseActivity implements View.OnClick
         if(requestCode==2){
             if (resultCode==RESULT_OK){
                tv_name.setText(data.getExtras().getString("name"));
+               tv_name.setVisibility(View.VISIBLE);
             }
         }
         if (requestCode == 1&&data!=null) {

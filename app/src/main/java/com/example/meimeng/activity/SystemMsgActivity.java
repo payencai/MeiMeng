@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 public class SystemMsgActivity extends AbsBaseActivity<SystemMsgBean> {
-    private int page=31;
+    private int page=1;
     private boolean isRefresh=false;
     private TextView mTitle;
 
@@ -76,7 +76,7 @@ public class SystemMsgActivity extends AbsBaseActivity<SystemMsgBean> {
     }
 
     private void loadData() {
-        addSysInfo();
+        //addSysInfo();
         Map<String,Object> params=new HashMap<>();
         String token="";
         if(APP.sUserType==0){

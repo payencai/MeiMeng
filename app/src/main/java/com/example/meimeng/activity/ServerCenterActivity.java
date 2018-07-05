@@ -159,28 +159,30 @@ public class ServerCenterActivity extends BaseActivity {
         return R.layout.server_usercenter;
     }
 
-    public void getServerUser(){
+    public void getServerUser() {
         HttpProxy.obtain().get(PlatformContans.Serveruser.sGetServerUser, APP.getInstance().getServerUserInfo().getToken(), new ICallBack() {
             @Override
             public void OnSuccess(String result) {
-                JSONObject jsonObject= null;
+                JSONObject jsonObject = null;
                 try {
                     jsonObject = new JSONObject(result);
-                    int code=jsonObject.getInt("resultCode");
-                    if(code==0){
-                        JSONObject object=jsonObject.getJSONObject("data");
-                        name=object.getString("nickname");
-                        image=object.getString("image");
+                    int code = jsonObject.getInt("resultCode");
+                    if (code == 0) {
+                        JSONObject object = jsonObject.getJSONObject("data");
+                        name = object.getString("nickname");
+                        image = object.getString("image");
                         if (name == null) {
                             mServerUsername.setText("朵雪花,你好");
                         } else {
                             mServerUsername.setText(name + ",你好");
                         }
                         if (!TextUtils.isEmpty(image)) {
-                            Glide.with(ServerCenterActivity.this).load(image).into(server_head);
+                            if (server_head != null) {
+                                Glide.with(ServerCenterActivity.this).load(image).into(server_head);
+                            }
                         }
                     }
-                    if(code==9999){
+                    if (code == 9999) {
 
                     }
                 } catch (JSONException e) {
@@ -196,11 +198,11 @@ public class ServerCenterActivity extends BaseActivity {
     }
 
     private void serverInitView() {
-         getServerUser();
+        getServerUser();
     }
 
     @OnClick({R.id.shengji_server_layout, R.id.addaed_server_layout, R.id.reback_server_layout, R.id.iv_server_settings,
-            R.id.userinfo_server_layout, R.id.record_server_layout, R.id.server_cv_head,R.id.comeBack})
+            R.id.userinfo_server_layout, R.id.record_server_layout, R.id.server_cv_head, R.id.comeBack})
     void onClick(View view) {
         switch (view.getId()) {
             case R.id.shengji_server_layout:
@@ -213,7 +215,7 @@ public class ServerCenterActivity extends BaseActivity {
                 startActivity(new Intent(this, RebackActivity.class));
                 break;
             case R.id.userinfo_server_layout:
-                startActivityForResult(new Intent(this, ServerUserInfoActivity.class),4);
+                startActivityForResult(new Intent(this, ServerUserInfoActivity.class), 4);
                 break;
             case R.id.record_server_layout:
                 startActivity(new Intent(this, ServerRecordActivity.class));
@@ -469,9 +471,9 @@ public class ServerCenterActivity extends BaseActivity {
                 Toast.makeText(this, "找不到照片", Toast.LENGTH_SHORT).show();
             }
         }
-        if (requestCode == 4&& data != null) {
-            if(!TextUtils.isEmpty(data.getExtras().getString("name"))){
-                mServerUsername.setText(data.getExtras().getString("name")+",你好");
+        if (requestCode == 4 && data != null) {
+            if (!TextUtils.isEmpty(data.getExtras().getString("name"))) {
+                mServerUsername.setText(data.getExtras().getString("name") + ",你好");
             }
         }
     }

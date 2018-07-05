@@ -22,6 +22,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.baidu.location.BDAbstractLocationListener;
+import com.baidu.location.BDLocation;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
@@ -32,6 +34,7 @@ import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.utils.DistanceUtil;
 import com.example.meimeng.APP;
 import com.example.meimeng.R;
 import com.example.meimeng.base.BaseActivity;
@@ -43,8 +46,10 @@ import com.example.meimeng.http.HttpProxy;
 import com.example.meimeng.http.ICallBack;
 import com.example.meimeng.manager.ActivityManager;
 import com.example.meimeng.mywebsocket.WsManager;
+import com.example.meimeng.service.LocationService;
 import com.example.meimeng.util.CustomPopWindow;
 import com.example.meimeng.util.LoginSharedUilt;
+import com.example.meimeng.util.MLog;
 import com.example.meimeng.util.ToaskUtil;
 import com.hyphenate.EMCallBack;
 import com.hyphenate.chat.EMClient;
@@ -96,11 +101,13 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
     //ws://127.0.0.1:8080/memen/websocket
     //ws://47.106.164.34:8080/memen/websocket
     private int count = 0;//救援人数
-    private static final int UPDATA_OVERLAY = 1 << 27;
-    private static final int UPDATA_WAIT_TIME = 1;
-    private static final int LOGIN_HX = 1 << 7;
     public static final int REQUE_LOGINHX_MAX_COUNT = 3;//请求登录环信的最大次数
+    private static final int UPDATA_WAIT_TIME = 1;
     protected static final int REQUEST_CODE_MAP = 1 << 6;
+    private static final int LOGIN_HX = 1 << 7;
+    private static final int SEND_LOCATION_CODE = 1 << 8;
+    private static final int DELAY_REQUEST_CODE = 1 << 9;
+    private static final int UPDATA_OVERLAY = 1 << 27;
 
     private MyHandler mHandler = new MyHandler(this);
 
@@ -112,11 +119,24 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
     private WebSocketClient mWebSocketClient;
     private String mGroupId;
     private EaseChatFragment mChatFragment;
+    private LocationService locationService;
+
+    private int mSalvationState = 0;//救助状态：0为取消求助，1为完成救助,2为救援完成，未退出当前界面
+
     //是否登录环信
     private boolean isLoginHx = false;
 
+    private int end = 0;//1所有人救援结束(完成救援) 2单方面结束救援(取消救援)
+    private boolean isFristShowEnd = true;//是否是第一次当初结束框
+
     @Override
     protected int getContentId() {
+        //在使用SDK各组件之前初始化context信息，传入ApplicationContext
+        //注意该方法要再setContentView方法之前实现
+        locationService = APP.getInstance().locationService;
+        //获取locationservice实例，建议应用中只初始化1个location实例，
+        // 然后使用，可以参考其他示例的activity，都是通过此种方式获取locationservice实例的
+        locationService.registerListener(myListener);
         return R.layout.activity_wait_salvation;
     }
 
@@ -168,11 +188,7 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
             setMarker(point);
             setUserMapCenter();
         }
-//        if (mContentFragment == null) {
-//            mContentFragment = new ContentFragment();
-//        }
-//        fm.beginTransaction().add(R.id.contentContainer, mContentFragment).commit();
-//        createLongConnect();
+        locationService.start();
         initSockect();
         mHandler.sendEmptyMessage(UPDATA_WAIT_TIME);
     }
@@ -247,14 +263,33 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
         super.onDestroy();
         mMapView.onDestroy();
         isLoginHx = false;
+        //在activity执行onDestroy时执行mMapView.onDestroy()，实现地图生命周期管理
+        try {
+            mWebSocketClient.close();
+        } catch (Exception e) {
+
+        }
+        locationService.unregisterListener(myListener); //注销掉监听
+        locationService.stop(); //停止定位服务
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.cancel:
-                setBackgroundDrakValue(0.75f);
-                showPopupW(v);
+
+                if (mSalvationState == 0) {
+                    String token = APP.getInstance().getUserInfo().getToken();
+                    LoginSharedUilt intance = LoginSharedUilt.getIntance(this);
+                    String helpId = intance.getHelpId();
+                    cancelHelp(token, helpId);
+                } else if (mSalvationState == 1) {
+                    setBackgroundDrakValue(0.75f);
+                    showPopupW(v);
+                } else {
+                    finish();
+                }
+
                 break;
             case R.id.popCancel:
                 mFinishPw.dismiss();
@@ -264,7 +299,7 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
                 String token = APP.getInstance().getUserInfo().getToken();
                 LoginSharedUilt intance = LoginSharedUilt.getIntance(this);
                 String helpId = intance.getHelpId();
-                cancelHelp(token, helpId);
+                helpEnd("1", helpId);
                 break;
             case R.id.showContent:
                 showFragment();
@@ -350,6 +385,9 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
                 @Override
                 public void onMessage(String s) {
                     Log.i(TAG, "onMessage: " + s);
+                    if (s.length() < 5) {
+                        return;
+                    }
                     disposeWebData(s);
                 }
 
@@ -368,7 +406,6 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
         mWebSocketClient.connect();
     }
 
-
     private void disposeWebData(String s) {
         try {
             JSONObject object = new JSONObject(s);
@@ -377,6 +414,7 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
             String imageKey = object.getString("imageKey");
             double longitude = object.getDouble("longitude");
             double latitude = object.getDouble("latitude");
+            mLocationMap.put(userId, new Point(longitude, latitude, image, userId));
             if (object.has("end")) {
                 int end = object.getInt("end");
                 final String closeName = object.getString("closeName");
@@ -385,14 +423,26 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
                     mHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            closeRescue(parent, closeName, closeTelephone);
-                            completeHelp(false);
+                            try {
+                                mWebSocketClient.close();
+                                mHandler.removeCallbacksAndMessages(null);
+                            } catch (Exception e) {
+
+                            }
+                            if (isFristShowEnd) {
+                                isFristShowEnd = false;
+                                closeRescue(parent, closeName, closeTelephone);
+                                completeHelp(false);
+                            }
                         }
                     });
                     return;
+                } else if (end == 2) {
+                    if (mLocationMap.containsKey(userId)) {
+                        mLocationMap.remove(userId);
+                    }
                 }
             }
-            mLocationMap.put(userId, new Point(longitude, latitude, image, userId));
             mHandler.sendEmptyMessage(UPDATA_OVERLAY);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -416,11 +466,62 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
             json.put("toUserId", userInfo.getId());
             json.put("image", userInfo.getImage());
             json.put("imageKey", userInfo.getImageKey());
+            json.put("rescuepersonnum", mLocationMap.size());//来救援的人数
+            if (end > 0) {
+                json.put("end", end);//1所有人救援结束(完成救援) 2单方面结束救援(取消救援)
+                json.put("closeUserId", userInfo.getId());//关闭人ID
+                json.put("closeUserType", 1);//关闭人类型，1：求救，2：救援
+                json.put("closeName", userInfo.getName());
+                json.put("closeTelephone", userInfo.getTelephone());
+            }
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
         return json.toString();
+    }
+
+    private void helpEnd(String endType, String id) {
+        JSONObject json = null;
+        try {
+            json = new JSONObject();
+            json.put("endType", endType);
+            json.put("id", id);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Log.d("cancelbyserveruser", "cancelHelp: " + json.toString());
+        UserInfo userInfo = APP.getInstance().getUserInfo();
+        String token = userInfo.getToken();
+        if (TextUtils.isEmpty(token)) {
+            ToaskUtil.showToast(this, "登录过期");
+            ActivityManager.getInstance().finishAllActivity();
+            startActivity(new Intent(this, LoginActivity.class));
+            return;
+        }
+        HttpProxy.obtain().post(PlatformContans.ForHelp.sUpdateForHelpInfoToEnd, token, json.toString(), new ICallBack() {
+            @Override
+            public void OnSuccess(String result) {
+                MLog.log("sUpdateForHelpInfoToEnd", result);
+                try {
+                    JSONObject object = new JSONObject(result);
+                    int resultCode = object.getInt("resultCode");
+                    String message = object.getString("message");
+//                    ToaskUtil.showToast(RescueActivity.this, message);
+                    if (resultCode == 0) {
+                        end = 1;
+                        completeHelp(true);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(String error) {
+                ToaskUtil.showToast(WaitSalvationActivity.this, "请检查网络");
+            }
+        });
     }
 
     @Override
@@ -463,6 +564,7 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
                     String message = object.getString("message");
                     if (resultCode == 0) {
                         ToaskUtil.showToast(WaitSalvationActivity.this, message);
+                        end = 1;
                         completeHelp(true);
                     } else {
                         ToaskUtil.showToast(WaitSalvationActivity.this, message);
@@ -495,14 +597,18 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
             }
             switch (msg.what) {
                 case UPDATA_OVERLAY:
-                    Log.d("handleMessage", "handleMessage: 更新覆盖物");
                     Map<String, Point> locationMap = activity.mLocationMap;
                     activity.mBaiduMap.clear();
-                    Log.d("handleMessage", "handleMessage: " + locationMap.size());
                     LatLng point = new LatLng(activity.lat, activity.lon);
                     activity.setMarker(point);
                     //0名用户正在赶来，
                     activity.helpNumber.setText(locationMap.size() + "名用户正在赶来，");
+                    activity.mSalvationState = locationMap.size();
+                    if (locationMap.size() > 0) {
+                        activity.cancel.setText("完成救助");
+                    } else {
+                        activity.cancel.setText("取消求救");
+                    }
                     for (String s : locationMap.keySet()) {
                         Point point1 = locationMap.get(s);
                         Log.d("handleMessage", "handleMessage: " + point1.toString());
@@ -523,6 +629,20 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
                         return;
                     }
                     activity.loginHx();
+                    break;
+                case SEND_LOCATION_CODE:
+                    String endString = activity.getJsonSrting();
+                    try {
+                        activity.mWebSocketClient.send(endString);
+                        sendEmptyMessageDelayed(DELAY_REQUEST_CODE, 3000);
+                    } catch (Exception e) {
+                        activity.mWebSocketClient = null;
+                        activity.initSockect();
+                        sendEmptyMessageDelayed(DELAY_REQUEST_CODE, 3000);
+                    }
+                    break;
+                case DELAY_REQUEST_CODE:
+                    activity.locationService.start();
                     break;
             }
         }
@@ -667,19 +787,27 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
     private void completeHelp(boolean isFinish) {
         LoginSharedUilt intance = LoginSharedUilt.getIntance(this);
         mLocationMap.clear();
-        mLocationMap = null;
         try {
             EMClient.getInstance().groupManager().destroyGroup(intance.getGroupId());//需异步处理
         } catch (HyphenateException e) {
             e.printStackTrace();
         }
         mHandler.removeCallbacksAndMessages(null);
+        String endString = getJsonSrting();
+        try {
+            mWebSocketClient.send(endString);
+        } catch (Exception e) {
+            mWebSocketClient = null;
+        }
         ToaskUtil.showToast(this, "已完成救援");
         intance.saveHelpId(null);
         intance.saveHelpTime(0);
         intance.saveGroupId(null);
         intance.saveIsCanBack(true);
-        mWebSocketClient.close();
+        try {
+            mWebSocketClient.close();
+        } catch (Exception e) {
+        }
         if (isFinish) {
             finish();
         }
@@ -771,5 +899,50 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
             EaseBaiduMapActivity.onStartEaseBaiduMap(WaitSalvationActivity.this, lat, lon);
         }
     };
+
+    /*****
+     *
+     * 定位结果回调，重写onReceiveLocation方法，可以直接拷贝如下代码到自己工程中修改
+     *
+     */
+    private BDAbstractLocationListener myListener = new BDAbstractLocationListener() {
+        @Override
+        public void onReceiveLocation(BDLocation location) {
+            String addr = location.getAddrStr();    //获取详细地址信息
+            String country = location.getCountry();    //获取国家
+            String province = location.getProvince();    //获取省份
+            String city = location.getCity();    //获取城市
+            String district = location.getDistrict();    //获取区县
+            String street = location.getStreet();    //获取街道信息
+            int LocType = location.getLocType();    //返回码
+
+            lat = location.getLatitude();
+            lon = location.getLongitude();
+
+            LoginSharedUilt intance = LoginSharedUilt.getIntance(WaitSalvationActivity.this);
+            intance.saveLat(lat);
+            intance.saveLon(lon);
+            intance.saveCity(city);
+            intance.saveAddr(addr);
+            locationService.setLocationOption(locationService.getSingleLocationClientOption());
+            location(city, street);
+            // TODO Auto-generated method stub
+        }
+    };
+
+    public void location(String city, String street) {
+//        mBaiduMap.clear();
+//        setMarker();
+//        setMarker2(point2);
+//        walkProject(point);
+//
+//
+//        if (isFristMaoCenter) {
+//            isFristMaoCenter = false;
+//            setUserMapCenter(point);
+//        }
+        mHandler.sendEmptyMessage(SEND_LOCATION_CODE);
+    }
+
 
 }

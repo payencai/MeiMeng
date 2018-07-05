@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/parent"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -60,7 +61,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_marginBottom="6dp"
                 android:layout_marginRight="15dp"
-                android:text="已有1人前往"
+                android:text="已有0人前往"
                 android:textColor="#666666"
                 android:textSize="10sp" />
 
@@ -92,7 +93,7 @@
                 android:layout_toRightOf="@id/helperHead"
                 android:ellipsize="end"
                 android:maxLines="3"
-                android:text="与您300米范围内"
+                android:text="与您0米范围内"
                 android:textColor="@color/text_333"
                 android:textSize="14sp" />
 
@@ -141,6 +142,7 @@
                 android:background="@color/line_gray" />
 
             <TextView
+                android:id="@+id/toAED"
                 style="@style/common_font"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"

@@ -13,7 +13,7 @@ import retrofit2.http.GET;
 
 public class PlatformContans {
 
-        public static String root = "http://47.106.164.34/";//正式地址
+    public static String root = "http://47.106.164.34/";//正式地址
     public static String rootUrl = root + "memen/";//
 //    public static String root = "http://10.1.2.66:8080/";//诗安测试地址
 //    public static String rootUrl = root + "memen/";//
@@ -37,7 +37,7 @@ public class PlatformContans {
         public static final String sUpdateServerUser = sHead + "updateServerUser";//修改服务用户个人信息
         public static final String sServerUserUpgrade = sHead + "serverUserUpgrade";//升级高级急救人员
         public static final String sAddServerUserByUseUser = sHead + "addServerUserByUseUser";
-        public static final String sGetServerUser=sHead+"getServerUser";
+        public static final String sGetServerUser = sHead + "getServerUser";
     }
 
     public static class AidKnowController {
@@ -51,6 +51,7 @@ public class PlatformContans {
         public static final String sGetContent = sHead + "getContent";
         public static final String sGetFacility = sHead + "getFacility";
         public static final String sGetAed = sHead + "getAed";
+        public static final String sGetDrone = sHead + "getDrone";//呼叫无人机AED
 
     }
 
@@ -67,6 +68,7 @@ public class PlatformContans {
         public static final String sGetCurrentHelp = sHead + "getCurrentHelp";
         public static final String sAddForHelpInfo = sHead + "addForHelpInfo";
         public static final String sUpdateForHelpInfoToCancel = sHead + "updateForHelpInfoToCancel";//取消求救
+//        public static final String sUpdateForHelpInfoToEnd = sHead + "updateForHelpInfoToEnd";//完成救助
         public static final String sUpdateForHelpInfoToCancelByServerUser = sHead + "updateForHelpInfoToCancelByServerUser";//救援人员取消求救
         public static final String sUpdateForHelpInfoToEnd = sHead + "updateForHelpInfoToEnd";//救援人员完成救援
         public static final String sUpdateForHelpInfoByGet = sHead + "updateForHelpInfoByGet";//接取求救信息前往救援

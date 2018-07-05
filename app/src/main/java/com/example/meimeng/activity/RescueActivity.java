@@ -23,6 +23,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -135,6 +136,8 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
     TextView helperDistance;
     @BindView(R.id.metronome)
     TextView metronome;
+    @BindView(R.id.parent)
+    LinearLayout parent;
 
 
     private MapView mMapView = null;
@@ -142,9 +145,14 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
     private CurrentHelpInfo mCurrentHelpInfo;
 
     private WebSocketClient mWebSocketClient;
+    private boolean isFristShowEnd = true;
 
     private double mCurLat;
     private double mCurLon;
+
+    private double mCallerLat;
+    private double mCallerLon;
+
     private int end = 0;//1所有人救援结束(完成救援) 2单方面结束救援(取消救援)
 
     private LocationService locationService;
@@ -193,6 +201,17 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
         Intent intent = getIntent();
         mCurrentHelpInfo = (CurrentHelpInfo) intent.getSerializableExtra("currentHelpInfo");
         if (mCurrentHelpInfo == null) {
+            finish();
+            return;
+        }
+
+        String latitude = mCurrentHelpInfo.getLatitude();
+        String longitude = mCurrentHelpInfo.getLongitude();
+        try {
+            mCallerLat = Double.parseDouble(latitude);
+            mCallerLon = Double.parseDouble(longitude);
+        } catch (Exception e) {
+            ToaskUtil.showToast(this, "位置异常");
             finish();
             return;
         }
@@ -311,8 +330,7 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
 
     }
 
-
-    @OnClick({R.id.comeBackText, R.id.saveText, R.id.callTel, R.id.metronome, R.id.messageText, R.id.helperHead})
+    @OnClick({R.id.comeBackText, R.id.saveText, R.id.callTel, R.id.metronome, R.id.messageText, R.id.helperHead, R.id.toAED})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.comeBackText:
@@ -320,7 +338,11 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
                 closeRescue(view);
                 break;
             case R.id.saveText:
-                showHelpEnd(view);
+                if (isFristShowEnd) {
+                    showHelpEnd(view);
+                } else {
+                    ToaskUtil.showToast(this, "此救援信息已完成或已取消");
+                }
                 break;
             case R.id.callTel:
                 checkPower();
@@ -329,13 +351,15 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
                 startActivity(new Intent(this, CPROptionActivity.class));
                 break;
             case R.id.messageText:
-//                startActivity(new Intent(this, ChatActivity.class));
                 LoginSharedUilt intance = LoginSharedUilt.getIntance(this);
-//                String groupId = intance.getGroupId();
                 String groupId = mCurrentHelpInfo.getGroupId();
                 ChatActivity.startChatActivity(this, groupId);
                 break;
             case R.id.helperHead:
+                break;
+            case R.id.toAED:
+//                startActivity(new Intent(this, ShowAEDActivity.class));
+                ShowAEDActivity.startShowAED(this, mCurLat, mCurLon);
                 break;
         }
     }
@@ -363,7 +387,7 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
 
     @Override
     public void onBackPressed() {
-        if (true) {
+        if (isFristShowEnd) {
             return;
         }
         super.onBackPressed();
@@ -389,7 +413,6 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
     private String PORT = "80";
     private URI uri;
 
-
     public void initSockect() {
         try {
             uri = new URI(address);
@@ -403,13 +426,12 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
                     Log.i(TAG, "onOpen: " + serverHandshake.getHttpStatusMessage());
                     String jsonSrting = getEndString();
 //                    String jsonSrting = getJsonSrting();
-                    Log.d(TAG, "onOpen: " + jsonSrting);
                     mWebSocketClient.send(jsonSrting);
                 }
 
                 @Override
                 public void onMessage(String s) {
-                    Log.i(TAG, "onMessage: " + s);
+                    Log.i("onMessagetag", s);
                     disposeWebData(s);
                 }
 
@@ -430,14 +452,64 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
     private void disposeWebData(String s) {
         try {
             JSONObject object = new JSONObject(s);
-            if (object.has("rescuepersonnum")) {
-                final int rescuepersonnum = object.getInt("rescuepersonnum");
-                mHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        workerNumber.setText("已有" + rescuepersonnum + "人前往");
+            String toUserId = object.getString("toUserId");
+            if (toUserId.equals(mCurrentHelpInfo.getUseUserId())) {
+
+                if (object.has("end")) {
+                    int end = object.getInt("end");
+                    final String closeName = object.getString("closeName");
+                    final String closeTelephone = object.getString("closeTelephone");
+                    if (end == 1) {
+                        mHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    mWebSocketClient.close();
+                                    mHandler.removeCallbacksAndMessages(null);
+                                } catch (Exception e) {
+
+                                }
+                                if (isFristShowEnd) {
+                                    isFristShowEnd = false;
+                                    showhelpEnd(parent, closeName, closeTelephone);
+                                }
+                            }
+                        });
+                        return;
                     }
-                });
+                }
+
+                if (object.has("rescuepersonnum")) {
+                    final int rescuepersonnum = object.getInt("rescuepersonnum");
+                    mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            workerNumber.setText("已有" + rescuepersonnum + "人前往");
+                        }
+                    });
+                }
+                if (object.has("demand_longitude") && object.has("demand_latitude")) {
+                    String demand_longitude = object.getString("demand_longitude");
+                    String demand_latitude = object.getString("demand_latitude");
+                    double demandLat = Double.parseDouble(demand_latitude);
+                    double demandLon = Double.parseDouble(demand_longitude);
+                    LatLng startPoint = new LatLng(mCurLat, mCurLon);
+                    LatLng endPoint = new LatLng(demandLat, demandLon);
+
+                    try {
+                        mCallerLat = Double.parseDouble(demand_latitude);
+                        mCallerLon = Double.parseDouble(demand_longitude);
+                    } catch (Exception e) {
+                    }
+
+                    final int distance = (int) DistanceUtil.getDistance(startPoint, endPoint);//距离定位的距离
+                    mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            helperDistance.setText("与您" + distance + "米范围内");
+                        }
+                    });
+                }
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -496,6 +568,36 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
                 .create();
         handlerCloseRescueView(otherView);
         customPopWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
+    }
+
+    private void showhelpEnd(View view, String closeName, String closeTelephone) {
+        View otherView = LayoutInflater.from(this).inflate(R.layout.pw_hint_helpend_layout, null);
+        CustomPopWindow customPopWindow = new CustomPopWindow.PopupWindowBuilder(this)
+                .setView(otherView)
+                .sizeByPercentage(this, 0.8f, 0f)
+                .setOutsideTouchable(false)
+                .enableBackgroundDark(true)
+                .setAnimationStyle(R.style.CustomPopWindowStyle)
+                .setBgDarkAlpha(0.5f)
+                .create();
+        handlerFinishHelpView(otherView, customPopWindow, closeName, closeTelephone);
+        customPopWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
+    }
+
+    private void handlerFinishHelpView(View view, final CustomPopWindow customPopWindow, String closeName, String closeTelephone) {
+        //有救援人:13480197692\n点击完成救助
+        TextView showContent = (TextView) view.findViewById(R.id.showContent);
+        String content = "有救援人:" + closeName + " \n点击完成救助";
+        showContent.setText(content);
+        view.findViewById(R.id.know).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (customPopWindow != null) {
+                    customPopWindow.dissmiss();
+                }
+                finish();
+            }
+        });
     }
 
     private void showHelpEnd(View view) {
@@ -676,6 +778,11 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
             int LocType = location.getLocType();    //返回码
             mCurLat = location.getLatitude();
             mCurLon = location.getLongitude();
+            LoginSharedUilt intance = LoginSharedUilt.getIntance(RescueActivity.this);
+            intance.saveLat(mCurLat);
+            intance.saveLon(mCurLon);
+            intance.saveCity(city);
+            intance.saveAddr(addr);
             locationService.setLocationOption(locationService.getSingleLocationClientOption());
             location(city, street);
             // TODO Auto-generated method stub
@@ -788,17 +895,11 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
     }
 
     private void walkProject(LatLng point) {
-        PlanNode stNode = PlanNode.withLocation(point);
-        PlanNode enNode = null;
+        LatLng endPt = new LatLng(mCallerLat, mCallerLon);
 
-        String latitude = mCurrentHelpInfo.getLatitude();
-        String longitude = mCurrentHelpInfo.getLongitude();
-        try {
-            double lat2 = Double.parseDouble(latitude);
-            double lon2 = Double.parseDouble(longitude);
-            LatLng endPt = new LatLng(lat2, lon2);
-            enNode = PlanNode.withLocation(endPt);
-        } catch (Exception e) {
+        PlanNode stNode = PlanNode.withLocation(point);
+        PlanNode enNode = PlanNode.withLocation(endPt);
+        if (endPt == null || stNode == null) {
             ToaskUtil.showToast(this, "位置异常");
             finish();
             return;
@@ -979,53 +1080,6 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
     @Override
     public void onGetBikingRouteResult(BikingRouteResult bikingRouteResult) {
 
-    }
-
-    private void getAEDController(double lon, double lat) {
-        String token;
-        if (APP.sUserType == 0) {
-            token = APP.getInstance().getUserInfo().getToken();
-        } else {
-            token = APP.getInstance().getServerUserInfo().getToken();
-        }
-        if (TextUtils.isEmpty(token)) {
-            return;
-        }
-
-        Map<String, Object> paramr = new HashMap<>();
-        paramr.put("longitude", lon);//经度
-        paramr.put("latitude", lat);//维度
-        HttpProxy.obtain().get(PlatformContans.AedController.sGetAed, paramr, token, new ICallBack() {
-            @Override
-            public void OnSuccess(String result) {
-                MLog.log("getAEDController", result);
-                try {
-                    JSONObject object = new JSONObject(result);
-                    int resultCode = object.getInt("resultCode");
-                    String message = object.getString("message");
-                    if (resultCode == 0) {
-                        JSONArray data = object.getJSONArray("data");
-                        int length = data.length();
-                        Gson gson = new Gson();
-                        List<AEDInfo> list = new ArrayList<>();
-                        for (int i = 0; i < length; i++) {
-                            JSONObject item = data.getJSONObject(i);
-                            AEDInfo serverUser = gson.fromJson(item.toString(), AEDInfo.class);
-                            list.add(serverUser);
-                        }
-//                        mBaiduMap.clear();//清除地图上所有覆盖物，无法分成批删除
-                        batchAddAED(list);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(String error) {
-
-            }
-        });
     }
 
     private void batchAddAED(List<AEDInfo> list) {

@@ -96,6 +96,7 @@ public class ServerMainActivity extends BaseActivity {
     private static final int LOGIN_HX = 2;
     public static final int REQUE_LOGINHX_MAX_COUNT = 3;//请求登录环信的最大次数
     private MyHandler mHandler = new MyHandler(this);
+    private boolean isCanRequest = false;
 
 
     @Override
@@ -159,6 +160,10 @@ public class ServerMainActivity extends BaseActivity {
                             CurrentHelpInfo currentHelpInfo = mData.get(position);
                             requestLeaveHelp(context, currentHelpInfo);
                         } else {
+                            if (isCanRequest) {
+                                isCanRequest = false;
+                                loginHx();
+                            }
                             ToaskUtil.showToast(holder.getItemView().getContext(), "聊天未登录，请稍等...");
                         }
                     }
@@ -386,6 +391,7 @@ public class ServerMainActivity extends BaseActivity {
                     requstLoginCount++;
                     if (requstLoginCount > REQUE_LOGINHX_MAX_COUNT) {
                         ToaskUtil.showToast(activity, "无法连接服务器,请检查网络");
+                        activity.isCanRequest = true;
                         requstLoginCount = 0;
 //                        activity.finish();
                         return;

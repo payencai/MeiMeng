@@ -298,27 +298,27 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
 
     }
-    private void showDialog(){
-        int count=0;
-        List<String> data=new ArrayList<>();
-        UserInfo userInfo=APP.getInstance().getUserInfo();
-        if(!TextUtils.isEmpty(userInfo.getLinkman1())){
+
+    private void showDialog() {
+        int count = 0;
+        List<String> data = new ArrayList<>();
+        UserInfo userInfo = APP.getInstance().getUserInfo();
+        if (!TextUtils.isEmpty(userInfo.getLinkman1())) {
             data.add(userInfo.getLinkman1());
             count++;
         }
-        if(!TextUtils.isEmpty(userInfo.getLinkman2())){
+        if (!TextUtils.isEmpty(userInfo.getLinkman2())) {
             data.add(userInfo.getLinkman2());
             count++;
         }
-        if(!TextUtils.isEmpty(userInfo.getLinkman3())){
+        if (!TextUtils.isEmpty(userInfo.getLinkman3())) {
             data.add(userInfo.getLinkman3());
             count++;
         }
-        if(count>0)
-        {
+        if (count > 0) {
             View dialog = LayoutInflater.from(this).inflate(R.layout.dialog_callhelp, null);
-            ListView listView=dialog.findViewById(R.id.lv_callhelp);
-            ListAdapter adapter=new ArrayAdapter<String>(this,R.layout.item,R.id.item_contacts,data);
+            ListView listView = dialog.findViewById(R.id.lv_callhelp);
+            ListAdapter adapter = new ArrayAdapter<String>(this, R.layout.item, R.id.item_contacts, data);
             listView.setAdapter(adapter);
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setView(dialog);
@@ -329,8 +329,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                     alertDialog.dismiss();
                     TextView contacts = (TextView) view.findViewById(R.id.item_contacts);
-                    String contact=contacts.getText().toString();
-                    curCallTel = contact.substring(contact.length()-11);
+                    String contact = contacts.getText().toString();
+                    curCallTel = contact.substring(contact.length() - 11);
                     checkPower();
                     //Log.e("phone",contact.substring(contact.length()-11));
                 }
@@ -340,10 +340,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             android.view.WindowManager.LayoutParams p = alertDialog.getWindow().getAttributes();  //获取对话框当前的参数值
             p.width = (int) (d.getWidth() * 0.7);    //宽度设置为屏幕的0.5
             alertDialog.getWindow().setAttributes(p);     //设置生效
-        }else{
-            Toast.makeText(this,"你还没有设置紧急联系人!",Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(this, "你还没有设置紧急联系人!", Toast.LENGTH_LONG).show();
         }
     }
+
     private void showPopupW(View view) {
 
 //        View shareview = LayoutInflater.from(this).inflate(R.layout.popup_call_help, null);
@@ -402,8 +403,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 if (customPopWindow != null) {
                     customPopWindow.dissmiss();
                 }
-                LoginSharedUilt intance = LoginSharedUilt.getIntance(MainActivity.this);
-                String groupId = intance.getGroupId();
                 startActivity(new Intent(MainActivity.this, WaitSoSActivity.class));
             }
         });
@@ -428,10 +427,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 showDialog();
             }
         });
-
-    }
-
-    private void initLoginView(View shareview) {
 
     }
 

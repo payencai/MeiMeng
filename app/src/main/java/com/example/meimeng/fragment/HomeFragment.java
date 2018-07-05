@@ -126,10 +126,11 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
     private double lon;
     private double selectlat;
     private double selectlon;
-    private boolean isSelect=false;
-    private int count=0;
-//    private Snackbar snackbar;
+    private boolean isSelect = false;
+    private int count = 0;
+    //    private Snackbar snackbar;
     private TextView locationName;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -145,7 +146,7 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
     }
 
     private void initView(View view) {
-        locationName=view.findViewById(R.id.actionBarAreaName);
+        locationName = view.findViewById(R.id.actionBarAreaName);
         addAED = (LinearLayout) view.findViewById(R.id.addAED);
         view.findViewById(R.id.searchBar).setOnClickListener(this);
         firstAidSite = (LinearLayout) view.findViewById(R.id.firstAidSite);
@@ -270,8 +271,10 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         mMapView.onPause();
 
     }
+
     private String locationcity;
     private String locationprovince;
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -292,16 +295,15 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
 //                closeAEDHint();
                 break;
             case R.id.searchBar:
-                if(searchType==0){
+                if (searchType == 0) {
                     //init();
-                    Intent intent= new Intent(getActivity(), CityPickerActivity.class);
-                    Bundle bundle=new Bundle();
-                    bundle.putString("city",locationcity);
-                    bundle.putString("province",locationprovince);
+                    Intent intent = new Intent(getActivity(), CityPickerActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putString("city", locationcity);
+                    bundle.putString("province", locationprovince);
                     intent.putExtras(bundle);
-                    startActivityForResult(intent,5);
-                }
-                else
+                    startActivityForResult(intent, 5);
+                } else
                     SearchActivity.startSearchActivity(getContext(), searchType);
                 break;
             case R.id.volunteerRecruiting:
@@ -310,7 +312,8 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
                 break;
         }
     }
-    private void setSelectMarker(){
+
+    private void setSelectMarker() {
         //定义Maker坐标点
         LatLng point = new LatLng(selectlat, selectlon);
         //构建Marker图标
@@ -323,19 +326,20 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         //在地图上添加Marker，并显示
         mBaiduMap.addOverlay(option);
     }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode==5 && data!=null){
-            City city= (City) data.getSerializableExtra("city");
+        if (requestCode == 5 && data != null) {
+            City city = (City) data.getSerializableExtra("city");
             locationName.setText(city.getName());
-            Log.e("tag",city.getName());
-            selectlat=data.getExtras().getDouble("lat");
-            selectlon= data.getExtras().getDouble("lon");
-            Log.e("bbb",selectlat+"： "+selectlon);
+            Log.e("tag", city.getName());
+            selectlat = data.getExtras().getDouble("lat");
+            selectlon = data.getExtras().getDouble("lon");
+            Log.e("bbb", selectlat + "： " + selectlon);
             setSelectMarker();
             setSelectMapCenter();
-            lat=selectlat;
-            lon=selectlon;
+            lat = selectlat;
+            lon = selectlon;
             //count++;
             //Log.e("tag",count+"");
             getServerUserByUser();
@@ -343,7 +347,7 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
 
     }
 
-    private void setSelectMapCenter(){
+    private void setSelectMapCenter() {
         LatLng cenpt = new LatLng(selectlat, selectlon);
         //定义地图状态
         MapStatus mMapStatus = new MapStatus.Builder()
@@ -355,17 +359,17 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         mBaiduMap.setMapStatus(mMapStatusUpdate);
     }
 
-    private  void init(){
+    private void init() {
 
-        List<HotCity> hotCities=new ArrayList<>();
+        List<HotCity> hotCities = new ArrayList<>();
         hotCities.add(new HotCity("北京", "北京", "101010100"));
         hotCities.add(new HotCity("上海", "上海", "101020100"));
         hotCities.add(new HotCity("广州", "广东", "101280101"));
         hotCities.add(new HotCity("深圳", "广东", "101280601"));
         hotCities.add(new HotCity("杭州", "浙江", "101210101"));
         CityPicker.getInstance()
-                .setFragmentManager(getActivity().getSupportFragmentManager())	//此方法必须调用
-                .enableAnimation(false)	//启用动画效果
+                .setFragmentManager(getActivity().getSupportFragmentManager())    //此方法必须调用
+                .enableAnimation(false)    //启用动画效果
                 .setLocatedCity(new LocatedCity("杭州", "浙江", "101210101"))
                 .setHotCities(hotCities)
                 .setOnPickListener(new OnPickListener() {
@@ -731,7 +735,8 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         customPopWindow.showAtLocation(view, Gravity.BOTTOM, 0, 0);
     }
 
-    private void handlerBrandView(Context context, View view, final CustomPopWindow customPopWindow, int distance, String address, String tel, final double lonNumber, final double latNumber) {
+    private void handlerBrandView(Context context, View view, final CustomPopWindow customPopWindow,
+                                  int distance, String address, String tel, final double lonNumber, final double latNumber) {
         view.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -755,7 +760,10 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
                     return;
                 }
 
-                LatLng startPt = new LatLng(lat, lon);
+                if (lon == 0 || lat == 0 || latNumber == 0 || lonNumber == 0) {
+                    ToaskUtil.showToast(getContext(), "位置获取失败!");
+                    return;
+                }
                 Intent intent = new Intent();
                 Bundle bundle = new Bundle();
                 intent.putExtra("bundle", bundle);
@@ -763,6 +771,8 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
                 bundle.putDouble("lonNumber", lonNumber);
                 bundle.putString("currentCity", mCurrentCity);
                 bundle.putString("startNodeStr", startNodeStr);
+                bundle.putDouble("startLat", lat);
+                bundle.putDouble("startLon", lon);
                 intent.setClass(getActivity(), RoutePlanDemo.class);
                 startActivity(intent);
                 if (customPopWindow != null) {
@@ -777,7 +787,6 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
             telNumber.setText("电话号码:" + tel);
         }
     }
-
 
     private void startWalkNavi() {
         Log.d("View", "startBikeNavi");
@@ -907,8 +916,8 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
 
         @Override
         public void onReceiveLocation(BDLocation location) {
-            locationcity=location.getCity();
-            locationprovince=location.getProvince();
+            locationcity = location.getCity();
+            locationprovince = location.getProvince();
             String addr = location.getAddrStr();    //获取详细地址信息
             String country = location.getCountry();    //获取国家
             String province = location.getProvince();    //获取省份
@@ -919,92 +928,92 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
             lat = location.getLatitude();
             lon = location.getLongitude();
             Log.d("onReceiveLocation", "onReceiveLocation: 定位");
-            location(city,addr);
+            location(city, addr);
             locationService.setLocationOption(locationService.getSingleLocationClientOption());
             // TODO Auto-generated method stub
 
 
-            if (null != location && location.getLocType() != BDLocation.TypeServerError) {
-                StringBuffer sb = new StringBuffer(256);
-                sb.append("time : ");
-                /**
-                 * 时间也可以使用systemClock.elapsedRealtime()方法 获取的是自从开机以来，每次回调的时间；
-                 * location.getTime() 是指服务端出本次结果的时间，如果位置不发生变化，则时间不变
-                 */
-                sb.append(location.getTime());
-                sb.append("\nlocType : ");// 定位类型
-                sb.append(location.getLocType());
-                sb.append("\nlocType description : ");// *****对应的定位类型说明*****
-                sb.append(location.getLocTypeDescription());
-                sb.append("\nlatitude : ");// 纬度
-                sb.append(location.getLatitude());
-                sb.append("\nlontitude : ");// 经度
-                sb.append(location.getLongitude());
-                sb.append("\nradius : ");// 半径
-                sb.append(location.getRadius());
-                sb.append("\nCountryCode : ");// 国家码
-                sb.append(location.getCountryCode());
-                sb.append("\nCountry : ");// 国家名称
-                sb.append(location.getCountry());
-                sb.append("\ncitycode : ");// 城市编码
-                sb.append(location.getCityCode());
-                sb.append("\ncity : ");// 城市
-                sb.append(location.getCity());
-                sb.append("\nDistrict : ");// 区
-                sb.append(location.getDistrict());
-                sb.append("\nStreet : ");// 街道
-                sb.append(location.getStreet());
-                sb.append("\naddr : ");// 地址信息
-                sb.append(location.getAddrStr());
-                sb.append("\nUserIndoorState: ");// *****返回用户室内外判断结果*****
-                sb.append(location.getUserIndoorState());
-                sb.append("\nDirection(not all devices have value): ");
-                sb.append(location.getDirection());// 方向
-                sb.append("\nlocationdescribe: ");
-                sb.append(location.getLocationDescribe());// 位置语义化信息
-                sb.append("\nPoi: ");// POI信息
-                if (location.getPoiList() != null && !location.getPoiList().isEmpty()) {
-                    for (int i = 0; i < location.getPoiList().size(); i++) {
-                        Poi poi = (Poi) location.getPoiList().get(i);
-                        sb.append(poi.getName() + ";");
-                    }
-                }
-                if (location.getLocType() == BDLocation.TypeGpsLocation) {// GPS定位结果
-                    sb.append("\nspeed : ");
-                    sb.append(location.getSpeed());// 速度 单位：km/h
-                    sb.append("\nsatellite : ");
-                    sb.append(location.getSatelliteNumber());// 卫星数目
-                    sb.append("\nheight : ");
-                    sb.append(location.getAltitude());// 海拔高度 单位：米
-                    sb.append("\ngps status : ");
-                    sb.append(location.getGpsAccuracyStatus());// *****gps质量判断*****
-                    sb.append("\ndescribe : ");
-                    sb.append("gps定位成功");
-                } else if (location.getLocType() == BDLocation.TypeNetWorkLocation) {// 网络定位结果
-                    // 运营商信息
-                    if (location.hasAltitude()) {// *****如果有海拔高度*****
-                        sb.append("\nheight : ");
-                        sb.append(location.getAltitude());// 单位：米
-                    }
-                    sb.append("\noperationers : ");// 运营商信息
-                    sb.append(location.getOperators());
-                    sb.append("\ndescribe : ");
-                    sb.append("网络定位成功");
-                } else if (location.getLocType() == BDLocation.TypeOffLineLocation) {// 离线定位结果
-                    sb.append("\ndescribe : ");
-                    sb.append("离线定位成功，离线定位结果也是有效的");
-                } else if (location.getLocType() == BDLocation.TypeServerError) {
-                    sb.append("\ndescribe : ");
-                    sb.append("服务端网络定位失败，可以反馈IMEI号和大体定位时间到loc-bugs@baidu.com，会有人追查原因");
-                } else if (location.getLocType() == BDLocation.TypeNetWorkException) {
-                    sb.append("\ndescribe : ");
-                    sb.append("网络不同导致定位失败，请检查网络是否通畅");
-                } else if (location.getLocType() == BDLocation.TypeCriteriaException) {
-                    sb.append("\ndescribe : ");
-                    sb.append("无法获取有效定位依据导致定位失败，一般是由于手机的原因，处于飞行模式下一般会造成这种结果，可以试着重启手机");
-                }
-//                logMsg(sb.toString());
-            }
+//            if (null != location && location.getLocType() != BDLocation.TypeServerError) {
+//                StringBuffer sb = new StringBuffer(256);
+//                sb.append("time : ");
+//                /**
+//                 * 时间也可以使用systemClock.elapsedRealtime()方法 获取的是自从开机以来，每次回调的时间；
+//                 * location.getTime() 是指服务端出本次结果的时间，如果位置不发生变化，则时间不变
+//                 */
+//                sb.append(location.getTime());
+//                sb.append("\nlocType : ");// 定位类型
+//                sb.append(location.getLocType());
+//                sb.append("\nlocType description : ");// *****对应的定位类型说明*****
+//                sb.append(location.getLocTypeDescription());
+//                sb.append("\nlatitude : ");// 纬度
+//                sb.append(location.getLatitude());
+//                sb.append("\nlontitude : ");// 经度
+//                sb.append(location.getLongitude());
+//                sb.append("\nradius : ");// 半径
+//                sb.append(location.getRadius());
+//                sb.append("\nCountryCode : ");// 国家码
+//                sb.append(location.getCountryCode());
+//                sb.append("\nCountry : ");// 国家名称
+//                sb.append(location.getCountry());
+//                sb.append("\ncitycode : ");// 城市编码
+//                sb.append(location.getCityCode());
+//                sb.append("\ncity : ");// 城市
+//                sb.append(location.getCity());
+//                sb.append("\nDistrict : ");// 区
+//                sb.append(location.getDistrict());
+//                sb.append("\nStreet : ");// 街道
+//                sb.append(location.getStreet());
+//                sb.append("\naddr : ");// 地址信息
+//                sb.append(location.getAddrStr());
+//                sb.append("\nUserIndoorState: ");// *****返回用户室内外判断结果*****
+//                sb.append(location.getUserIndoorState());
+//                sb.append("\nDirection(not all devices have value): ");
+//                sb.append(location.getDirection());// 方向
+//                sb.append("\nlocationdescribe: ");
+//                sb.append(location.getLocationDescribe());// 位置语义化信息
+//                sb.append("\nPoi: ");// POI信息
+//                if (location.getPoiList() != null && !location.getPoiList().isEmpty()) {
+//                    for (int i = 0; i < location.getPoiList().size(); i++) {
+//                        Poi poi = (Poi) location.getPoiList().get(i);
+//                        sb.append(poi.getName() + ";");
+//                    }
+//                }
+//                if (location.getLocType() == BDLocation.TypeGpsLocation) {// GPS定位结果
+//                    sb.append("\nspeed : ");
+//                    sb.append(location.getSpeed());// 速度 单位：km/h
+//                    sb.append("\nsatellite : ");
+//                    sb.append(location.getSatelliteNumber());// 卫星数目
+//                    sb.append("\nheight : ");
+//                    sb.append(location.getAltitude());// 海拔高度 单位：米
+//                    sb.append("\ngps status : ");
+//                    sb.append(location.getGpsAccuracyStatus());// *****gps质量判断*****
+//                    sb.append("\ndescribe : ");
+//                    sb.append("gps定位成功");
+//                } else if (location.getLocType() == BDLocation.TypeNetWorkLocation) {// 网络定位结果
+//                    // 运营商信息
+//                    if (location.hasAltitude()) {// *****如果有海拔高度*****
+//                        sb.append("\nheight : ");
+//                        sb.append(location.getAltitude());// 单位：米
+//                    }
+//                    sb.append("\noperationers : ");// 运营商信息
+//                    sb.append(location.getOperators());
+//                    sb.append("\ndescribe : ");
+//                    sb.append("网络定位成功");
+//                } else if (location.getLocType() == BDLocation.TypeOffLineLocation) {// 离线定位结果
+//                    sb.append("\ndescribe : ");
+//                    sb.append("离线定位成功，离线定位结果也是有效的");
+//                } else if (location.getLocType() == BDLocation.TypeServerError) {
+//                    sb.append("\ndescribe : ");
+//                    sb.append("服务端网络定位失败，可以反馈IMEI号和大体定位时间到loc-bugs@baidu.com，会有人追查原因");
+//                } else if (location.getLocType() == BDLocation.TypeNetWorkException) {
+//                    sb.append("\ndescribe : ");
+//                    sb.append("网络不同导致定位失败，请检查网络是否通畅");
+//                } else if (location.getLocType() == BDLocation.TypeCriteriaException) {
+//                    sb.append("\ndescribe : ");
+//                    sb.append("无法获取有效定位依据导致定位失败，一般是由于手机的原因，处于飞行模式下一般会造成这种结果，可以试着重启手机");
+//                }
+////                logMsg(sb.toString());
+//            }
         }
 
     };

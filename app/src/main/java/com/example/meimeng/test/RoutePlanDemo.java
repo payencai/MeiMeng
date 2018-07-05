@@ -145,6 +145,9 @@ public class RoutePlanDemo extends Activity implements BaiduMap.OnMapClickListen
     String startNodeStr = "";
     String endNodeStr = "";
 
+    private double startLat;
+    private double startLon;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_routeplan);
@@ -154,8 +157,13 @@ public class RoutePlanDemo extends Activity implements BaiduMap.OnMapClickListen
         Bundle bundle = intent.getBundleExtra("bundle");
         mLatNumber = bundle.getDouble("latNumber");
         mLonNumber = bundle.getDouble("lonNumber");
+        startLat = bundle.getDouble("startLat");
+        startLon = bundle.getDouble("startLon");
+
         mCurrentCity = bundle.getString("currentCity", "");
         startNodeStr = bundle.getString("startNodeStr", "");
+
+
         try {
             mNaviHelper = BikeNavigateHelper.getInstance();
             mWNaviHelper = WalkNavigateHelper.getInstance();
@@ -317,18 +325,18 @@ public class RoutePlanDemo extends Activity implements BaiduMap.OnMapClickListen
         mBtnPre.setVisibility(View.INVISIBLE);
         mBtnNext.setVisibility(View.INVISIBLE);
         mBaidumap.clear();
-        // 处理搜索按钮响应
-        // 设置起终点信息，对于tranist search 来说，城市名无意义
-//        PlanNode stNode = PlanNode.withCityNameAndPlaceName("北京", startNodeStr);
-//        PlanNode enNode = PlanNode.withCityNameAndPlaceName("北京", endNodeStr);
 
-        if (TextUtils.isEmpty(mEndCity) || TextUtils.isEmpty(endNodeStr)) {
-            ToaskUtil.showToast(this, "位置不可达");
-            return;
-        }
+//        if (TextUtils.isEmpty(mEndCity) || TextUtils.isEmpty(endNodeStr)) {
+//            ToaskUtil.showToast(this, "位置不可达");
+//            return;
+//        }
 
-        PlanNode stNode = PlanNode.withCityNameAndPlaceName(mCurrentCity, startNodeStr);
-        PlanNode enNode = PlanNode.withCityNameAndPlaceName(mEndCity, endNodeStr);
+//        PlanNode stNode = PlanNode.withCityNameAndPlaceName(mCurrentCity, startNodeStr);
+//        PlanNode enNode = PlanNode.withCityNameAndPlaceName(mEndCity, endNodeStr);
+
+        PlanNode stNode = PlanNode.withLocation(new LatLng(lat, lon));
+        PlanNode enNode = PlanNode.withLocation(new LatLng(mLatNumber, mLonNumber));
+
         // 实际使用中请对起点终点城市进行正确的设定
 
         if (v.getId() == R.id.mass) {

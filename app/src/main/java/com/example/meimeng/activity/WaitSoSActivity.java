@@ -2,10 +2,8 @@ package com.example.meimeng.activity;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -17,46 +15,31 @@ import com.example.meimeng.base.BaseActivity;
 import com.example.meimeng.bean.LoginAccount.ServerUserInfo;
 import com.example.meimeng.bean.LoginAccount.UserInfo;
 import com.example.meimeng.constant.PlatformContans;
-import com.example.meimeng.http.HttpProxy;
 import com.example.meimeng.http.ICallBack;
 import com.example.meimeng.manager.ActivityManager;
 import com.example.meimeng.util.LoginSharedUilt;
-import com.example.meimeng.util.MLog;
 import com.example.meimeng.util.ToaskUtil;
 import com.hyphenate.EMCallBack;
 import com.hyphenate.EMValueCallBack;
 import com.hyphenate.chat.EMClient;
-import com.hyphenate.chat.EMCursorResult;
 import com.hyphenate.chat.EMGroup;
 import com.hyphenate.chat.EMGroupManager;
 import com.hyphenate.chat.EMGroupOptions;
-import com.hyphenate.exceptions.HyphenateException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.Headers;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -368,10 +351,13 @@ public class WaitSoSActivity extends BaseActivity implements View.OnClickListene
 
             @Override
             public void onError(int i, final String s) {
-                Log.d("asyncCreateGroup", "onSuccess: 创建失败," + Thread.currentThread().getName() + "," + s);
+                Log.d("asyncCreateGroup", "onSuccess: 创建失败," + i + "," + Thread.currentThread().getName() + "," + s);
                 String tmpe = "Userisnotlogin";
                 String replace = s.replace(" ", "");
+                Log.d("asyncCreateGroup", "onError: " + tmpe);
+                Log.d("asyncCreateGroup", "onError: " + replace);
                 if (tmpe.equals(replace)) {
+                    Log.d("asyncCreateGroup", "onError: 重新登录");
                     loginHx(0);
                 }
             }
@@ -401,6 +387,7 @@ public class WaitSoSActivity extends BaseActivity implements View.OnClickListene
             public void onSuccess() {
                 EMClient.getInstance().groupManager().loadAllGroups();
                 EMClient.getInstance().chatManager().loadAllConversations();
+                Log.d("asyncCreateGroup", "onSuccess: 登录成功");
                 if (tag == 0) {
                     createGroupChat();
                 } else {
@@ -415,7 +402,7 @@ public class WaitSoSActivity extends BaseActivity implements View.OnClickListene
 
             @Override
             public void onError(int code, String message) {
-                Log.d("asyncCreateGroup", "登录聊天服务器失败！");
+                Log.d("asyncCreateGroup", "登录聊天服务器失败！" + code + "," + message);
                 mHandler.sendEmptyMessageDelayed(LOGIN_HX, 1000);
             }
         });

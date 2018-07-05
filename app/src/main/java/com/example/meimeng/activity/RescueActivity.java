@@ -3,9 +3,12 @@ package com.example.meimeng.activity;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
@@ -33,41 +36,78 @@ import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
+import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.search.core.PoiInfo;
+import com.baidu.mapapi.search.core.SearchResult;
+import com.baidu.mapapi.search.geocode.GeoCodeResult;
+import com.baidu.mapapi.search.geocode.GeoCoder;
+import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
+import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
+import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
+import com.baidu.mapapi.search.route.BikingRouteResult;
+import com.baidu.mapapi.search.route.DrivingRouteResult;
+import com.baidu.mapapi.search.route.IndoorRouteResult;
+import com.baidu.mapapi.search.route.MassTransitRouteResult;
+import com.baidu.mapapi.search.route.OnGetRoutePlanResultListener;
+import com.baidu.mapapi.search.route.PlanNode;
+import com.baidu.mapapi.search.route.RoutePlanSearch;
+import com.baidu.mapapi.search.route.TransitRouteResult;
+import com.baidu.mapapi.search.route.WalkingRoutePlanOption;
+import com.baidu.mapapi.search.route.WalkingRouteResult;
+import com.baidu.mapapi.utils.DistanceUtil;
 import com.bumptech.glide.Glide;
 import com.example.meimeng.APP;
 import com.example.meimeng.R;
 import com.example.meimeng.base.BaseActivity;
+import com.example.meimeng.bean.AEDInfo;
+import com.example.meimeng.bean.AddressBean;
 import com.example.meimeng.bean.CurrentHelpInfo;
 import com.example.meimeng.bean.LoginAccount.ServerUserInfo;
 import com.example.meimeng.bean.LoginAccount.UserInfo;
+import com.example.meimeng.bean.ServerUser;
 import com.example.meimeng.constant.PlatformContans;
 import com.example.meimeng.http.HttpProxy;
 import com.example.meimeng.http.ICallBack;
 import com.example.meimeng.manager.ActivityManager;
+import com.example.meimeng.overlayutil.TransitRouteOverlay;
+import com.example.meimeng.overlayutil.WalkingRouteOverlay;
 import com.example.meimeng.service.LocationService;
+import com.example.meimeng.test.RouteLineAdapter;
+import com.example.meimeng.test.RoutePlanDemo;
 import com.example.meimeng.util.CustomPopWindow;
 import com.example.meimeng.util.LoginSharedUilt;
 import com.example.meimeng.util.MLog;
 import com.example.meimeng.util.ToaskUtil;
+import com.google.gson.Gson;
+import com.hyphenate.EMCallBack;
+import com.hyphenate.EMGroupChangeListener;
+import com.hyphenate.chat.EMClient;
+import com.hyphenate.chat.EMMucSharedFile;
+import com.hyphenate.exceptions.HyphenateException;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class RescueActivity extends BaseActivity {
+public class RescueActivity extends BaseActivity implements OnGetRoutePlanResultListener {
 
     private static final String TAG = RescueActivity.class.getSimpleName();
 
@@ -120,6 +160,12 @@ public class RescueActivity extends BaseActivity {
 
     private static final int DELAY_REQUEST_CODE = 1;
 
+    private static final int LOGIN_HX = 2;
+
+    public static final int REQUE_LOGINHX_MAX_COUNT = 3;//请求登录环信的最大次数
+
+    RoutePlanSearch mSearch = null;    // 搜索模块，也可去掉地图模块独立使用
+
     @Override
 
     protected int getContentId() {
@@ -161,8 +207,13 @@ public class RescueActivity extends BaseActivity {
         mMapView = (MapView) findViewById(R.id.bmapView);
         //开启定位图层
         mBaiduMap = mMapView.getMap();
+        // 初始化搜索模块，注册事件监听
+        mSearch = RoutePlanSearch.newInstance();
+        mSearch.setOnGetRoutePlanResultListener(this);
+
         initDataView();
         locationService.start();
+        applyGroup();
         initSockect();
     }
 
@@ -199,9 +250,17 @@ public class RescueActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         mMapView.onDestroy();
+        if (mSearch != null) {
+            mSearch.destroy();
+        }
         //在activity执行onDestroy时执行mMapView.onDestroy()，实现地图生命周期管理
         locationService.unregisterListener(myListener); //注销掉监听
         locationService.stop(); //停止定位服务
+        try {
+            mWebSocketClient.close();
+        } catch (Exception e) {
+
+        }
     }
 
     /**
@@ -212,6 +271,22 @@ public class RescueActivity extends BaseActivity {
         //构建Marker图标
         BitmapDescriptor bitmap = BitmapDescriptorFactory
                 .fromResource(R.mipmap.ic_high_volunteer);
+        //构建MarkerOption，用于在地图上添加Marker
+        OverlayOptions option = new MarkerOptions()
+                .position(point)
+                .icon(bitmap);
+        //在地图上添加Marker，并显示
+        mBaiduMap.addOverlay(option);
+    }
+
+    /**
+     * 添加marker
+     */
+    private void setMarker2(LatLng point) {
+        //定义Maker坐标点
+        //构建Marker图标
+        BitmapDescriptor bitmap = BitmapDescriptorFactory
+                .fromResource(R.mipmap.icon_lation_wait_helper);
         //构建MarkerOption，用于在地图上添加Marker
         OverlayOptions option = new MarkerOptions()
                 .position(point)
@@ -236,6 +311,7 @@ public class RescueActivity extends BaseActivity {
 
     }
 
+
     @OnClick({R.id.comeBackText, R.id.saveText, R.id.callTel, R.id.metronome, R.id.messageText, R.id.helperHead})
     public void onViewClicked(View view) {
         switch (view.getId()) {
@@ -253,12 +329,13 @@ public class RescueActivity extends BaseActivity {
                 startActivity(new Intent(this, CPROptionActivity.class));
                 break;
             case R.id.messageText:
-                startActivity(new Intent(this, ChatActivity.class));
+//                startActivity(new Intent(this, ChatActivity.class));
+                LoginSharedUilt intance = LoginSharedUilt.getIntance(this);
+//                String groupId = intance.getGroupId();
+                String groupId = mCurrentHelpInfo.getGroupId();
+                ChatActivity.startChatActivity(this, groupId);
                 break;
             case R.id.helperHead:
-                //TODO:
-//                String endString = getEndString();
-//                mWebSocketClient.send(endString);
                 break;
         }
     }
@@ -308,8 +385,10 @@ public class RescueActivity extends BaseActivity {
     }
 
     private String address = "ws://47.106.164.34:80/memen/websocket";
+    //    private String address = "ws://192.168.1.18:8080/memen/websocket";
     private String PORT = "80";
     private URI uri;
+
 
     public void initSockect() {
         try {
@@ -323,15 +402,15 @@ public class RescueActivity extends BaseActivity {
                 public void onOpen(ServerHandshake serverHandshake) {
                     Log.i(TAG, "onOpen: " + serverHandshake.getHttpStatusMessage());
                     String jsonSrting = getEndString();
-                    String jsonSrting1 = getJsonSrting();
+//                    String jsonSrting = getJsonSrting();
                     Log.d(TAG, "onOpen: " + jsonSrting);
-//                    mWebSocketClient.send(jsonSrting1);
+                    mWebSocketClient.send(jsonSrting);
                 }
 
                 @Override
                 public void onMessage(String s) {
                     Log.i(TAG, "onMessage: " + s);
-//                    disposeWebData(s);
+                    disposeWebData(s);
                 }
 
                 @Override
@@ -348,29 +427,21 @@ public class RescueActivity extends BaseActivity {
         mWebSocketClient.connect();
     }
 
-    private String getJsonSrting() {
-        String result = null;
-        JSONObject json = null;
-        ServerUserInfo userInfo = APP.getInstance().getServerUserInfo();
-        if (userInfo == null) {
-            ToaskUtil.showToast(this, "登录异常");
-            ActivityManager.getInstance().finishAllActivity();
-            return "";
-        }
-
+    private void disposeWebData(String s) {
         try {
-            json = new JSONObject();
-            json.put("type", 2);//1求救人员 2救援人员
-            json.put("demand_latitude", mCurLat);
-            json.put("demand_longitude", mCurLon);
-            json.put("toUserId", userInfo.getId());
-            json.put("image", userInfo.getImage());
-            json.put("imageKey", userInfo.getImageKey());
-
+            JSONObject object = new JSONObject(s);
+            if (object.has("rescuepersonnum")) {
+                final int rescuepersonnum = object.getInt("rescuepersonnum");
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        workerNumber.setText("已有" + rescuepersonnum + "人前往");
+                    }
+                });
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return json.toString();
     }
 
     private String getEndString() {
@@ -385,9 +456,10 @@ public class RescueActivity extends BaseActivity {
         try {
             json = new JSONObject();
             json.put("type", 2);//1求救人员 2救援人员
-            json.put("demand_latitude", mCurLat);
-            json.put("demand_longitude", mCurLon);
-            json.put("toUserId", userInfo.getId());
+            json.put("latitude", mCurLat);
+            json.put("longitude", mCurLon);
+            json.put("toUserId", mCurrentHelpInfo.getUseUserId());//求救人的id
+            json.put("userId", userInfo.getId());//志愿者的id
             json.put("image", userInfo.getImage());
             json.put("imageKey", userInfo.getImageKey());
             json.put("isCertificate", userInfo.getIsCertificate());
@@ -407,7 +479,9 @@ public class RescueActivity extends BaseActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return json.toString();
+        String s = json.toString();
+        Log.d("getEndString", "getEndString: " + s);
+        return s;
     }
 
     private void closeRescue(View view) {
@@ -527,7 +601,6 @@ public class RescueActivity extends BaseActivity {
                             if (resultCode == 0) {
                                 end = 2;
                                 helpFinish();
-                                finish();
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -573,7 +646,6 @@ public class RescueActivity extends BaseActivity {
                         }
                         end = 1;
                         helpFinish();
-                        finish();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -593,7 +665,6 @@ public class RescueActivity extends BaseActivity {
      *
      */
     private BDAbstractLocationListener myListener = new BDAbstractLocationListener() {
-
         @Override
         public void onReceiveLocation(BDLocation location) {
             String addr = location.getAddrStr();    //获取详细地址信息
@@ -605,28 +676,414 @@ public class RescueActivity extends BaseActivity {
             int LocType = location.getLocType();    //返回码
             mCurLat = location.getLatitude();
             mCurLon = location.getLongitude();
-            location();
             locationService.setLocationOption(locationService.getSingleLocationClientOption());
+            location(city, street);
             // TODO Auto-generated method stub
         }
     };
 
-    public void location() {
-        LatLng point = new LatLng(mCurLat, mCurLon);
-        setMarker(point);
-        setUserMapCenter(point);
-//        mHandler.sendEmptyMessage(SEND_LOCATION_CODE);
+    private void applyGroup() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    //如果群开群是自由加入的，即group.isMembersOnly()为false，直接join
+                    EMClient.getInstance().groupManager().joinGroup(mCurrentHelpInfo.getGroupId());//需异步处理
+                    //需要申请和验证才能加入的，即group.isMembersOnly()为true，调用下面方法
+//            EMClient.getInstance().groupManager().applyJoinToGroup(groupid, "求加入");//需异步处理
+                } catch (HyphenateException e) {
+                    e.printStackTrace();
+                    String tmep = "Userisnotlogin";
+                    int errorCode = e.getErrorCode();
+                    String message = e.getMessage();
+                    String replace = message.replace(" ", "");
+                    if (replace.equals(tmep) && errorCode == 201) {
+                        loginHx();
+                    }
+                    Log.d(TAG, "run: 加入群失败，" + e.getDescription() + "," + e.getMessage() + "," + e.getLocalizedMessage() + "," + e
+                            .getErrorCode());
+                }
+            }
+        }).start();
+
     }
+
+    private void loginHx() {
+        Log.d("asyncCreateGroup", "loginHx: 登录hx");
+        String userName = null;
+        String password = null;
+        if (APP.sUserType == 0) {
+            UserInfo userInfo = APP.getInstance().getUserInfo();
+            userName = userInfo.getId();
+            password = userInfo.getHxPwd();
+        } else {
+            ServerUserInfo serverUserInfo = APP.getInstance().getServerUserInfo();
+            userName = serverUserInfo.getId();
+            password = serverUserInfo.getHxPwd();
+        }
+        if (TextUtils.isEmpty(userName) || TextUtils.isEmpty(userName)) {
+            ToaskUtil.showToast(this, "数据获取失败");
+            ActivityManager.getInstance().finishAllActivity();
+            return;
+        }
+        EMClient.getInstance().login(userName, password, new EMCallBack() {//回调
+            @Override
+            public void onSuccess() {
+                Log.d(TAG, "onSuccess: MainActivity环信登录成功回调");
+                EMClient.getInstance().groupManager().loadAllGroups();
+                EMClient.getInstance().chatManager().loadAllConversations();
+                applyGroup();
+            }
+
+            @Override
+            public void onProgress(int progress, String status) {
+
+            }
+
+            @Override
+            public void onError(int code, String message) {
+                Log.d("asyncCreateGroup", "登录聊天服务器失败！" + code + "," + message);
+                String replace = message.replace(" ", "");
+                if (replace.equals("Userisalreadylogin") && code == 200) {
+                    applyGroup();
+                    return;
+                }
+                mHandler.sendEmptyMessageDelayed(LOGIN_HX, 1000);
+            }
+        });
+    }
+
+    public void location(String city, String street) {
+        LatLng point = new LatLng(mCurLat, mCurLon);
+        String latitude = mCurrentHelpInfo.getLatitude();
+        String longitude = mCurrentHelpInfo.getLongitude();
+        LatLng point2 = null;
+
+        try {
+            double lat2 = Double.parseDouble(latitude);
+            double lon2 = Double.parseDouble(longitude);
+            point2 = new LatLng(lat2, lon2);
+        } catch (Exception e) {
+        }
+        if (point2 == null) {
+            ToaskUtil.showToast(this, "位置获取异常");
+            end = 2;
+            helpFinish();
+            return;
+        }
+
+        int distance = (int) DistanceUtil.getDistance(point, point2);//距离定位的距离
+        helperDistance.setText("与您" + distance + "米范围内");
+        mBaiduMap.clear();
+        setMarker(point);
+        setMarker2(point2);
+        walkProject(point);
+
+
+        if (isFristMaoCenter) {
+            isFristMaoCenter = false;
+            setUserMapCenter(point);
+        }
+        mHandler.sendEmptyMessage(SEND_LOCATION_CODE);
+    }
+
+    private void walkProject(LatLng point) {
+        PlanNode stNode = PlanNode.withLocation(point);
+        PlanNode enNode = null;
+
+        String latitude = mCurrentHelpInfo.getLatitude();
+        String longitude = mCurrentHelpInfo.getLongitude();
+        try {
+            double lat2 = Double.parseDouble(latitude);
+            double lon2 = Double.parseDouble(longitude);
+            LatLng endPt = new LatLng(lat2, lon2);
+            enNode = PlanNode.withLocation(endPt);
+        } catch (Exception e) {
+            ToaskUtil.showToast(this, "位置异常");
+            finish();
+            return;
+        }
+        mSearch.walkingSearch((new WalkingRoutePlanOption())
+                .from(stNode).to(enNode));
+    }
+
+    boolean isFristMaoCenter = true;
 
     /**
      * 某种原因结束救援
      */
     private void helpFinish() {
-        getEndString();
+        mHandler.removeCallbacksAndMessages(null);
+        String endString = getEndString();
+        try {
+            mWebSocketClient.send(endString);
+        } catch (Exception e) {
+            mWebSocketClient = null;
+        }
+        finish();
+    }
+
+    private void addGroupChangListener() {
+        EMClient.getInstance().groupManager().addGroupChangeListener(new EMGroupChangeListener() {
+            @Override
+            public void onInvitationReceived(String groupId, String groupName, String inviter, String reason) {
+                //接收到群组加入邀请
+            }
+
+            @Override
+            public void onRequestToJoinReceived(String groupId, String groupName, String applyer, String reason) {
+                //用户申请加入群
+            }
+
+            @Override
+            public void onRequestToJoinAccepted(String groupId, String groupName, String accepter) {
+                //加群申请被同意
+                Log.d("onRequestToJoinAccepted", "onRequestToJoinAccepted: 加群申请被同意");
+            }
+
+            @Override
+            public void onRequestToJoinDeclined(String groupId, String groupName, String decliner, String reason) {
+                //加群申请被拒绝
+            }
+
+            @Override
+            public void onInvitationAccepted(String groupId, String inviter, String reason) {
+                //群组邀请被同意
+            }
+
+            @Override
+            public void onInvitationDeclined(String groupId, String invitee, String reason) {
+                //群组邀请被拒绝
+            }
+
+            @Override
+            public void onUserRemoved(String s, String s1) {
+
+            }
+
+            @Override
+            public void onGroupDestroyed(String s, String s1) {
+
+            }
+
+            @Override
+            public void onAutoAcceptInvitationFromGroup(String groupId, String inviter, String inviteMessage) {
+                //接收邀请时自动加入到群组的通知
+            }
+
+            @Override
+            public void onMuteListAdded(String groupId, final List<String> mutes, final long muteExpire) {
+                //成员禁言的通知
+            }
+
+            @Override
+            public void onMuteListRemoved(String groupId, final List<String> mutes) {
+                //成员从禁言列表里移除通知
+            }
+
+            @Override
+            public void onAdminAdded(String groupId, String administrator) {
+                //增加管理员的通知
+            }
+
+            @Override
+            public void onAdminRemoved(String groupId, String administrator) {
+                //管理员移除的通知
+            }
+
+            @Override
+            public void onOwnerChanged(String groupId, String newOwner, String oldOwner) {
+                //群所有者变动通知
+            }
+
+            @Override
+            public void onMemberJoined(final String groupId, final String member) {
+                //群组加入新成员通知
+            }
+
+            @Override
+            public void onMemberExited(final String groupId, final String member) {
+                //群成员退出通知
+            }
+
+            @Override
+            public void onAnnouncementChanged(String groupId, String announcement) {
+                //群公告变动通知
+            }
+
+            @Override
+            public void onSharedFileAdded(String groupId, EMMucSharedFile sharedFile) {
+                //增加共享文件的通知
+            }
+
+            @Override
+            public void onSharedFileDeleted(String groupId, String fileId) {
+                //群共享文件删除通知
+            }
+        });
+    }
+
+    @Override
+    public void onGetWalkingRouteResult(WalkingRouteResult result) {
+        if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
+            Toast.makeText(RescueActivity.this, "抱歉，未找到结果", Toast.LENGTH_SHORT).show();
+        }
+        if (result.error == SearchResult.ERRORNO.AMBIGUOUS_ROURE_ADDR) {
+            //起终点或途经点地址有岐义，通过以下接口获取建议查询信息
+            //result.getSuggestAddrInfo()
+            return;
+        }
+        if (result.error == SearchResult.ERRORNO.NO_ERROR) {
+//            mBaiduMap.clear();
+            WalkingRouteOverlay walkingRouteOverlay = new WalkingRouteOverlay(mBaiduMap);
+            walkingRouteOverlay.setData(result.getRouteLines().get(0));
+            walkingRouteOverlay.addToMap();
+            walkingRouteOverlay.zoomToSpan();
+        }
+    }
+
+    @Override
+    public void onGetTransitRouteResult(TransitRouteResult result) {
+        if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
+            Toast.makeText(RescueActivity.this, "抱歉，未找到结果", Toast.LENGTH_SHORT).show();
+        }
+        if (result.error == SearchResult.ERRORNO.AMBIGUOUS_ROURE_ADDR) {
+            //起终点或途经点地址有岐义，通过以下接口获取建议查询信息
+            //result.getSuggestAddrInfo()
+            return;
+        }
+        if (result.error == SearchResult.ERRORNO.NO_ERROR) {
+            TransitRouteOverlay overlay = new TransitRouteOverlay(mBaiduMap);
+            mBaiduMap.setOnMarkerClickListener(overlay);
+            overlay.setData(result.getRouteLines().get(0));
+            overlay.addToMap();
+            overlay.zoomToSpan();
+        }
+    }
+
+    @Override
+    public void onGetMassTransitRouteResult(MassTransitRouteResult massTransitRouteResult) {
+
+    }
+
+    @Override
+    public void onGetDrivingRouteResult(DrivingRouteResult drivingRouteResult) {
+
+    }
+
+    @Override
+    public void onGetIndoorRouteResult(IndoorRouteResult indoorRouteResult) {
+
+    }
+
+    @Override
+    public void onGetBikingRouteResult(BikingRouteResult bikingRouteResult) {
+
+    }
+
+    private void getAEDController(double lon, double lat) {
+        String token;
+        if (APP.sUserType == 0) {
+            token = APP.getInstance().getUserInfo().getToken();
+        } else {
+            token = APP.getInstance().getServerUserInfo().getToken();
+        }
+        if (TextUtils.isEmpty(token)) {
+            return;
+        }
+
+        Map<String, Object> paramr = new HashMap<>();
+        paramr.put("longitude", lon);//经度
+        paramr.put("latitude", lat);//维度
+        HttpProxy.obtain().get(PlatformContans.AedController.sGetAed, paramr, token, new ICallBack() {
+            @Override
+            public void OnSuccess(String result) {
+                MLog.log("getAEDController", result);
+                try {
+                    JSONObject object = new JSONObject(result);
+                    int resultCode = object.getInt("resultCode");
+                    String message = object.getString("message");
+                    if (resultCode == 0) {
+                        JSONArray data = object.getJSONArray("data");
+                        int length = data.length();
+                        Gson gson = new Gson();
+                        List<AEDInfo> list = new ArrayList<>();
+                        for (int i = 0; i < length; i++) {
+                            JSONObject item = data.getJSONObject(i);
+                            AEDInfo serverUser = gson.fromJson(item.toString(), AEDInfo.class);
+                            list.add(serverUser);
+                        }
+//                        mBaiduMap.clear();//清除地图上所有覆盖物，无法分成批删除
+                        batchAddAED(list);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(String error) {
+
+            }
+        });
+    }
+
+    private void batchAddAED(List<AEDInfo> list) {
+        List<OverlayOptions> options = new ArrayList<OverlayOptions>();
+        //构建Marker图标
+        //当前自己的位置
+        BitmapDescriptor bitmap1 = BitmapDescriptorFactory
+                .fromResource(R.mipmap.ic_exist_aed3);
+        //构建Marker图标
+        BitmapDescriptor bitmap2 = BitmapDescriptorFactory
+                .fromResource(R.mipmap.ic_unexist_aed3);
+        for (AEDInfo AEDInfobean : list) {
+            //isCertificate 1为高级，2为普通
+            //workLongitude  经度
+            //workLatitude 维度
+            AEDInfo.KeyBean key = AEDInfobean.getKey();
+            int isPass = key.getIsPass();
+            String workLatitude = key.getLatitude();
+            String workLongitude = key.getLongitude();
+            double latNumber = 0;
+            double lonNumber = 0;
+            LatLng point;
+            try {
+                latNumber = Double.parseDouble(workLatitude);
+                lonNumber = Double.parseDouble(workLongitude);
+            } catch (Exception e) {
+
+            }
+            point = new LatLng(latNumber, lonNumber);
+            MarkerOptions position = new MarkerOptions().position(point);
+            OverlayOptions option;
+            if (isPass == 4) {
+                option = position.icon(bitmap1);
+            } else {
+                option = position.icon(bitmap2);
+            }
+//            options.add(option);
+//            Marker marker = (Marker) mBaiduMap.addOverlay(option);
+            mBaiduMap.addOverlay(option);
+//            String address = key.getAddress();//广州新东方学校大学城教学区广州市番禺区大学城中六路1号广州大学城信息枢纽楼814房
+//            String expiryDate = key.getExpiryDate();//2018-05-23
+//            String brank = key.getBrank();//回家你那边
+//            Bundle bundle = new Bundle();
+//            bundle.putInt("type", 0);//0为AED 1为志愿者覆盖物
+//            bundle.putString("telephone", key.getTel());
+//            bundle.putDouble("latNumber", latNumber);
+//            bundle.putDouble("lonNumber", lonNumber);
+//
+//            bundle.putString("address", address);
+//            bundle.putString("expiryDate", expiryDate);
+//            bundle.putString("brank", brank);
+//            marker.setExtraInfo(bundle);
+        }
     }
 
     private static class LocationHandler extends Handler {
         private WeakReference<Activity> activity;
+        private int requstLoginCount = 0;
 
         public LocationHandler(Activity activity) {
             this.activity = new WeakReference<>(activity);
@@ -641,11 +1098,27 @@ public class RescueActivity extends BaseActivity {
             switch (msg.what) {
                 case SEND_LOCATION_CODE:
                     String endString = activity.getEndString();
-                    activity.mWebSocketClient.send(endString);
-                    sendEmptyMessageDelayed(DELAY_REQUEST_CODE, 2000);
+                    try {
+                        activity.mWebSocketClient.send(endString);
+                        sendEmptyMessageDelayed(DELAY_REQUEST_CODE, 3000);
+                    } catch (Exception e) {
+                        activity.mWebSocketClient = null;
+                        activity.initSockect();
+                        sendEmptyMessageDelayed(DELAY_REQUEST_CODE, 3000);
+                    }
                     break;
                 case DELAY_REQUEST_CODE:
                     activity.locationService.start();
+                    break;
+                case LOGIN_HX:
+                    requstLoginCount++;
+                    if (requstLoginCount > REQUE_LOGINHX_MAX_COUNT) {
+                        ToaskUtil.showToast(activity, "无法连接服务器,请检查网络");
+                        requstLoginCount = 0;
+                        activity.finish();
+                        return;
+                    }
+                    activity.loginHx();
                     break;
             }
         }

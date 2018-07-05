@@ -1,27 +1,26 @@
 package com.example.meimeng.activity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.util.LruCache;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
@@ -40,7 +39,6 @@ import com.example.meimeng.bean.LoginAccount.ServerUserInfo;
 import com.example.meimeng.bean.LoginAccount.UserInfo;
 import com.example.meimeng.bean.Point;
 import com.example.meimeng.constant.PlatformContans;
-import com.example.meimeng.fragment.ContentFragment;
 import com.example.meimeng.http.HttpProxy;
 import com.example.meimeng.http.ICallBack;
 import com.example.meimeng.manager.ActivityManager;
@@ -50,13 +48,10 @@ import com.example.meimeng.util.LoginSharedUilt;
 import com.example.meimeng.util.ToaskUtil;
 import com.hyphenate.EMCallBack;
 import com.hyphenate.chat.EMClient;
+import com.hyphenate.easeui.EaseConstant;
+import com.hyphenate.easeui.ui.EaseChatFragment;
+//import com.hyphenate.util.LatLng;
 import com.hyphenate.exceptions.HyphenateException;
-import com.koushikdutta.async.ByteBufferList;
-import com.koushikdutta.async.DataEmitter;
-import com.koushikdutta.async.callback.DataCallback;
-import com.koushikdutta.async.future.Future;
-import com.koushikdutta.async.http.AsyncHttpClient;
-import com.koushikdutta.async.http.WebSocket;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
@@ -94,7 +89,7 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
 
     private LruCache<String, Bitmap> lruCache;
 
-    private Fragment mContentFragment;
+    //    private Fragment mContentFragment;
     private FragmentManager fm;
     private static final String TAG_FRAGMENT = "content_fragment";
     private boolean isShowFragment = true;
@@ -105,6 +100,8 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
     private static final int UPDATA_WAIT_TIME = 1;
     private static final int LOGIN_HX = 1 << 7;
     public static final int REQUE_LOGINHX_MAX_COUNT = 3;//请求登录环信的最大次数
+    protected static final int REQUEST_CODE_MAP = 1 << 6;
+
     private MyHandler mHandler = new MyHandler(this);
 
     private Map<String, Point> mLocationMap = new HashMap<>();
@@ -112,8 +109,11 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
     private TextView waitTime;
     //等待救援的时间
     private int mWaitTimeNumber = 0;
-    private Future<WebSocket> mFuture;
     private WebSocketClient mWebSocketClient;
+    private String mGroupId;
+    private EaseChatFragment mChatFragment;
+    //是否登录环信
+    private boolean isLoginHx = false;
 
     @Override
     protected int getContentId() {
@@ -127,6 +127,12 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
         lon = intance.getLon();
         lat = intance.getLat();
         mWaitTimeNumber = intance.getHelpTime();
+        mGroupId = intance.getGroupId();
+        if (TextUtils.isEmpty(mGroupId)) {
+            ToaskUtil.showToast(this, "群Id为空");
+            completeHelp(true);
+            return;
+        }
         loginHx();
 
         //获取系统给每一个应用所分配的内存大小
@@ -162,27 +168,33 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
             setMarker(point);
             setUserMapCenter();
         }
-        if (mContentFragment == null) {
-            mContentFragment = new ContentFragment();
-        }
-        fm.beginTransaction().add(R.id.contentContainer, mContentFragment).commit();
+//        if (mContentFragment == null) {
+//            mContentFragment = new ContentFragment();
+//        }
+//        fm.beginTransaction().add(R.id.contentContainer, mContentFragment).commit();
 //        createLongConnect();
         initSockect();
         mHandler.sendEmptyMessage(UPDATA_WAIT_TIME);
     }
 
     private void hideFragment() {
+        if (mChatFragment == null) {
+            return;
+        }
         isShowFragment = false;
         showContent.setVisibility(View.VISIBLE);
         hideContent.setVisibility(View.GONE);
-        fm.beginTransaction().hide(mContentFragment).commit();
+        fm.beginTransaction().hide(mChatFragment).commit();
     }
 
     private void showFragment() {
+        if (mChatFragment == null) {
+            return;
+        }
         isShowFragment = true;
         showContent.setVisibility(View.GONE);
         hideContent.setVisibility(View.VISIBLE);
-        fm.beginTransaction().show(mContentFragment).commit();
+        fm.beginTransaction().show(mChatFragment).commit();
     }
 
     /**
@@ -234,7 +246,7 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
     protected void onDestroy() {
         super.onDestroy();
         mMapView.onDestroy();
-        Log.d("onDestroy", "onDestroy: 还结束不了了？");
+        isLoginHx = false;
     }
 
     @Override
@@ -356,48 +368,6 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
         mWebSocketClient.connect();
     }
 
-    private void createLongConnect() {
-        // webSocket地址
-        // 端口
-        // 发送消息的方法
-        // note that this data has been read
-        mFuture = AsyncHttpClient.getDefaultInstance().websocket(
-                address,// webSocket地址
-                PORT,// 端口
-                new AsyncHttpClient.WebSocketConnectCallback() {
-                    @Override
-                    public void onCompleted(Exception ex, WebSocket webSocket) {
-                        if (ex != null) {
-                            ex.printStackTrace();
-                            return;
-                        }
-                        String jsonSrting = getJsonSrting();
-                        Log.d(TAG, "onCompleted: " + jsonSrting);
-                        webSocket.send(jsonSrting);// 发送消息的方法
-                        webSocket.send(new byte[10]);
-                        webSocket.setStringCallback(new WebSocket.StringCallback() {
-                            public void onStringAvailable(String s) {
-                                Log.d("onStringAvailable", "onStringAvailable: " + s);
-                                disposeWebData(s);
-                            }
-                        });
-                        webSocket.setDataCallback(new DataCallback() {
-                            public void onDataAvailable(DataEmitter emitter, ByteBufferList byteBufferList) {
-                                Log.d(TAG, "onDataAvailable: I got some bytes!");
-                                // note that this data has been read
-                                byteBufferList.recycle();
-                            }
-                        });
-                    }
-                });
-    }
-
-    private void closeLongConnect() {
-//        AsyncHttpClient.getDefaultInstance()
-        if (mFuture != null) {
-            mFuture.cancel(true);
-        }
-    }
 
     private void disposeWebData(String s) {
         try {
@@ -430,7 +400,6 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
     }
 
     private String getJsonSrting() {
-        String result = null;
         JSONObject json = null;
         UserInfo userInfo = APP.getInstance().getUserInfo();
         if (userInfo == null) {
@@ -452,6 +421,27 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
             e.printStackTrace();
         }
         return json.toString();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == REQUEST_CODE_MAP) { // location
+                double latitude = data.getDoubleExtra("latitude", 0);
+                double longitude = data.getDoubleExtra("longitude", 0);
+                String locationAddress = data.getStringExtra("address");
+//                ToaskUtil.showToast(this, locationAddress + "经度:" + longitude + ",维度:" + latitude);
+                if (locationAddress != null && !locationAddress.equals("")) {
+                    if (mChatFragment != null) {
+                        mChatFragment.sendLocationMessage(latitude, longitude, locationAddress);
+                    }
+                } else {
+                    Toast.makeText(this, com.hyphenate.easeui.R.string.unable_to_get_loaction, Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     /**
@@ -684,7 +674,6 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
             e.printStackTrace();
         }
         mHandler.removeCallbacksAndMessages(null);
-        mFuture = null;
         ToaskUtil.showToast(this, "已完成救援");
         intance.saveHelpId(null);
         intance.saveHelpTime(0);
@@ -716,9 +705,15 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
         EMClient.getInstance().login(userName, password, new EMCallBack() {//回调
             @Override
             public void onSuccess() {
+                Log.d("asyncCreateGroup", "onSuccess: 登录成功");
                 EMClient.getInstance().groupManager().loadAllGroups();
                 EMClient.getInstance().chatManager().loadAllConversations();
-
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        initFragment(mGroupId);
+                    }
+                });
             }
 
             @Override
@@ -728,10 +723,53 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
 
             @Override
             public void onError(int code, String message) {
-                Log.d("asyncCreateGroup", "登录聊天服务器失败！");
+                String replace = message.replace(" ", "");
+                Log.d("asyncCreateGroup", "登录聊天服务器失败！" + code + "," + message);
+                if (replace.equals("Userisalreadylogin") && code == 200) {
+                    mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            initFragment(mGroupId);
+                        }
+                    });
+                    return;
+                }
                 mHandler.sendEmptyMessageDelayed(LOGIN_HX, 1000);
             }
         });
     }
+
+    private void initFragment(String userId) {
+        UserInfo userInfo = APP.getInstance().getUserInfo();
+        String nickname = userInfo.getNickname();
+        String image = userInfo.getImage();
+        String imageKey = userInfo.getImageKey();
+        isLoginHx = true;
+        mChatFragment = new EaseChatFragment();
+        mChatFragment.setHeadimg(image);
+        mChatFragment.setHeadimgKey(imageKey);
+        mChatFragment.setNikename(nickname);
+        mChatFragment.setHintHead(true);
+        mChatFragment.setTransparency(true);
+        mChatFragment.setLication(mLication);
+        //传入参数
+        Bundle args = new Bundle();
+        args.putInt(EaseConstant.EXTRA_CHAT_TYPE, EaseConstant.CHATTYPE_GROUP);
+        args.putString(EaseConstant.EXTRA_USER_ID, userId);
+        mChatFragment.setArguments(args);
+        getSupportFragmentManager().beginTransaction().add(R.id.contentContainer, mChatFragment).commit();
+    }
+
+    private EaseChatFragment.ILaunchLication mLication = new EaseChatFragment.ILaunchLication() {
+        @Override
+        public void startEaseBaiduMapActivity() {
+            startActivityForResult(new Intent(WaitSalvationActivity.this, EaseBaiduMapActivity2.class), REQUEST_CODE_MAP);
+        }
+
+        @Override
+        public void checkMap(double lat, double lon) {
+            EaseBaiduMapActivity.onStartEaseBaiduMap(WaitSalvationActivity.this, lat, lon);
+        }
+    };
 
 }

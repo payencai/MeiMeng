@@ -7,11 +7,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.utils.DistanceUtil;
 import com.bumptech.glide.Glide;
 import com.example.meimeng.R;
 import com.example.meimeng.activity.RescueActivity;
 import com.example.meimeng.common.rv.base.RVBaseCell;
 import com.example.meimeng.common.rv.base.RVBaseViewHolder;
+import com.example.meimeng.util.LoginSharedUilt;
 
 import java.io.Serializable;
 
@@ -73,17 +76,35 @@ public class CurrentHelpInfo extends RVBaseCell implements Serializable {
 
     @Override
     public void onBindViewHolder(RVBaseViewHolder holder, int position) {
-        LinearLayout nowhelp= (LinearLayout) holder.getView(R.id.nowhelp);
+        LoginSharedUilt intance = LoginSharedUilt.getIntance(holder.getItemView().getContext());
+        double lat = intance.getLat();
+        double lon = intance.getLon();
+
+        LatLng pointcur = new LatLng(lat, lon);
+        double lat2 = 0;
+        double lon2 = 0;
+        int distance = 0;
+        try {
+            lat2 = Double.parseDouble(latitude);
+            lon2 = Double.parseDouble(longitude);
+            LatLng point = new LatLng(lat2, lon2);
+            distance = (int) DistanceUtil.getDistance(pointcur, point);//距离定位的距离
+        } catch (RuntimeException e) {
+            
+        }
+
+
+        LinearLayout nowhelp = (LinearLayout) holder.getView(R.id.nowhelp);
         holder.setText(R.id.rv_name, "姓名：" + useUserName);
         holder.setText(R.id.rv_address, "位置：" + userAddress);
-        holder.setText(R.id.rv_distance, "距离：与你" +distance+"米范围内" );
-        if(helpNum>0){
-            holder.setText(R.id.help_number,"已有"+helpNum+"人前往");
-        }else{
-            holder.setText(R.id.help_number,"");
+        holder.setText(R.id.rv_distance, "距离：与你" + distance + "米范围内");
+        if (helpNum > 0) {
+            holder.setText(R.id.help_number, "已有" + helpNum + "人前往");
+        } else {
+            holder.setText(R.id.help_number, "");
         }
-        holder.setText(R.id.rv_time,createTime.substring(0,10));
-        CircleImageView imageView= (CircleImageView) holder.getImageView(R.id.rv_image);
+        holder.setText(R.id.rv_time, createTime.substring(0, 10));
+        CircleImageView imageView = (CircleImageView) holder.getImageView(R.id.rv_image);
         final Context context = holder.getItemView().getContext();
         Glide.with(context).load(image).into(imageView);
 //        holder.getView(R.id.item).setOnClickListener(new View.OnClickListener() {

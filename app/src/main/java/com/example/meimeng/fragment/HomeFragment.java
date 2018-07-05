@@ -263,7 +263,6 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         }
     }
 
-
     @Override
     public void onPause() {
         super.onPause();

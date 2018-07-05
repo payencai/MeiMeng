@@ -1,8 +1,11 @@
 package com.example.meimeng.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,6 +23,7 @@ import com.example.meimeng.base.BaseActivity;
 import com.example.meimeng.bean.CurrentHelpInfo;
 
 import com.example.meimeng.bean.LoginAccount.ServerUserInfo;
+import com.example.meimeng.bean.LoginAccount.UserInfo;
 import com.example.meimeng.common.rv.base.RVBaseAdapter;
 import com.example.meimeng.common.rv.base.RVBaseViewHolder;
 import com.example.meimeng.constant.PlatformContans;
@@ -31,11 +35,14 @@ import com.example.meimeng.util.LoginSharedUilt;
 import com.example.meimeng.util.MLog;
 import com.example.meimeng.util.ToaskUtil;
 import com.google.gson.Gson;
+import com.hyphenate.EMCallBack;
+import com.hyphenate.chat.EMClient;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -84,15 +91,17 @@ public class ServerMainActivity extends BaseActivity {
 
     RVBaseAdapter<CurrentHelpInfo> adapter;
     private HelpInfoFragment mHelpInfoFragment;
+    private boolean isLoginHx = false;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
+    private static final int LOGIN_HX = 2;
+    public static final int REQUE_LOGINHX_MAX_COUNT = 3;//请求登录环信的最大次数
+    private MyHandler mHandler = new MyHandler(this);
+
 
     @Override
     protected void initView() {
         ButterKnife.bind(this);
+        loginHx();
         ServerUserInfo userInfo = APP.getInstance().getServerUserInfo();
         juli_date.setText("距离升星还有" + userInfo.getLevelMessage() + "日");
         or_help.setText("或救援" + userInfo.getLevelHelp() + "次");
@@ -145,11 +154,16 @@ public class ServerMainActivity extends BaseActivity {
                 holder.getView(R.id.item).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Context context = holder.getItemView().getContext();
-                        CurrentHelpInfo currentHelpInfo = mData.get(position);
-                        requestLeaveHelp(context, currentHelpInfo);
+                        if (isLoginHx) {
+                            Context context = holder.getItemView().getContext();
+                            CurrentHelpInfo currentHelpInfo = mData.get(position);
+                            requestLeaveHelp(context, currentHelpInfo);
+                        } else {
+                            ToaskUtil.showToast(holder.getItemView().getContext(), "聊天未登录，请稍等...");
+                        }
                     }
                 });
+
             }
         };
         saveImg.setOnClickListener(new View.OnClickListener() {
@@ -159,7 +173,6 @@ public class ServerMainActivity extends BaseActivity {
             }
         });
         initRvView();
-
     }
 
     private void initRvView() {
@@ -300,6 +313,87 @@ public class ServerMainActivity extends BaseActivity {
 
             }
         });
+    }
+
+    private void loginHx() {
+        Log.d("asyncCreateGroup", "loginHx: 登录hx");
+        String userName = null;
+        String password = null;
+        if (APP.sUserType == 0) {
+            UserInfo userInfo = APP.getInstance().getUserInfo();
+            userName = userInfo.getId();
+            password = userInfo.getHxPwd();
+        } else {
+            ServerUserInfo serverUserInfo = APP.getInstance().getServerUserInfo();
+            userName = serverUserInfo.getId();
+            password = serverUserInfo.getHxPwd();
+        }
+//        ServerUserInfo serverUserInfo = APP.getInstance().getServerUserInfo();
+//        userName = serverUserInfo.getId();
+//        password = serverUserInfo.getHxPwd();
+        Log.d("asyncCreateGroup", "loginHx: id:" + userName);
+        Log.d("asyncCreateGroup", "loginHx: psw::" + password);
+        if (TextUtils.isEmpty(userName) || TextUtils.isEmpty(userName)) {
+            ToaskUtil.showToast(this, "数据获取失败");
+            ActivityManager.getInstance().finishAllActivity();
+            return;
+        }
+        EMClient.getInstance().login(userName, password, new EMCallBack() {//回调
+            @Override
+            public void onSuccess() {
+                Log.d("asyncCreateGroup", "onSuccess: MainActivity环信登录成功回调");
+                EMClient.getInstance().groupManager().loadAllGroups();
+                EMClient.getInstance().chatManager().loadAllConversations();
+                isLoginHx = true;
+            }
+
+            @Override
+            public void onProgress(int progress, String status) {
+
+            }
+
+            @Override
+            public void onError(int code, String message) {
+                Log.d("asyncCreateGroup", "登录聊天服务器失败！" + code + "," + message);
+                String replace = message.replace(" ", "");
+                if (replace.equals("Userisalreadylogin") && code == 200) {
+                    isLoginHx = true;
+                    return;
+                }
+                mHandler.sendEmptyMessageDelayed(LOGIN_HX, 1000);
+            }
+        });
+    }
+
+    private static class MyHandler extends Handler {
+
+        private WeakReference<Activity> activity;
+        private int count = 0;
+        private int requstLoginCount = 0;
+
+        public MyHandler(Activity activity) {
+            this.activity = new WeakReference<>(activity);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            ServerMainActivity activity = (ServerMainActivity) this.activity.get();
+            if (activity == null) {
+                return;
+            }
+            switch (msg.what) {
+                case LOGIN_HX:
+                    requstLoginCount++;
+                    if (requstLoginCount > REQUE_LOGINHX_MAX_COUNT) {
+                        ToaskUtil.showToast(activity, "无法连接服务器,请检查网络");
+                        requstLoginCount = 0;
+//                        activity.finish();
+                        return;
+                    }
+                    activity.loginHx();
+                    break;
+            }
+        }
     }
 
 

@@ -6,78 +6,9 @@
     android:orientation="vertical"
     tools:context=".activity.ChatActivity">
 
-    <include
-        android:id="@+id/head"
-        layout="@layout/toobar_head_layout" />
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/messageRv"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/view1"
-        android:layout_below="@id/head"></android.support.v7.widget.RecyclerView>
-
-    <View
-        android:id="@+id/view1"
-        android:layout_width="match_parent"
-        android:layout_height="0.75dp"
-        android:layout_above="@+id/bottomBar"
-        android:background="@color/line_gray" />
-
     <RelativeLayout
-        android:id="@+id/bottomBar"
+        android:id="@+id/chatContainer"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_alignParentBottom="true"
-        android:background="#f7f7f9"
-        android:focusable="true"
-        android:focusableInTouchMode="true">
-
-        <ImageView
-            android:id="@+id/msgTypeBtn"
-            android:layout_width="33dp"
-            android:layout_height="33dp"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="16dp"
-            android:src="@mipmap/ic_speak_btn" />
-
-        <ImageView
-            android:id="@+id/photoBtn"
-            android:layout_width="33dp"
-            android:layout_height="33dp"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="16dp"
-            android:src="@mipmap/ic_photo_btn" />
-
-        <EditText
-            android:id="@+id/rescueEdit"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="@dimen/margin_6dp"
-            android:layout_toLeftOf="@+id/photoBtn"
-            android:layout_toRightOf="@+id/msgTypeBtn"
-            android:background="@drawable/shape_annulus_edittext_bg"
-            android:hint="文字编辑"
-            android:padding="@dimen/margin_7dp"
-            android:textColor="#333333"
-            android:textCursorDrawable="@null"
-            android:textSize="@dimen/text_size_14sp"
-            android:visibility="gone" />
-
-        <TextView
-            android:id="@+id/voiceBtn"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="@dimen/margin_6dp"
-            android:layout_toLeftOf="@+id/photoBtn"
-            android:layout_toRightOf="@+id/msgTypeBtn"
-            android:background="@drawable/shape_annulus_edittext_bg"
-            android:gravity="center"
-            android:hint="按住   说话"
-            android:padding="@dimen/margin_7dp"
-            android:textColor="@color/color_white_100"
-            android:textSize="@dimen/text_size_14sp" />
-    </RelativeLayout>
+        android:layout_height="match_parent"></RelativeLayout>
 
 </RelativeLayout>

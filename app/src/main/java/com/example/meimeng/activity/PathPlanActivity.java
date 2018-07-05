@@ -451,7 +451,7 @@ public class PathPlanActivity extends BaseActivity implements OnGetRoutePlanResu
                         startWalkNavi();
                         break;
                     case 2:
-                        startActivity(new Intent(this, RoutePlanDemo.class));
+//                        startActivity(new Intent(this, RoutePlanDemo.class));
                         break;
                     default:
                         break;

@@ -192,10 +192,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         initFragment();
         loginHx();
         setOtherLoginListener();
-        //注册监听,监听多设备登录问题
-        //class MyMultiDeviceListener implements EMMultiDeviceListener
+//        注册监听,监听多设备登录问题
         EMClient.getInstance().addMultiDeviceListener(myMultiDeviceListener);
-
     }
 
     @Override
@@ -424,7 +422,18 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
             @Override
             public void onError(int code, String message) {
-                Log.d("asyncCreateGroup", "登录聊天服务器失败！");
+                String replace = message.replace(" ", "");
+                if (replace.equals("Userisalreadylogin") && code == 200) {
+                    LoginSharedUilt intance = LoginSharedUilt.getIntance(MainActivity.this);
+                    String groupId = intance.getGroupId();
+                    if (TextUtils.isEmpty(groupId)) {
+                        createGroupChat();
+                    } else {
+                        Log.d("onSuccess", "onSuccess: 已有聊天窗口");
+                    }
+                    return;
+                }
+                Log.d("asyncCreateGroup", "登录聊天服务器失败！" + code + "," + message);
                 mHandler.sendEmptyMessageDelayed(LOGIN_HX, 1000);
             }
         });

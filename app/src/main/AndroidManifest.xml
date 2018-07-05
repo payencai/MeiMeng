@@ -47,6 +47,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.example.meimeng.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/filepaths" />
+        </provider>
 
         <!-- 环信 -->
         <!-- 设置环信应用的AppKey -->
@@ -177,17 +186,6 @@
         <activity android:name=".activity.ServerMainActivity" />
         <activity android:name=".activity.ServerCenterActivity" />
         <activity android:name=".activity.HelpMsgActivity" />
-
-        <provider
-            android:name="android.support.v4.content.FileProvider"
-            android:authorities="com.example.meimeng.fileprovider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/filepaths" />
-        </provider>
-
         <activity android:name=".activity.MakeContactsActivity" />
         <activity android:name=".test.BNaviGuideActivity" />
         <activity android:name=".test.TestWNaviGuideActivity" />
@@ -199,10 +197,13 @@
 
         <service android:name=".chat.BackService" />
 
-        <!--<receiver android:name=".mywebsocket.NetStatusReceiver" />-->
+        <!-- <receiver android:name=".mywebsocket.NetStatusReceiver" /> -->
 
         <activity android:name=".activity.RescueActivity" />
-        <activity android:name=".activity.ChatActivity"></activity>
+        <activity android:name=".activity.ChatActivity" />
+        <activity android:name=".activity.EaseBaiduMapActivity" />
+        <activity android:name=".activity.EaseBaiduMapActivity2" />
+        <activity android:name=".activity.ShowAEDActivity"></activity>
     </application>
 
 </manifest>

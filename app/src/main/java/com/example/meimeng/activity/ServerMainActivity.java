@@ -31,7 +31,6 @@ import com.example.meimeng.bean.LoginAccount.UserInfo;
 import com.example.meimeng.common.rv.base.RVBaseAdapter;
 import com.example.meimeng.common.rv.base.RVBaseViewHolder;
 import com.example.meimeng.constant.PlatformContans;
-import com.example.meimeng.custom.UnReadMsgTextView;
 import com.example.meimeng.fragment.HelpInfoFragment;
 import com.example.meimeng.http.HttpProxy;
 import com.example.meimeng.http.ICallBack;

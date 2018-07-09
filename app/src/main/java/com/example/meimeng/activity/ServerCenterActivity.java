@@ -146,8 +146,7 @@ public class ServerCenterActivity extends BaseActivity {
                         mIntent.setType("image/*");
                         startActivityForResult(mIntent, 2);
                         break;
-                    case R.id.layout_empty:
-                        mPop.dismiss();
+
 
                 }
             }

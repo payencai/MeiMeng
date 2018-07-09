@@ -43,11 +43,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static android.view.Gravity.CENTER;
 
@@ -98,7 +101,11 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
             hisList.add(h4);
             if (h5!="")
             hisList.add(h5);
-             adapter=new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,hisList);
+            // 使用HashSet去掉重复
+            Set<String> set = new HashSet<String>(hisList);
+            // 得到去重后的新集合
+            List<String> newList = new ArrayList<String>(set);
+             adapter=new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,newList);
             lv_his.setAdapter(adapter);
             lv_his.setVisibility(View.GONE);
             lv_his.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -121,6 +128,7 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.clear();
                 adapter.clear();
+                his_layput.setVisibility(View.GONE);
                 editor.commit();
             }
         });
@@ -165,7 +173,10 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
             hisList.add(h4);
         if (h5!="")
             hisList.add(h5);
-        adapter=new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,hisList);
+        Set<String> set = new HashSet<String>(hisList);
+        // 得到去重后的新集合
+        List<String> newList = new ArrayList<String>(set);
+        adapter=new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,newList);
         lv_his.setAdapter(adapter);
         his_layput.setVisibility(View.VISIBLE);
     }
@@ -257,7 +268,7 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
                                 for (final String name : MedicineName) {
                                     final TextView textView = new TextView(getApplicationContext());
                                     textView.setText(name);
-                                    textView.setTextSize(16);
+                                    textView.setTextSize(14);
                                     textView.setGravity(CENTER);
                                     textView.setPadding(10,10,10,10);
                                     textView.setTextColor(getResources().getColor(R.color.text_9));

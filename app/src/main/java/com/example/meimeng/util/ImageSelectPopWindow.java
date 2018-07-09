@@ -18,7 +18,7 @@ public class ImageSelectPopWindow extends PopupWindow implements View.OnClickLis
     private OnItemClickListener mListener;
     private TextView cancel;
     private TextView camery;
-    private LinearLayout empty;
+
     public View getPopView() {
         return mPopView;
     }
@@ -42,13 +42,10 @@ public class ImageSelectPopWindow extends PopupWindow implements View.OnClickLis
     }
     private void init(Context context){
         LayoutInflater inflater=LayoutInflater.from(context);
-
         mPopView = inflater.inflate(R.layout.dialog_select_photo, null);
         cancel=mPopView.findViewById(R.id.tv_select_cancel);
         camery=mPopView.findViewById(R.id.tv_select_camera);
         gallery=mPopView.findViewById(R.id.tv_select_gallery);
-        empty=mPopView.findViewById(R.id.layout_empty);
-        empty.setOnClickListener(this);
         cancel.setOnClickListener(this);
         camery.setOnClickListener(this);
         gallery.setOnClickListener(this);

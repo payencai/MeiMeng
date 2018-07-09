@@ -1,6 +1,7 @@
 package com.example.meimeng.activity;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
@@ -15,10 +16,13 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.meimeng.APP;
@@ -36,8 +40,10 @@ import com.example.meimeng.http.HttpProxy;
 import com.example.meimeng.http.ICallBack;
 import com.example.meimeng.manager.ActivityManager;
 import com.example.meimeng.service.LoginInfoService;
+import com.example.meimeng.util.CommomDialog;
 import com.example.meimeng.util.LoginSharedUilt;
 import com.example.meimeng.util.MLog;
+import com.example.meimeng.util.ServerUserInfoSharedPre;
 import com.example.meimeng.util.ToaskUtil;
 import com.example.meimeng.util.UserInfoSharedPre;
 import com.google.gson.Gson;
@@ -187,11 +193,25 @@ public class ServerMainActivity extends BaseActivity {
         iv_switch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(isDirectLogin){
-                     clientLogin();
-                }else{
-                    finish();
-                }
+                CommomDialog dialog=new CommomDialog(ServerMainActivity.this, R.style.dialog, "是否切换到用户？", new CommomDialog.OnCloseListener() {
+                    @Override
+                    public void onClick(Dialog dialog, boolean confirm) {
+                        if(confirm){
+                            dialog.dismiss();
+                            clientLogin();
+                        }else{
+
+                        }
+                    }
+                });
+
+                dialog.setTitle("切换身份").show();
+                WindowManager windowManager = getWindowManager();
+                Display display = windowManager.getDefaultDisplay();
+                WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
+                lp.width = (int)(display.getWidth()); //设置宽度
+                dialog.getWindow().setAttributes(lp);
+
             }
         });
         searchBar.setOnClickListener(new View.OnClickListener() {
@@ -246,8 +266,9 @@ public class ServerMainActivity extends BaseActivity {
                         userInfo.setPassword(pwd);
                         UserInfoSharedPre intance = UserInfoSharedPre.getIntance(ServerMainActivity.this);
                         intance.saveUserInfo(userInfo, true);
+                        ServerUserInfoSharedPre.getIntance(ServerMainActivity.this).clearUserInfo();
                         startActivity(new Intent(ServerMainActivity.this, MainActivity.class));
-                        //finish();
+                        finish();
                     } else {
 
                     }

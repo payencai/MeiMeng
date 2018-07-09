@@ -65,6 +65,8 @@ public class MedSearchActivity extends BaseActivity {
         if(!TextUtils.isEmpty(name)){
             SharedPreferences preferences = getSharedPreferences("medhistory", MODE_PRIVATE);
             SharedPreferences.Editor editor = preferences.edit();
+
+
             int count= preferences.getInt("count",0);
             switch (count){
                 case  0:
@@ -72,15 +74,17 @@ public class MedSearchActivity extends BaseActivity {
                 case  2:
                 case  3:
                 case  4:
-                    count++;
-                    editor.putString("h"+count, name);
-                    editor.putInt("count",count);
-                    editor.commit();
+                    if (!preferences.contains(name)){
+                        count++;
+                        editor.putString("h"+count, name);
+                        editor.putInt("count",count);
+                        editor.commit();
+                    }
                     break;
-                case 5:
-                    editor.clear();
-                    editor.putString("h"+1, name);
-                    editor.putInt("count",1);
+                default:
+                    editor.remove(preferences.getString("h5",""));
+                    editor.commit();
+                    editor.putString("h"+5, name);
                     editor.commit();
                     break;
             }

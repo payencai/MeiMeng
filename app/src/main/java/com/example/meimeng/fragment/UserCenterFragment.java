@@ -2,6 +2,7 @@ package com.example.meimeng.fragment;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -16,6 +17,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -59,9 +61,11 @@ import com.example.meimeng.constant.PlatformContans;
 import com.example.meimeng.http.HttpProxy;
 import com.example.meimeng.http.ICallBack;
 import com.example.meimeng.manager.ActivityManager;
+import com.example.meimeng.util.CommomDialog;
 import com.example.meimeng.util.ImageSelectPopWindow;
 import com.example.meimeng.util.ServerUserInfoSharedPre;
 import com.example.meimeng.util.ToaskUtil;
+import com.example.meimeng.util.UserInfoSharedPre;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -291,51 +295,53 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
             }
         });
     }
-
-    private void setPopupWindow() {
-        final Window window = getActivity().getWindow();
-        MainActivity activity= (MainActivity) getActivity();
-        final ImageSelectPopWindow mPop = new ImageSelectPopWindow(getActivity());
-        final WindowManager.LayoutParams params = window.getAttributes();
-        params.alpha = (float) 0.3;
-        window.setAttributes(params);
-        mPop.showAtLocation(getActivity().findViewById(R.id.server_userinfo_layout), Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
-        //window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-        mPop.setOnDismissListener(new PopupWindow.OnDismissListener() {
+    private void showDialog(){
+        final Dialog dialog = new Dialog(getContext(), R.style.dialog);
+        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_select_photo,null);
+        //获得dialog的window窗口
+        Window window = dialog.getWindow();
+        //设置dialog在屏幕底部
+        window.setGravity(Gravity.BOTTOM);
+        //设置dialog弹出时的动画效果，从屏幕底部向上弹出
+        window.setWindowAnimations(R.style.mypopwindow_anim_style);
+        window.getDecorView().setPadding(0, 0, 0, 0);
+        //获得window窗口的属性
+        android.view.WindowManager.LayoutParams lp = window.getAttributes();
+        //设置窗口宽度为充满全屏
+        lp.width = WindowManager.LayoutParams.WRAP_CONTENT;
+        //设置窗口高度为包裹内容
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        //将设置好的属性set回去
+        window.setAttributes(lp);
+        //将自定义布局加载到dialog上
+        dialog.setContentView(dialogView);
+        dialog.findViewById(R.id.tv_select_cancel).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onDismiss() {
-                final WindowManager.LayoutParams params = window.getAttributes();
-                params.alpha = (float) 1.0;
-                window.setAttributes(params);
+            public void onClick(View view) {
+                dialog.dismiss();
             }
         });
-        mPop.setOnItemClickListener(new ImageSelectPopWindow.OnItemClickListener() {
+        dialog.findViewById(R.id.tv_select_camera).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void setOnItemClick(View v) {
-                switch (v.getId()) {
-                    case R.id.tv_select_cancel:
-                        mPop.dismiss();
-                        break;
-                    case R.id.tv_select_camera:
-                        mPop.dismiss();
-                        if (isCameraPermission(getActivity(), 0x007))
-                            startCamera();
-                        break;
-                    case R.id.tv_select_gallery:
-                        //upImage(PlatformContans.Image.sUpdateImage,);
-                        mPop.dismiss();
-                        Intent mIntent = new Intent(Intent.ACTION_GET_CONTENT);
-                        mIntent.addCategory(Intent.CATEGORY_OPENABLE);
-                        mIntent.setType("image/*");
-                        getActivity().startActivityForResult(mIntent, 2);
-                        break;
-                    case R.id.layout_empty:
-                        mPop.dismiss();
-
-                }
+            public void onClick(View view) {
+                dialog.dismiss();
+                if (isCameraPermission(getActivity(), 0x007))
+                    startCamera();
             }
         });
+        dialog.findViewById(R.id.tv_select_gallery).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+                Intent mIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                mIntent.addCategory(Intent.CATEGORY_OPENABLE);
+                mIntent.setType("image/*");
+                getActivity().startActivityForResult(mIntent, 2);
+            }
+        });
+        dialog.show();
     }
+
     public void cropPhoto(Uri inputUri) {
         // 调用系统裁剪图片的 Action
         Intent cropPhotoIntent = new Intent("com.android.camera.action.CROP");
@@ -424,6 +430,9 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
                         requestCode);
                 return false;
             }
+            else{
+                return true;
+            }
         }
         return true;
     }
@@ -433,7 +442,6 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
         switch (requestCode) {
             case 0x007:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // byCamera();
                     startCamera();
                 } else {
                     Toast.makeText(getContext(), "拍照权限被拒绝", Toast.LENGTH_SHORT).show();
@@ -489,7 +497,8 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
                 break;
 
             case R.id.client_cv_head:
-                setPopupWindow();
+                showDialog();
+                //setPopupWindow();
                 //ImageSelectorUtils.openPhoto(getActivity(),0,false,1,client_selected);
                 break;
             case R.id.layout_qrcode:
@@ -497,11 +506,28 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
                 break;
             case R.id.iv_switch_account:
                 Log.e("onclick","click");
-                serverLogin();
-               // startActivity(new Intent(getActivity(), ServerMainActivity.class));
+                CommomDialog dialog=new CommomDialog(getContext(), R.style.dialog, "是否切换到志愿者？", new CommomDialog.OnCloseListener() {
+                    @Override
+                    public void onClick(Dialog dialog, boolean confirm) {
+                        if(confirm){
+                            dialog.dismiss();
+                            serverLogin();
+                        }else{
+
+                        }
+                    }
+                });
+
+                dialog.setTitle("切换身份").show();
+                WindowManager windowManager = getActivity().getWindowManager();
+                Display display = windowManager.getDefaultDisplay();
+                WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
+                lp.width = (int)(display.getWidth()); //设置宽度
+                dialog.getWindow().setAttributes(lp);
                 break;
         }
     }
+
     private void serverLogin(){
         String phone=APP.getInstance().getUserInfo().getTelephone();
         final String pwd=APP.getInstance().getUserInfo().getPassword();
@@ -522,9 +548,12 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
                         userInfo.setPassword(pwd);
                         ServerUserInfoSharedPre intance = ServerUserInfoSharedPre.getIntance(getActivity());
                         intance.saveServerUserInfo(userInfo, true);
+                        UserInfoSharedPre userInfoSharedPre=UserInfoSharedPre.getIntance(getActivity());
+                        userInfoSharedPre.clearUserInfo();
                         Intent intent=new Intent(getActivity(), ServerMainActivity.class);
                         intent.putExtra("flag",false);
                         startActivity(intent);
+                        getActivity().finish();
                     } else {
                         Log.e("pwd","pwd");
                     }

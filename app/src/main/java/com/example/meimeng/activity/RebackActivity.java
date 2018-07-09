@@ -61,22 +61,19 @@ public class RebackActivity extends BaseActivity {
     }
     private void summitMsg(String input){
         Map<String, Object> p = new HashMap<>();
-        p.put("content","hello" );
+        p.put("content",input );
         String data=null;
         String token=null;
         Gson gson = new GsonBuilder().enableComplexMapKeySerialization().create();
         if(APP.sUserType==0){
             token=APP.getInstance().getUserInfo().getToken();
-            p.put("userType",1);
             data = gson.toJson(p);
-        }else{
+        }else if (APP.sUserType==1){
             token=APP.getInstance().getServerUserInfo().getToken();
-            p.put("userType",2);
             data = gson.toJson(p);
         }
-
-
-        HttpProxy.obtain().post(PlatformContans.UserAdvice.sAddAdvice, token, data, new ICallBack() {
+        Log.e("token",token);
+        HttpProxy.obtain().post(PlatformContans.MessageController.sAddFeedBack, token, data, new ICallBack() {
             @Override
             public void OnSuccess(String result) {
                 Log.e("TAG",result);

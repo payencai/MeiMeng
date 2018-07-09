@@ -107,7 +107,7 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
     private MapView mMapView = null;
     private BaiduMap mBaiduMap;
     private static final int BAIDU_READ_PHONE_STATE = 100;
-    private int searchType = 0;//搜索类型，0为城市搜索，1为药品搜索
+    private int searchType = 1;//搜索类型，0为城市搜索，1为药品搜索
 
     private LocationService locationService;
     public LocationClient mLocationClient = null;

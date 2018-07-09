@@ -87,7 +87,7 @@ public class DrugInfo extends RVBaseCell {
 
     @Override
     public void onBindViewHolder(final RVBaseViewHolder holder, int position) {
-        holder.setText(R.id.userTel,name+"   "+telephone);
+        holder.setText(R.id.userTel,name.substring(0,1)+"**");
         holder.setText(R.id.drugInfo,"药品信息： "+medicine);
         holder.setText(R.id.address,address);
         holder.setText(R.id.distance,"距离你"+distance+"米");

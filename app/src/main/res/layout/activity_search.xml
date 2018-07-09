@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".activity.SearchActivity">
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:orientation="vertical"
+              tools:context=".activity.SearchActivity">
 
     <RelativeLayout
         android:id="@+id/head"
@@ -56,9 +57,59 @@
 
     </RelativeLayout>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/drugRv"
+    <com.example.meimeng.util.AutoNewLineLayout
+        android:layout_margin="@dimen/margin_15dp"
+        android:id="@+id/auto_line"
+        app:vertivalSpace="@dimen/margin_10dp"
+        app:horizontalSpace="@dimen/margin_40dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"></android.support.v7.widget.RecyclerView>
+        android:layout_height="wrap_content">
 
+    </com.example.meimeng.util.AutoNewLineLayout>
+    <LinearLayout
+        android:id="@+id/layout_his"
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <View
+            android:alpha="0.3"
+            android:layout_marginTop="@dimen/margin_5dp"
+            android:background="@color/text_9"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"></View>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/margin_45dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="15dp"
+                android:text="历史记录"
+                android:textColor="@color/text_333"
+                android:textSize="16sp"/>
+
+            <ImageView
+                android:id="@+id/del_his"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="19dp"
+                android:src="@mipmap/ic_rubbish"/>
+        </RelativeLayout>
+        <View
+            android:alpha="0.3"
+            android:layout_marginTop="@dimen/margin_5dp"
+            android:background="@color/text_9"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"></View>
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/his"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></ListView>
 </LinearLayout>

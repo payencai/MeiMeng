@@ -95,7 +95,7 @@ public class MedicineActivity extends AbsBaseActivity<MedicineBean> {
         Map<String, Object> params = new HashMap<>();
         params.put("page", page);
         Log.e("page", page + "");
-        HttpProxy.obtain().get(PlatformContans.Medicine.sGetMedicineByServer, params, APP.getInstance().getUserInfo().getToken(), new ICallBack() {
+        HttpProxy.obtain().get(PlatformContans.Medicine.sGetMedicineByManage, params, APP.getInstance().getUserInfo().getToken(), new ICallBack() {
             @Override
             public void OnSuccess(String result) {
                 mBaseAdapter.hideLoadMore();

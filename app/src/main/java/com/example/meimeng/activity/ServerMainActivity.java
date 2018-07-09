@@ -34,6 +34,7 @@ import com.example.meimeng.manager.ActivityManager;
 import com.example.meimeng.util.LoginSharedUilt;
 import com.example.meimeng.util.MLog;
 import com.example.meimeng.util.ToaskUtil;
+import com.example.meimeng.util.UserInfoSharedPre;
 import com.google.gson.Gson;
 import com.hyphenate.EMCallBack;
 import com.hyphenate.chat.EMClient;
@@ -78,12 +79,12 @@ public class ServerMainActivity extends BaseActivity {
     CircleImageView iv_head;
     @BindView(R.id.enter_main)
     LinearLayout enter_main;
-    @BindView(R.id.title)
-    TextView title;
-    @BindView(R.id.back)
-    ImageView back;
-    @BindView(R.id.saveImg)
-    ImageView saveImg;
+    @BindView(R.id.server_msg)
+    ImageView iv_msg;
+    @BindView(R.id.server_switch)
+    ImageView iv_switch;
+    @BindView(R.id.server_search)
+    LinearLayout tv_search;
     @BindView(R.id.getcurrenthelp)
     RecyclerView mRecyclerView;
     @BindView(R.id.base_refresh_layout)
@@ -97,23 +98,24 @@ public class ServerMainActivity extends BaseActivity {
     public static final int REQUE_LOGINHX_MAX_COUNT = 3;//请求登录环信的最大次数
     private MyHandler mHandler = new MyHandler(this);
     private boolean isCanRequest = false;
-
-
+    private boolean isDirectLogin=true;
+    private LinearLayout searchBar;
     @Override
     protected void initView() {
         ButterKnife.bind(this);
+
         loginHx();
-        ServerUserInfo userInfo = APP.getInstance().getServerUserInfo();
+        isDirectLogin=getIntent().getBooleanExtra("flag",true);
+        ServerUserInfo userInfo=null;
+        userInfo = APP.getInstance().getServerUserInfo();
         juli_date.setText("距离升星还有" + userInfo.getLevelMessage() + "日");
         or_help.setText("或救援" + userInfo.getLevelHelp() + "次");
-        title.setText("美盟全民救援");
+        searchBar=findViewById(R.id.searchMedBar);
         time.setText(userInfo.getOnlineTime() + "");
         count.setText(userInfo.getHelpNum() + "");
         distance.setText(userInfo.getHelpDistance() + "");
-        back.setVisibility(View.GONE);
-        saveImg.setImageResource(R.mipmap.ic_common_nav_normal_messag);
-        saveImg.setVisibility(View.VISIBLE);
-        Glide.with(this).load(APP.getInstance().getServerUserInfo().getImage()).into(iv_head);
+
+        Glide.with(this).load(userInfo.getImage()).into(iv_head);
         enter_main.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -171,15 +173,68 @@ public class ServerMainActivity extends BaseActivity {
 
             }
         };
-        saveImg.setOnClickListener(new View.OnClickListener() {
+        iv_msg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(ServerMainActivity.this, HelpMsgActivity.class));
+                startActivity(new Intent(ServerMainActivity.this,HelpMsgActivity.class));
+            }
+        });
+        iv_switch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(isDirectLogin){
+                     clientLogin();
+                }else{
+                    finish();
+                }
+            }
+        });
+        searchBar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent=new Intent(ServerMainActivity.this,SearchActivity.class);
+                intent.putExtra("type","server");
+                startActivity(intent);
             }
         });
         initRvView();
     }
+    private void clientLogin(){
+        String phone=APP.getInstance().getServerUserInfo().getTelephone();
+        final String pwd=APP.getInstance().getServerUserInfo().getPassword();
+        Map<String, Object> params = new HashMap<>();
+        params.put("telephone", phone);
+        params.put("password", pwd);
+        HttpProxy.obtain().get(PlatformContans.UseUser.sLogin, params, new ICallBack() {
+            @Override
+            public void OnSuccess(String result) {
+                try {
+                    Log.e("result",result);
+                    JSONObject object = new JSONObject(result);
+                    int resultCode = object.getInt("resultCode");
+                    if (resultCode == 0) {
+                        JSONObject data = object.getJSONObject("data");
+                        UserInfo userInfo = new Gson().fromJson(data.toString(), UserInfo.class);
+                        //Log.e("type",userInfo.getServerType());
+                        userInfo.setPassword(pwd);
+                        UserInfoSharedPre intance = UserInfoSharedPre.getIntance(ServerMainActivity.this);
+                        intance.saveUserInfo(userInfo, true);
+                        startActivity(new Intent(ServerMainActivity.this, MainActivity.class));
+                        //finish();
+                    } else {
 
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(String error) {
+
+            }
+        });
+    }
     private void initRvView() {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(ServerMainActivity.this));
         mRecyclerView.setAdapter(adapter);

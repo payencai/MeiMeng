@@ -85,7 +85,10 @@ import com.example.meimeng.util.ToaskUtil;
 import com.google.gson.Gson;
 import com.hyphenate.EMCallBack;
 import com.hyphenate.EMGroupChangeListener;
+import com.hyphenate.EMMessageListener;
 import com.hyphenate.chat.EMClient;
+import com.hyphenate.chat.EMConversation;
+import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMMucSharedFile;
 import com.hyphenate.exceptions.HyphenateException;
 
@@ -138,6 +141,8 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
     TextView metronome;
     @BindView(R.id.parent)
     LinearLayout parent;
+    @BindView(R.id.my_unread_msg_number)
+    TextView mUnreadMsgNumber;
 
 
     private MapView mMapView = null;
@@ -171,6 +176,8 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
     private static final int LOGIN_HX = 2;
 
     public static final int REQUE_LOGINHX_MAX_COUNT = 3;//请求登录环信的最大次数
+
+    public static final int CLEAR_UNREAD_MSG = 1 << 4;
 
     RoutePlanSearch mSearch = null;    // 搜索模块，也可去掉地图模块独立使用
 
@@ -234,6 +241,62 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
         locationService.start();
         applyGroup();
         initSockect();
+        setMessageListener();
+
+    }
+
+    private void setMessageListener() {
+        EMClient.getInstance().chatManager().addMessageListener(msgListener);
+    }
+
+    EMMessageListener msgListener = new EMMessageListener() {
+
+        @Override
+        public void onMessageReceived(List<EMMessage> messages) {
+            //收到消息
+            getUnreadMsg(mCurrentHelpInfo.getGroupId());
+        }
+
+        @Override
+        public void onCmdMessageReceived(List<EMMessage> messages) {
+            //收到透传消息
+        }
+
+        @Override
+        public void onMessageRead(List<EMMessage> messages) {
+            //收到已读回执
+        }
+
+        @Override
+        public void onMessageDelivered(List<EMMessage> message) {
+            //收到已送达回执
+        }
+
+        @Override
+        public void onMessageRecalled(List<EMMessage> messages) {
+            //消息被撤回
+        }
+
+        @Override
+        public void onMessageChanged(EMMessage message, Object change) {
+            //消息状态变动
+        }
+    };
+
+    private void getUnreadMsg(String username) {
+        EMConversation conversation = EMClient.getInstance().chatManager().getConversation(username);
+        final int unreadMsgCount = conversation.getUnreadMsgCount();
+        Log.d("getUnreadMsg", "getUnreadMsg: " + unreadMsgCount);
+        if (unreadMsgCount > 0) {
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    mUnreadMsgNumber.setVisibility(View.VISIBLE);
+                    mUnreadMsgNumber.setText(unreadMsgCount + "");
+                }
+            });
+
+        }
     }
 
     private void initDataView() {
@@ -280,6 +343,8 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
         } catch (Exception e) {
 
         }
+//        记得在不需要的时候移除listener，如在activity的onDestroy()时
+        EMClient.getInstance().chatManager().removeMessageListener(msgListener);
     }
 
     /**
@@ -353,7 +418,7 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
             case R.id.messageText:
                 LoginSharedUilt intance = LoginSharedUilt.getIntance(this);
                 String groupId = mCurrentHelpInfo.getGroupId();
-                ChatActivity.startChatActivity(this, groupId);
+                ChatActivity.startChatActivity(this, groupId, CLEAR_UNREAD_MSG);
                 break;
             case R.id.helperHead:
                 break;
@@ -554,6 +619,14 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
         String s = json.toString();
         Log.d("getEndString", "getEndString: " + s);
         return s;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        mUnreadMsgNumber.setText("");
+        mUnreadMsgNumber.setVisibility(View.GONE);
+
     }
 
     private void closeRescue(View view) {
@@ -805,6 +878,9 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
                     String message = e.getMessage();
                     String replace = message.replace(" ", "");
                     if (replace.equals(tmep) && errorCode == 201) {
+                        loginHx();
+                    }
+                    if (errorCode == 601) {
                         loginHx();
                     }
                     Log.d(TAG, "run: 加入群失败，" + e.getDescription() + "," + e.getMessage() + "," + e.getLocalizedMessage() + "," + e

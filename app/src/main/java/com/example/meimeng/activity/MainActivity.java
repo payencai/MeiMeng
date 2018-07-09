@@ -4,12 +4,14 @@ package com.example.meimeng.activity;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.Application;
+import android.app.Service;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -19,7 +21,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -35,7 +36,6 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.donkingliang.imageselector.utils.ImageSelectorUtils;
 import com.example.meimeng.APP;
 import com.example.meimeng.R;
 import com.example.meimeng.base.BaseActivity;
@@ -47,28 +47,27 @@ import com.example.meimeng.fragment.HomeFragment;
 import com.example.meimeng.fragment.UsFragment;
 import com.example.meimeng.fragment.UserCenterFragment;
 import com.example.meimeng.manager.ActivityManager;
+import com.example.meimeng.service.LoginInfoService;
 import com.example.meimeng.util.CustomPopWindow;
 import com.example.meimeng.util.LoginSharedUilt;
 import com.example.meimeng.util.ToaskUtil;
 import com.hyphenate.EMCallBack;
 import com.hyphenate.EMConnectionListener;
-import com.hyphenate.EMContactListener;
+import com.hyphenate.EMError;
 import com.hyphenate.EMMultiDeviceListener;
 import com.hyphenate.EMValueCallBack;
-import com.hyphenate.chat.EMChatManager;
 import com.hyphenate.chat.EMClient;
-import com.hyphenate.chat.EMContactManager;
 import com.hyphenate.chat.EMGroup;
 import com.hyphenate.chat.EMGroupManager;
 import com.hyphenate.chat.EMGroupOptions;
-import com.hyphenate.exceptions.HyphenateException;
+import com.hyphenate.util.NetUtils;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends BaseActivity implements View.OnClickListener, EMConnectionListener {
+public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     private static final String TAG = "MainActivity";
     private ImageView imgSos;
@@ -107,6 +106,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private String curCallTel = "";
     private MyMultiDeviceListener myMultiDeviceListener = new MyMultiDeviceListener();
     //当前显示的Fragment
+    private MainActivity mActivity;
+
+    public static boolean isForeground = false;
+    public static final String MESSAGE_RECEIVED_ACTION = "com.example.jpushdemo.MESSAGE_RECEIVED_ACTION";
+    public static final String KEY_TITLE = "title";
+    public static final String KEY_MESSAGE = "message";
+    public static final String KEY_EXTRAS = "extras";
 
     private void checkPower() {
         if (ContextCompat.checkSelfPermission(this,
@@ -201,6 +207,29 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         setOtherLoginListener();
 //        注册监听,监听多设备登录问题
         EMClient.getInstance().addMultiDeviceListener(myMultiDeviceListener);
+        //开启后台服务，轮番访问账号对应设备
+        startLoginServiceInfo();
+    }
+
+    private LoginInfoService mDeviceService;
+    private ServiceConnection conn;
+
+    private void startLoginServiceInfo() {
+//        Intent service = new Intent(this, LoginInfoService.class);
+//        startService(service);
+        conn = new ServiceConnection() {
+            //绑定成功时回调该方法
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                mDeviceService = ((LoginInfoService.MyBinder) service).getInstance();
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+
+            }
+        };
+        bindService(new Intent(this, LoginInfoService.class), conn, Service.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -263,6 +292,24 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     protected void onStart() {
         super.onStart();
+    }
+
+    @Override
+    protected void onResume() {
+        isForeground = true;
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        isForeground = false;
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unbindService(conn);
     }
 
     @Override
@@ -607,16 +654,43 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     private void setOtherLoginListener() {
-        EMClient.getInstance().addConnectionListener(this);
+        EMClient.getInstance().addConnectionListener(connectionListener);
     }
 
-    @Override
-    public void onConnected() {
-        Log.d("onDisconnected", "onConnected: ");
-    }
+    // create the global connection listener
+    private EMConnectionListener connectionListener = new EMConnectionListener() {
+        @Override
+        public void onDisconnected(final int error) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (error == EMError.USER_REMOVED) {
+                        Log.i(TAG, "run: 显示帐号已经被移除");
+                        // 显示帐号已经被移除
+                    } else if (error == EMError.USER_LOGIN_ANOTHER_DEVICE) {
+                        // 显示帐号在其他设备登录
+                        Log.i(TAG, "run: 显示帐号在其他设备登录");
+                    } else {
+                        if (NetUtils.hasNetwork(MainActivity.this)) {
+                            //连接不到聊天服务器
+                            Log.i(TAG, "run: 连接不到聊天服务器");
+                        } else {
+                            //当前网络不可用，请检查网络设置
+                            Log.i(TAG, "run: 当前网络不可用，请检查网络设置");
+                        }
+                    }
+                }
+            });
 
-    @Override
-    public void onDisconnected(int i) {
-        Log.d("onDisconnected", "onDisconnected: " + i);
-    }
+        }
+
+        @Override
+        public void onConnected() {
+            // in case group and contact were already synced, we supposed to
+            // notify sdk we are ready to receive the events
+            Log.d("onConnected", "onConnected: 这是什么？、");
+        }
+    };
+
+
 }

@@ -51,3 +51,13 @@
 #环信混淆
 -keep class com.hyphenate.** {*;}
 -dontwarn  com.hyphenate.**
+#极光推动混淆
+-dontoptimize
+-dontpreverify
+
+-dontwarn cn.jpush.**
+-keep class cn.jpush.** { *; }
+-keep class * extends cn.jpush.android.helpers.JPushMessageReceiver { *; }
+
+-dontwarn cn.jiguang.**
+-keep class cn.jiguang.** { *; }

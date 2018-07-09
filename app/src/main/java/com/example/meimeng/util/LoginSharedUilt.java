@@ -31,7 +31,6 @@ public class LoginSharedUilt {
         return sIntance;
     }
 
-
     /**
      * 保存上次的登录状态
      */
@@ -115,6 +114,14 @@ public class LoginSharedUilt {
 
     public boolean getIsCanBack() {
         return mPreferences.getBoolean("isCanBack", false);
+    }
+
+    public void saveDeviceOnlyId(String deviceOnlyId) {
+        mPreferences.edit().putString("deviceOnlyId", deviceOnlyId).commit();
+    }
+
+    public String getDeviceOnlyId() {
+        return mPreferences.getString("deviceOnlyId", null);
     }
 
 }

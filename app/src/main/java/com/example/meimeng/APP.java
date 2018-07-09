@@ -23,6 +23,9 @@ import com.hyphenate.easeui.EaseUI;
 import java.util.Iterator;
 import java.util.List;
 
+import cn.jpush.android.api.JPushInterface;
+
+
 /**
  * 作者：凌涛 on 2018/5/30 1818
  * 邮箱：771548229@qq..com
@@ -80,11 +83,14 @@ public class APP extends Application {
 
         initECChat();
 //        initAppStatusListener();
-
         //init demo helper
 //        DemoHelper.getInstance().init(applicationContext);
         // 初始化华为 HMS 推送服务
 //        HMSPushHelper.getInstance().initHMSAgent(instance);
+
+        //极光推送
+        JPushInterface.setDebugMode(true);
+        JPushInterface.init(this);
     }
 
     //获取processAppName

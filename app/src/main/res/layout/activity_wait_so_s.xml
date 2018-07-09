@@ -8,21 +8,30 @@
 
     <TextView
         android:id="@+id/textHint"
-        android:layout_width="216dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_above="@id/waitview"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="106dp"
+        android:layout_marginLeft="24dp"
         android:gravity="center"
-        android:text="您即将通知家人和附近的人对您进行紧急求助"
+        android:text="您即将通知家人和附近的人\n对您进行紧急求助"
         android:textColor="#333333"
         android:textSize="@dimen/text_size_18sp" />
 
+    <com.example.meimeng.custom.WaitSOSView
+        android:id="@+id/waitview"
+        android:layout_width="320dp"
+        android:layout_height="320dp"
+        android:layout_centerInParent="true" />
+
 
     <ImageView
-        android:layout_width="220dp"
-        android:layout_height="220dp"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         android:layout_centerInParent="true"
+        android:scaleType="fitXY"
         android:src="@mipmap/ic_sos_wait" />
+
 
     <TextView
         android:id="@+id/cancel"

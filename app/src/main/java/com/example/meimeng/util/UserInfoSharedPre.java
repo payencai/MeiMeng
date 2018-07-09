@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.example.meimeng.APP;
 import com.example.meimeng.bean.LoginAccount.UserInfo;
+import com.hyphenate.easeui.utils.EaseUserUtils;
 
 import java.lang.reflect.Field;
 
@@ -41,6 +42,7 @@ public class UserInfoSharedPre {
 
     public void saveUserInfo(UserInfo userInfo, boolean isSavePassword) {
         APP.getInstance().setUserInfo(userInfo);
+        EaseUserUtils.saveMeUserHeadUrl(userInfo.getImage());
         APP.sUserType = 0;
         saveUserFields(userInfo);
         LoginSharedUilt.getIntance(mContext).saveLastLoginType(0);

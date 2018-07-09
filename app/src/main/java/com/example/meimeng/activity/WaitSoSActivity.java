@@ -7,6 +7,10 @@ import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
 import android.widget.TextView;
 
 import com.example.meimeng.APP;
@@ -15,9 +19,11 @@ import com.example.meimeng.base.BaseActivity;
 import com.example.meimeng.bean.LoginAccount.ServerUserInfo;
 import com.example.meimeng.bean.LoginAccount.UserInfo;
 import com.example.meimeng.constant.PlatformContans;
+import com.example.meimeng.custom.WaitSOSView;
 import com.example.meimeng.http.ICallBack;
 import com.example.meimeng.manager.ActivityManager;
 import com.example.meimeng.util.LoginSharedUilt;
+import com.example.meimeng.util.MLog;
 import com.example.meimeng.util.ToaskUtil;
 import com.hyphenate.EMCallBack;
 import com.hyphenate.EMValueCallBack;
@@ -55,33 +61,59 @@ public class WaitSoSActivity extends BaseActivity implements View.OnClickListene
     private static final int LOGIN_HX = 1 << 7;
     public static final int REQUE_LOGINHX_MAX_COUNT = 3;//请求登录环信的最大次数
     private int createGroupType = 0;//创建聊天窗口类型
+    private WaitSOSView waitview;
 
     @Override
     protected void initView() {
         cancel = (TextView) findViewById(R.id.cancel);
+        waitview = (WaitSOSView) findViewById(R.id.waitview);
+        setRotate();
         cancel.setOnClickListener(this);
 //        loginHx();
         LoginSharedUilt intance = LoginSharedUilt.getIntance(WaitSoSActivity.this);
         String groupId = intance.getGroupId();
         String helpId = intance.getHelpId();
-        if (TextUtils.isEmpty(helpId)) {
-            if (TextUtils.isEmpty(groupId)) {
-                Log.d("asyncCreateGroup", "initView: 没有GroupId 和 没有HelpId");
-                createGroupChat();
-            } else {
-                Log.d("asyncCreateGroup", "initView: 有GroupId 和 没有HelpId");
-                requestHelpInfo(groupId);
-            }
+        if (TextUtils.isEmpty(groupId)) {
+            MLog.log("asyncCreateGroup", "initView: 没有GroupId");
+            createGroupChat();
         } else {
-            if (TextUtils.isEmpty(groupId)) {
-                Log.d("asyncCreateGroup", "initView: 没有GroupId 和 有HelpId");
-                createGroupChat2();
-            } else {
-                Log.d("asyncCreateGroup", "initView: 有GroupId 和 有HelpId");
-                mHandler.sendEmptyMessage(0);
-            }
+            MLog.log("asyncCreateGroup", "initView: 有GroupId");
+            requestHelpInfo(groupId);
         }
+//        if (TextUtils.isEmpty(helpId)) {
+//            if (TextUtils.isEmpty(groupId)) {
+//                MLog.log("asyncCreateGroup", "initView: 没有GroupId 和 没有HelpId");
+//                createGroupChat();
+//            } else {
+//                MLog.log("asyncCreateGroup", "initView: 有GroupId 和 没有HelpId");
+//                requestHelpInfo(groupId);
+//            }
+//        } else {
+//            if (TextUtils.isEmpty(groupId)) {
+//                MLog.log("asyncCreateGroup", "initView: 没有GroupId 和 有HelpId");
+//                createGroupChat2();
+//            } else {
+//                MLog.log("asyncCreateGroup", "initView: 有GroupId 和 有HelpId");
+//                mHandler.sendEmptyMessage(0);
+//            }
+//        }
 
+    }
+
+    private void setRotate() {
+        RotateAnimation rotateAnimation = new RotateAnimation(0, -359, RotateAnimation.RELATIVE_TO_SELF,
+                0.5f, RotateAnimation.RELATIVE_TO_SELF, 0.5f);
+        rotateAnimation.setDuration(5000);
+        //设置旋转重复次数,INFINITE表示旋转次数无限循环
+        rotateAnimation.setRepeatCount(RotateAnimation.INFINITE);
+        //设置重复旋转模式
+        rotateAnimation.setRepeatMode(RotateAnimation.RESTART);
+        //设置插值器，使动画匀速执行
+        rotateAnimation.setInterpolator(new LinearInterpolator());
+        waitview.startAnimation(rotateAnimation);
+
+//        Animation animation = AnimationUtils.loadAnimation(this, R.anim.rotate);
+//        waitview.startAnimation(animation);
     }
 
     @Override
@@ -93,6 +125,12 @@ public class WaitSoSActivity extends BaseActivity implements View.OnClickListene
     protected void onResume() {
         super.onResume();
 //        mHandler.sendEmptyMessageDelayed(0, 2000);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mHandler.removeCallbacksAndMessages(null);
     }
 
     @Override
@@ -142,7 +180,7 @@ public class WaitSoSActivity extends BaseActivity implements View.OnClickListene
 
     //连接后台
     private void requestHelpInfo(String groupid) {
-        Log.d("asyncCreateGroup", "requestHelpInfo:  新增救援");
+        MLog.log("asyncCreateGroup", "requestHelpInfo:  新增救援");
         if (TextUtils.isEmpty(groupid)) {
             mHandler.post(new Runnable() {
                 @Override
@@ -184,42 +222,17 @@ public class WaitSoSActivity extends BaseActivity implements View.OnClickListene
             e.printStackTrace();
         }
         String jsonString = json.toString();
-        Log.d("asyncCreateGroup", "requestHelpInfo: " + jsonString);
+        MLog.log("asyncCreateGroup", "requestHelpInfo: " + jsonString);
         if (TextUtils.isEmpty(tokenString)) {
             return;
         }
         String url = PlatformContans.ForHelp.sAddForHelpInfo;
-        Log.d("asyncCreateGroup", "requestHelpInfo: " + url);
+        MLog.log("asyncCreateGroup", "requestHelpInfo: " + url);
         addHelper(url, tokenString, jsonString);
-//        addHelper(PlatformContans.ForHelp.sAddForHelpInfo, tokenString, jsonString, new ICallBack() {
-//            @Override
-//            public void OnSuccess(String result) {
-//                Log.d("asyncCreateGroup", "OnSuccess: " + result);
-//                try {
-//                    JSONObject object = new JSONObject(result);
-//                    int resultCode = object.getInt("resultCode");
-//                    if (resultCode == 0) {
-////                                mHandler.sendEmptyMessage(0);
-//                    }
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(String error) {
-//                mHandler.post(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        ToaskUtil.showToast(WaitSoSActivity.this, "请检查网络");
-//                    }
-//                });
-//            }
-//        });
     }
 
     public void addHelper(String httpUrl, String token, String json, ICallBack callBack) {
-        Log.d("asyncCreateGroup", "addHelper: " + httpUrl);
+        MLog.log("asyncCreateGroup", "addHelper: " + httpUrl);
         BufferedReader reader = null;
         String result = null;
         StringBuffer sbf = new StringBuffer();
@@ -290,7 +303,7 @@ public class WaitSoSActivity extends BaseActivity implements View.OnClickListene
 //            body = RequestBody.create(jsonType, URLEncoder.encode(json, "utf-8"));
 //        } catch (UnsupportedEncodingException e) {
 //            e.printStackTrace();
-//            Log.d("asyncCreateGroup", "addHelper: 解析出错");
+//            MLog.log("asyncCreateGroup", "addHelper: 解析出错");
 //            body = RequestBody.create(jsonType, json);
 //        }
         final Request request = new Request.Builder()
@@ -302,14 +315,14 @@ public class WaitSoSActivity extends BaseActivity implements View.OnClickListene
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                Log.d("asyncCreateGroup", "onFailure: 失败");
+                MLog.log("asyncCreateGroup", "onFailure: 失败");
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.isSuccessful()) {
                     String result = response.body().string();
-                    Log.d("asyncCreateGroup", "onResponse: " + result);
+                    MLog.log("asyncCreateGroup", "onResponse: " + result);
                     try {
                         JSONObject object = new JSONObject(result);
                         int resultCode = object.getInt("resultCode");
@@ -317,7 +330,7 @@ public class WaitSoSActivity extends BaseActivity implements View.OnClickListene
                         if (!TextUtils.isEmpty(data)) {
                             LoginSharedUilt intance = LoginSharedUilt.getIntance(WaitSoSActivity.this);
                             intance.saveHelpId(data);
-                            if (resultCode == 0) {
+                            if (resultCode == 0 || resultCode == 1) {
                                 mHandler.sendEmptyMessage(0);
                             }
                         } else {
@@ -342,7 +355,7 @@ public class WaitSoSActivity extends BaseActivity implements View.OnClickListene
         EMClient.getInstance().groupManager().asyncCreateGroup("" + l, "救援互动群", allMembers, "创建群", option, new EMValueCallBack<EMGroup>() {
             @Override
             public void onSuccess(EMGroup emGroup) {
-                Log.d("asyncCreateGroup", "onSuccess: 创建成功," + Thread.currentThread().getName());
+                MLog.log("asyncCreateGroup", "onSuccess: 创建成功," + Thread.currentThread().getName());
                 String groupId = emGroup.getGroupId();
                 LoginSharedUilt intance = LoginSharedUilt.getIntance(WaitSoSActivity.this);
                 intance.saveGroupId(groupId);
@@ -351,14 +364,24 @@ public class WaitSoSActivity extends BaseActivity implements View.OnClickListene
 
             @Override
             public void onError(int i, final String s) {
-                Log.d("asyncCreateGroup", "onSuccess: 创建失败," + i + "," + Thread.currentThread().getName() + "," + s);
+                MLog.log("asyncCreateGroup", "onSuccess: 创建失败," + i + "," + Thread.currentThread().getName() + "," + s);
                 String tmpe = "Userisnotlogin";
+                String tmpe2 = "Serverisnotreachable";
                 String replace = s.replace(" ", "");
-                Log.d("asyncCreateGroup", "onError: " + tmpe);
-                Log.d("asyncCreateGroup", "onError: " + replace);
+                MLog.log("asyncCreateGroup", "onError: " + tmpe);
+                MLog.log("asyncCreateGroup", "onError: " + replace);
                 if (tmpe.equals(replace)) {
-                    Log.d("asyncCreateGroup", "onError: 重新登录");
+                    MLog.log("asyncCreateGroup", "onError: 重新登录");
                     loginHx(0);
+                }
+                if (replace.equals(tmpe2)) {
+                    mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            ToaskUtil.showToast(WaitSoSActivity.this, "创建群聊失败，无法连接网络");
+                            finish();
+                        }
+                    });
                 }
             }
         });
@@ -387,7 +410,7 @@ public class WaitSoSActivity extends BaseActivity implements View.OnClickListene
             public void onSuccess() {
                 EMClient.getInstance().groupManager().loadAllGroups();
                 EMClient.getInstance().chatManager().loadAllConversations();
-                Log.d("asyncCreateGroup", "onSuccess: 登录成功");
+                MLog.log("asyncCreateGroup", "onSuccess: 登录成功");
                 if (tag == 0) {
                     createGroupChat();
                 } else {
@@ -402,7 +425,13 @@ public class WaitSoSActivity extends BaseActivity implements View.OnClickListene
 
             @Override
             public void onError(int code, String message) {
-                Log.d("asyncCreateGroup", "登录聊天服务器失败！" + code + "," + message);
+                String temp = "Networkisn'tavaliable";
+                MLog.log("asyncCreateGroup", "登录聊天服务器失败！" + code + "," + message);
+                if (code == 2 && temp.equals(message)) {
+                    ToaskUtil.showToast(WaitSoSActivity.this, "无法访问网络");
+                    finish();
+                    return;
+                }
                 mHandler.sendEmptyMessageDelayed(LOGIN_HX, 1000);
             }
         });
@@ -417,7 +446,7 @@ public class WaitSoSActivity extends BaseActivity implements View.OnClickListene
         EMClient.getInstance().groupManager().asyncCreateGroup("" + l, "救援互动群", allMembers, "创建群", option, new EMValueCallBack<EMGroup>() {
             @Override
             public void onSuccess(EMGroup emGroup) {
-                Log.d("asyncCreateGroup", "onSuccess: 创建成功," + Thread.currentThread().getName());
+                MLog.log("asyncCreateGroup", "onSuccess: 创建成功," + Thread.currentThread().getName());
                 String groupId = emGroup.getGroupId();
                 LoginSharedUilt intance = LoginSharedUilt.getIntance(WaitSoSActivity.this);
                 intance.saveGroupId(groupId);
@@ -426,7 +455,7 @@ public class WaitSoSActivity extends BaseActivity implements View.OnClickListene
 
             @Override
             public void onError(int i, final String s) {
-                Log.d("asyncCreateGroup", "onSuccess: 创建失败," + Thread.currentThread().getName() + "," + s);
+                MLog.log("asyncCreateGroup", "onSuccess: 创建失败," + Thread.currentThread().getName() + "," + s);
                 String tmpe = "Userisnotlogin";
                 String replace = s.replace(" ", "");
                 if (tmpe.equals(replace)) {

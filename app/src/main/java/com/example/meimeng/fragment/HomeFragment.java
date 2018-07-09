@@ -492,7 +492,6 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         });
     }
 
-
     private void showTypeSelect(View view) {
         if (mTypeSelectPw != null) {
             mTypeSelectPw = null;

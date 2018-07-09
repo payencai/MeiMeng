@@ -785,13 +785,20 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
      * 完成救援的数据处理
      */
     private void completeHelp(boolean isFinish) {
-        LoginSharedUilt intance = LoginSharedUilt.getIntance(this);
+        final LoginSharedUilt intance = LoginSharedUilt.getIntance(this);
+        final String groupId = intance.getGroupId();
         mLocationMap.clear();
-        try {
-            EMClient.getInstance().groupManager().destroyGroup(intance.getGroupId());//需异步处理
-        } catch (HyphenateException e) {
-            e.printStackTrace();
-        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    EMClient.getInstance().groupManager().destroyGroup(groupId);//需异步处理
+                } catch (HyphenateException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
         mHandler.removeCallbacksAndMessages(null);
         String endString = getJsonSrting();
         try {

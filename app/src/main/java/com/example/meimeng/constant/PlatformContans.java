@@ -15,7 +15,7 @@ public class PlatformContans {
 
     public static String root = "http://47.106.164.34/";//正式地址
     public static String rootUrl = root + "memen/";//
-//    public static String root = "http://10.1.2.66:8080/";//诗安测试地址
+//    public static String root = "http://192.168.1.18:8080/";//诗安测试地址
 //    public static String rootUrl = root + "memen/";//
 
     public static class UseUser {
@@ -28,6 +28,7 @@ public class PlatformContans {
         public static final String sUpdateUseUser = sHead + "updateUseUser";//更新用户
         public static final String sGetUseUser = sHead + "getUseUser";//登录用户获取。
         public static final String sGetServerUserByUser = sHead + "getServerUserByUser";//获取附近救援人员信息。
+        public static final String sEquipment = sHead + "equipment";//获取设备信息。
 
     }
 

@@ -37,12 +37,16 @@ public class ChatActivity extends BaseActivity {
     @BindView(R.id.chatContainer)
     RelativeLayout chatContainer;
     private String mUserId;
+    private int mRequestCode;
     private EaseChatFragment mChatFragment;
 
-    public static void startChatActivity(Context context, String userId) {
-        Intent intent = new Intent(context, ChatActivity.class);
+    public static void startChatActivity(Activity activity, String userId, int requestCode) {
+        Intent intent = new Intent(activity, ChatActivity.class);
         intent.putExtra("userId", userId);
-        context.startActivity(intent);
+        intent.putExtra("requestCode", requestCode);
+//        activity.startActivity(intent);
+        activity.startActivityForResult(intent, requestCode);
+
     }
 
     @Override
@@ -54,6 +58,7 @@ public class ChatActivity extends BaseActivity {
 
         Intent intent = getIntent();
         mUserId = intent.getStringExtra("userId");
+        mRequestCode = intent.getIntExtra("requestCode", 0);
         if (TextUtils.isEmpty(mUserId)) {
             ToaskUtil.showToast(this, "当前群id为空");
             finish();
@@ -67,6 +72,7 @@ public class ChatActivity extends BaseActivity {
         ServerUserInfo userInfo = APP.getInstance().getServerUserInfo();
         String nickname = userInfo.getNickname();
         String image = userInfo.getImage();
+        Log.d("initFragment", "initFragment: " + image);
         String imageKey = userInfo.getImageKey();
         mChatFragment = new EaseChatFragment();
         mChatFragment.setLication(mLication);
@@ -139,6 +145,12 @@ public class ChatActivity extends BaseActivity {
                 mHandler.sendEmptyMessageDelayed(LOGIN_HX, 1000);
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        setResult(mRequestCode);
     }
 
     @Override

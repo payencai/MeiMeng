@@ -1,10 +1,14 @@
 package com.example.meimeng.activity;
 
 import android.app.Activity;
+import android.app.Service;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Message;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -27,10 +31,12 @@ import com.example.meimeng.bean.LoginAccount.UserInfo;
 import com.example.meimeng.common.rv.base.RVBaseAdapter;
 import com.example.meimeng.common.rv.base.RVBaseViewHolder;
 import com.example.meimeng.constant.PlatformContans;
+import com.example.meimeng.custom.UnReadMsgTextView;
 import com.example.meimeng.fragment.HelpInfoFragment;
 import com.example.meimeng.http.HttpProxy;
 import com.example.meimeng.http.ICallBack;
 import com.example.meimeng.manager.ActivityManager;
+import com.example.meimeng.service.LoginInfoService;
 import com.example.meimeng.util.LoginSharedUilt;
 import com.example.meimeng.util.MLog;
 import com.example.meimeng.util.ToaskUtil;
@@ -178,6 +184,28 @@ public class ServerMainActivity extends BaseActivity {
             }
         });
         initRvView();
+        startLoginServiceInfo();
+
+    }
+    private LoginInfoService mDeviceService;
+    private ServiceConnection conn;
+
+    private void startLoginServiceInfo() {
+//        Intent service = new Intent(this, LoginInfoService.class);
+//        startService(service);
+        conn = new ServiceConnection() {
+            //绑定成功时回调该方法
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                mDeviceService = ((LoginInfoService.MyBinder) service).getInstance();
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+
+            }
+        };
+        bindService(new Intent(this, LoginInfoService.class), conn, Service.BIND_AUTO_CREATE);
     }
 
     private void initRvView() {
@@ -197,6 +225,12 @@ public class ServerMainActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         getCurrentHelp();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unbindService(conn);
     }
 
     String image = "";

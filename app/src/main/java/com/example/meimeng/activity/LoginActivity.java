@@ -7,8 +7,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,6 +29,7 @@ import com.example.meimeng.http.HttpProxy;
 import com.example.meimeng.http.ICallBack;
 import com.example.meimeng.util.LoginSharedUilt;
 import com.example.meimeng.util.MLog;
+import com.example.meimeng.util.RandomUtil;
 import com.example.meimeng.util.ServerUserInfoSharedPre;
 import com.example.meimeng.util.ToaskUtil;
 import com.example.meimeng.util.UserInfoSharedPre;
@@ -38,6 +41,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 public class LoginActivity extends BaseActivity implements View.OnClickListener {
 
@@ -55,6 +59,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
     private int userLoginState = 0;//登录类型，0为用户登录，1为服务登录
     private KyLoadingBuilder mLoginLoadView;
+    private AlertDialog mResetLoginAlertDialog;
 
     /**
      * @param context
@@ -145,6 +150,12 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     @Override
     protected void onResume() {
         super.onResume();
+        Intent intent = getIntent();
+        boolean resetLogin = intent.getBooleanExtra("resetLogin", false);
+        if (resetLogin) {
+            showResetLoginView();
+            return;
+        }
         /*以下为自动登录代码*/
         String tel;
         String psw;
@@ -164,6 +175,21 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             mLoginLoadView = openLoadView("");
             requestLogin(url, tel, psw);
         }
+    }
+
+    private void showResetLoginView() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View loginView = LayoutInflater.from(this).inflate(R.layout.reset_login_layout, null);
+        builder.setView(loginView);
+        mResetLoginAlertDialog = builder.create();
+        mResetLoginAlertDialog.show();
+        loginView.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mResetLoginAlertDialog.dismiss();
+            }
+        });
+
     }
 
     @Override
@@ -296,6 +322,15 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         Map<String, Object> params = new HashMap<>();
         params.put("telephone", tel);
         params.put("password", psw);
+        LoginSharedUilt intance = LoginSharedUilt.getIntance(this);
+        String deviceOnlyId = intance.getDeviceOnlyId();
+        if (TextUtils.isEmpty(deviceOnlyId)) {
+            Random random = new Random();
+            String s = RandomUtil.generateString(random, 12);
+            deviceOnlyId = "deviceOnlyId" + s + System.currentTimeMillis();
+            intance.saveDeviceOnlyId(deviceOnlyId);
+        }
+        params.put("equipment", deviceOnlyId);
         HttpProxy.obtain().get(url, params, new ICallBack() {
             @Override
             public void OnSuccess(String result) {

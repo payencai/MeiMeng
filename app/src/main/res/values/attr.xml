@@ -32,4 +32,7 @@
         <attr name="titleBarRightImage" format="reference"/>
         <attr name="titleBarBackground" format="reference|color"/>
     </declare-styleable>
+    <declare-styleable name="UnReadMsgTextView">
+        <attr name="unreadTextSize" format="integer" />
+    </declare-styleable>
 </resources>

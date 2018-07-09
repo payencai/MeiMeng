@@ -303,7 +303,7 @@ public class ClientUserInfoActivity extends BaseActivity {
                     int resultCode = object.getInt("resultCode");
                     if (resultCode == 0) {
                         JSONObject data = object.getJSONObject("data");
-                        et_name.setText(data.getString("name") + "");
+                        et_name.setText(data.getString("nickname") + "");
                         et_fixphone.setText(data.getString("fixedLineTelephone"));
                         bloodtype = data.getString("bloodType");
                         tvValue.setText(bloodtype + "");
@@ -312,14 +312,15 @@ public class ClientUserInfoActivity extends BaseActivity {
                         et_phone.setText(data.getString("telephone") + "");
                         et_age.setText(data.getInt("age") + "");
                         String sex = data.getString("sex");
-                        rg_sex.setEnabled(false);
-                        rb_nv.setEnabled(false);
-                        rb_man.setEnabled(false);
+                        //rg_sex.setEnabled(false);
+                        rb_nv.setChecked(true);
                         if (sex.equals("男")) {
                             rb_man.setChecked(true);
                         } else {
                             rb_nv.setChecked(false);
                         }
+                        rb_nv.setEnabled(false);
+                        rb_man.setEnabled(false);
                         et_sicken.setText(data.getString("sickenHistory") + "");
                         et_othersicken.setText(data.getString("otherSicken") + "");
                         et_lianxi1.setText(data.getString("linkman1") + "");

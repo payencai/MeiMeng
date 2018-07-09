@@ -44,6 +44,7 @@ import com.example.meimeng.activity.MainActivity;
 import com.example.meimeng.activity.QRCodeActivity;
 import com.example.meimeng.activity.RebackActivity;
 import com.example.meimeng.activity.ServerCenterActivity;
+import com.example.meimeng.activity.ServerMainActivity;
 import com.example.meimeng.activity.ServerRecordActivity;
 import com.example.meimeng.activity.ServerUserInfoActivity;
 import com.example.meimeng.activity.SettingActivity;
@@ -60,6 +61,7 @@ import com.example.meimeng.http.ICallBack;
 import com.example.meimeng.manager.ActivityManager;
 import com.example.meimeng.util.ImageSelectPopWindow;
 import com.example.meimeng.util.ServerUserInfoSharedPre;
+import com.example.meimeng.util.ToaskUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -95,7 +97,7 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
     private LinearLayout mClientReback;
     private LinearLayout mClientAboutus;
     private LinearLayout mClientQrcode;
-
+    private ImageView mSwitch;
     private CircleImageView client_head;
 
     private ArrayList<String> client_selected = new ArrayList<>();
@@ -126,6 +128,7 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
         mClientYaopin.setOnClickListener(this);
         mClientRecord.setOnClickListener(this);
         mClientReback.setOnClickListener(this);
+        mSwitch.setOnClickListener(this);
         client_head.setOnClickListener(this);
     }
 
@@ -141,6 +144,12 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
         mClientRecord = view.findViewById(R.id.record_client_layout);
         mClientReback = view.findViewById(R.id.reback_client_layout);
         mClientAboutus = view.findViewById(R.id.aboutus_client_layout);
+        mSwitch=view.findViewById(R.id.iv_switch_account);
+        Object object=APP.getInstance().getUserInfo().getServerType();
+        if(object!=null){
+            if(APP.getInstance().getUserInfo().getServerType().equals("3"))
+                mSwitch.setVisibility(View.VISIBLE);
+        }
         //UserInfo userInfo = APP.getInstance().getUserInfo();
         getUserInfo();
         //mAdapter = new PictureAdapter(getActivity(), client_selected);
@@ -285,7 +294,6 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
 
     private void setPopupWindow() {
         final Window window = getActivity().getWindow();
-
         MainActivity activity= (MainActivity) getActivity();
         final ImageSelectPopWindow mPop = new ImageSelectPopWindow(getActivity());
         final WindowManager.LayoutParams params = window.getAttributes();
@@ -299,8 +307,6 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
                 final WindowManager.LayoutParams params = window.getAttributes();
                 params.alpha = (float) 1.0;
                 window.setAttributes(params);
-                //mPop.getBackground().
-                //mPop.getBackground().setAlpha(255);
             }
         });
         mPop.setOnItemClickListener(new ImageSelectPopWindow.OnItemClickListener() {
@@ -489,6 +495,48 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
             case R.id.layout_qrcode:
                 startActivity(new Intent(getActivity(), QRCodeActivity.class));
                 break;
+            case R.id.iv_switch_account:
+                Log.e("onclick","click");
+                serverLogin();
+               // startActivity(new Intent(getActivity(), ServerMainActivity.class));
+                break;
         }
+    }
+    private void serverLogin(){
+        String phone=APP.getInstance().getUserInfo().getTelephone();
+        final String pwd=APP.getInstance().getUserInfo().getPassword();
+        Log.e("pwd",pwd);
+        Map<String, Object> params = new HashMap<>();
+        params.put("telephone", phone);
+        params.put("password", pwd);
+        HttpProxy.obtain().get(PlatformContans.Serveruser.ServerUserLogin, params, new ICallBack() {
+            @Override
+            public void OnSuccess(String result) {
+                try {
+                    JSONObject object = new JSONObject(result);
+                    int resultCode = object.getInt("resultCode");
+                    if (resultCode == 0) {
+                        JSONObject data = object.getJSONObject("data");
+                        Log.e("pwd",pwd);
+                        ServerUserInfo userInfo = new Gson().fromJson(data.toString(), ServerUserInfo.class);
+                        userInfo.setPassword(pwd);
+                        ServerUserInfoSharedPre intance = ServerUserInfoSharedPre.getIntance(getActivity());
+                        intance.saveServerUserInfo(userInfo, true);
+                        Intent intent=new Intent(getActivity(), ServerMainActivity.class);
+                        intent.putExtra("flag",false);
+                        startActivity(intent);
+                    } else {
+                        Log.e("pwd","pwd");
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(String error) {
+
+            }
+        });
     }
 }

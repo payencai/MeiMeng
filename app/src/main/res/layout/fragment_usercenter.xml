@@ -7,41 +7,61 @@
 
     <LinearLayout
 
-        android:orientation="vertical"
-        android:background="@mipmap/ic_me_bg"
         android:layout_width="match_parent"
-        android:layout_height="120dp">
+        android:layout_height="120dp"
+        android:background="@mipmap/ic_me_bg"
+        android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/iv_client_settings"
-            android:layout_margin="@dimen/margin_15dp"
-            android:layout_gravity="right"
-            android:src="@mipmap/ic_settings"
-            android:layout_width="21dp"
-            android:layout_height="21dp"/>
-
-        <de.hdodenhof.circleimageview.CircleImageView
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/client_cv_head"
-            android:layout_marginBottom="5dp"
-            android:layout_marginTop="-25dp"
-            android:layout_gravity="center"
-            android:src="@mipmap/ic_me_head"
-            android:layout_width="60dp"
-            android:layout_height="55dp"
-            app:civ_border_color="@color/color_red"/>
-        <LinearLayout
-            android:gravity="center"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="70dp">
+
+            <ImageView
+                android:id="@+id/iv_client_settings"
+                android:layout_width="21dp"
+                android:layout_height="21dp"
+                android:layout_gravity="left"
+                android:layout_margin="@dimen/margin_15dp"
+                android:src="@mipmap/ic_settings"/>
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:layout_marginTop="@dimen/margin_15dp"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/client_cv_head"
+                android:layout_width="60dp"
+                android:layout_height="55dp"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:src="@mipmap/ic_me_head"
+                app:civ_border_color="@color/color_red"/>
+
+            <ImageView
+                android:visibility="gone"
+                android:id="@+id/iv_switch_account"
+                android:layout_width="21dp"
+                android:layout_height="21dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignTop="@+id/iv_client_settings"
+                android:layout_gravity="right"
+                android:layout_marginEnd="19dp"
+                android:src="@mipmap/ic_switchaccount"/>
+        </RelativeLayout>
+
+
+        <LinearLayout
+            android:layout_marginTop="@dimen/margin_10dp"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:gravity="center">
+
             <TextView
                 android:id="@+id/tv_client_username"
-                android:layout_marginBottom="20dp"
-                android:textSize="@dimen/text_size_17sp"
-                android:textColor="#ffffffff"
-                android:text="朵雪花，你好"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:text="朵雪花，你好"
+                android:textColor="#ffffffff"
+                android:textSize="@dimen/text_size_17sp"/>
         </LinearLayout>
 
 
@@ -52,7 +72,6 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
 
         <LinearLayout
             android:layout_marginTop="10dp"

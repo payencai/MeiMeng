@@ -88,6 +88,7 @@ public class PlatformContans {
         public static final String sAddMedicineRelation = sHead + "addMedicineRelation";
         public static final String sGetMedicineByManage = sHead + "getMedicineByManage";
         public static final String sGetMedicineByServer = sHead + "getMedicineByServer";
+        public static final String sGetVirtualNumber=sHead+"getVirtualNumber";
     }
 
     public static class Image {
@@ -100,6 +101,7 @@ public class PlatformContans {
         public static final String sGetSysInfoBytype = sHead + "getSysInfoBytype";
         public static final String sGetSysInfoById = sHead + "getSysInfoById";
         public static final String sAddSysInfo = sHead + "addSysInfo";
+        public static final String sAddFeedBack=sHead+"addFeedBack";
     }
 
 }

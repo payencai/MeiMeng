@@ -68,7 +68,7 @@
                     android:id="@+id/selectorText"
                     style="@style/common_font"
                     android:layout_height="match_parent"
-                    android:text="城市" />
+                    android:text="药品" />
 
                 <ImageView
                     android:layout_width="8dp"
@@ -98,7 +98,7 @@
                     android:id="@+id/searchHint"
                     style="@style/common_font"
                     android:layout_height="match_parent"
-                    android:text="输入城市名"
+                    android:text="输入药品名"
                     android:textColor="@color/text_9" />
             </LinearLayout>
 

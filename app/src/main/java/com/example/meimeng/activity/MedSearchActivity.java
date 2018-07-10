@@ -51,6 +51,19 @@ public class MedSearchActivity extends BaseActivity {
         return R.layout.activity_med_search;
     }
     private String calledPhone="";
+    private boolean isIsits(String name){
+        SharedPreferences preferences = getSharedPreferences("medhistory", MODE_PRIVATE);
+        int count= preferences.getInt("count",0);
+        Log.e("count",count+"");
+        for(int i=1;i<count+1;i++){
+            String str=preferences.getString("h"+i,"");
+            Log.e("str",str);
+            if(TextUtils.equals(name,str)){
+                    return true;
+            }
+        }
+        return false;
+    }
     @Override
     protected void initView() {
         ImageView back=findViewById(R.id.back);
@@ -65,29 +78,21 @@ public class MedSearchActivity extends BaseActivity {
         if(!TextUtils.isEmpty(name)){
             SharedPreferences preferences = getSharedPreferences("medhistory", MODE_PRIVATE);
             SharedPreferences.Editor editor = preferences.edit();
-
-
             int count= preferences.getInt("count",0);
-            switch (count){
-                case  0:
-                case  1:
-                case  2:
-                case  3:
-                case  4:
-                    if (!preferences.contains(name)){
-                        count++;
-                        editor.putString("h"+count, name);
-                        editor.putInt("count",count);
-                        editor.commit();
-                    }
-                    break;
-                default:
-                    editor.remove(preferences.getString("h5",""));
+            if(!isIsits(name)){
+                if(count>=5)
+                {
+                    editor.putString("h5",name);
                     editor.commit();
-                    editor.putString("h"+5, name);
+                }else{
+                    int newNum=count+1;
+                    String val="h"+newNum;
+                    editor.putString(val,name);
+                    editor.putInt("count",newNum);
                     editor.commit();
-                    break;
+                }
             }
+
         }
         adapter = new RVBaseAdapter<DrugInfo>() {
             @Override

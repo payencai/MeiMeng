@@ -109,7 +109,7 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view=null;
+        View view = null;
 
         if (APP.sUserType == 0) {
             view = inflater.inflate(R.layout.fragment_usercenter, container, false);
@@ -119,7 +119,6 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
         }
         return view;
     }
-
 
 
     private void clientInitEvent() {
@@ -137,8 +136,8 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
     }
 
     private void clientInitView(View view) {
-        mClientQrcode=view.findViewById(R.id.layout_qrcode);
-        client_head=view.findViewById(R.id.client_cv_head);
+        mClientQrcode = view.findViewById(R.id.layout_qrcode);
+        client_head = view.findViewById(R.id.client_cv_head);
         mClientSetting = view.findViewById(R.id.iv_client_settings);
         mClientUsername = view.findViewById(R.id.tv_client_username);
         mClientUserinfo = view.findViewById(R.id.userinfo_client_layout);
@@ -148,11 +147,13 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
         mClientRecord = view.findViewById(R.id.record_client_layout);
         mClientReback = view.findViewById(R.id.reback_client_layout);
         mClientAboutus = view.findViewById(R.id.aboutus_client_layout);
-        mSwitch=view.findViewById(R.id.iv_switch_account);
-        Object object=APP.getInstance().getUserInfo().getServerType();
-        if(object!=null){
-            if(APP.getInstance().getUserInfo().getServerType().equals("3"))
-                mSwitch.setVisibility(View.VISIBLE);
+        mSwitch = view.findViewById(R.id.iv_switch_account);
+
+        if (APP.getInstance().getUserInfo().getServerType().equals("3")){
+            Log.e("type",APP.getInstance().getUserInfo().getServerType());
+            mSwitch.setVisibility(View.VISIBLE);}
+        else{
+            mSwitch.setVisibility(View.GONE);
         }
         //UserInfo userInfo = APP.getInstance().getUserInfo();
         getUserInfo();
@@ -162,18 +163,19 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
 
     }
 
-    public void getUserInfo(){
+    public void getUserInfo() {
         HttpProxy.obtain().get(PlatformContans.UseUser.sGetUseUser, APP.getInstance().getUserInfo().getToken(), new ICallBack() {
             @Override
             public void OnSuccess(String result) {
-                JSONObject jsonObject= null;
+                Log.e("result",result);
+                JSONObject jsonObject = null;
                 try {
                     jsonObject = new JSONObject(result);
-                    int code=jsonObject.getInt("resultCode");
-                    if(code==0){
-                        JSONObject object=jsonObject.getJSONObject("data");
-                        String name=object.getString("nickname");
-                        String  image=object.getString("image");
+                    int code = jsonObject.getInt("resultCode");
+                    if (code == 0) {
+                        JSONObject object = jsonObject.getJSONObject("data");
+                        String name = object.getString("nickname");
+                        String image = object.getString("image");
                         if (name == null) {
                             mClientUsername.setText("朵雪花,你好");
                         } else {
@@ -183,7 +185,7 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
                             Glide.with(getActivity()).load(image).into(client_head);
                         }
                     }
-                    if(code==9999){
+                    if (code == 9999) {
 
                     }
                 } catch (JSONException e) {
@@ -199,38 +201,40 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
             }
         });
     }
-    String clientimgurl="";
-    private void updateClientUserInfo(String image){
-        Map<String,Object> params=new HashMap<>();
-        UserInfo userInfo=APP.getInstance().getUserInfo();
+
+    String clientimgurl = "";
+
+    private void updateClientUserInfo(String image) {
+        Map<String, Object> params = new HashMap<>();
+        UserInfo userInfo = APP.getInstance().getUserInfo();
         Gson gson = new GsonBuilder().enableComplexMapKeySerialization().create();
-        String token=APP.getInstance().getUserInfo().getToken();
+        String token = APP.getInstance().getUserInfo().getToken();
         //params.put("accountType ",userInfo.getAccountType()+"");
-        params.put("province",userInfo.getProvince()+"");
-        params.put("area",userInfo.getArea()+"");
-        params.put("city",userInfo.getCity()+"");
-        params.put("image",image);
-        params.put("address",userInfo.getAddress());
-        params.put("longitude",userInfo.getLongitude());
-        params.put("latitude",userInfo.getLatitude());
-        String data=gson.toJson(params);
-        Log.e("json",data);
+        params.put("province", userInfo.getProvince() + "");
+        params.put("area", userInfo.getArea() + "");
+        params.put("city", userInfo.getCity() + "");
+        params.put("image", image);
+        params.put("address", userInfo.getAddress());
+        params.put("longitude", userInfo.getLongitude());
+        params.put("latitude", userInfo.getLatitude());
+        String data = gson.toJson(params);
+        Log.e("json", data);
         HttpProxy.obtain().post(PlatformContans.UseUser.sUpdateUseUser, token, data, new ICallBack() {
             @Override
             public void OnSuccess(String result) {
 
-                JSONObject jsonObject= null;
+                JSONObject jsonObject = null;
                 try {
                     jsonObject = new JSONObject(result);
-                    String message=jsonObject.getString("message");
-                    Log.e("error",message);
-                    int code=jsonObject.getInt("resultCode");
-                    if(code==0){
-                        JSONObject object=jsonObject.getJSONObject("data");
-                        String image=object.getString("image");
+                    String message = jsonObject.getString("message");
+                    Log.e("error", message);
+                    int code = jsonObject.getInt("resultCode");
+                    if (code == 0) {
+                        JSONObject object = jsonObject.getJSONObject("data");
+                        String image = object.getString("image");
                         Glide.with(getActivity()).load(image).into(client_head);
                     }
-                    if(code==9999){
+                    if (code == 9999) {
                         //Log.e("error","error");
                     }
                 } catch (JSONException e) {
@@ -240,11 +244,12 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
 
             @Override
             public void onFailure(String error) {
-                Log.e("error",error);
+                Log.e("error", error);
             }
         });
     }
-    public void upImage(String url,  File file) {
+
+    public void upImage(String url, File file) {
         OkHttpClient mOkHttpClent = new OkHttpClient();
         //clientimgurl=imgurl;
         // serveriamge=imgurl;
@@ -277,12 +282,12 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
                     JSONObject object = new JSONObject(string);
                     int resultCode = object.getInt("resultCode");
                     final String data = object.getString("data");
-                    clientimgurl=data;
+                    clientimgurl = data;
                     if (resultCode == 0) {
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                if(APP.sUserType==0)
+                                if (APP.sUserType == 0)
                                     updateClientUserInfo(data);
                             }
                         });
@@ -295,9 +300,10 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
             }
         });
     }
-    private void showDialog(){
+
+    private void showDialog() {
         final Dialog dialog = new Dialog(getContext(), R.style.dialog);
-        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_select_photo,null);
+        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_select_photo, null);
         //获得dialog的window窗口
         Window window = dialog.getWindow();
         //设置dialog在屏幕底部
@@ -429,8 +435,7 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
                 ActivityCompat.requestPermissions(context, PERMISSIONS_CAMERA_AND_STORAGE,
                         requestCode);
                 return false;
-            }
-            else{
+            } else {
                 return true;
             }
         }
@@ -451,19 +456,21 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
-    public TextView getValue(){
-        return  mClientUsername;
+
+    public TextView getValue() {
+        return mClientUsername;
     }
+
     Uri photoUri;
     Uri photoOutputUri;
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode==4 && data!=null){
-            String name=data.getExtras().getString("name");
-            if(!TextUtils.isEmpty(name)){
-               mClientUsername.setText(name+",你好");
+        if (requestCode == 4 && data != null) {
+            String name = data.getExtras().getString("name");
+            if (!TextUtils.isEmpty(name)) {
+                mClientUsername.setText(name + ",你好");
             }
         }
     }
@@ -475,7 +482,7 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
                 startActivity(new Intent(getActivity(), ClientRecordActivity.class));
                 break;
             case R.id.iv_client_settings:
-                startActivityForResult(new Intent(getActivity(), SettingActivity.class),4);
+                startActivityForResult(new Intent(getActivity(), SettingActivity.class), 4);
                 break;
             case R.id.userinfo_client_layout:
                 startActivity(new Intent(getActivity(), ClientUserInfoActivity.class));
@@ -505,14 +512,14 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
                 startActivity(new Intent(getActivity(), QRCodeActivity.class));
                 break;
             case R.id.iv_switch_account:
-                Log.e("onclick","click");
-                CommomDialog dialog=new CommomDialog(getContext(), R.style.dialog, "是否切换到志愿者？", new CommomDialog.OnCloseListener() {
+                Log.e("onclick", "click");
+                CommomDialog dialog = new CommomDialog(getContext(), R.style.dialog, "是否切换到志愿者？", new CommomDialog.OnCloseListener() {
                     @Override
                     public void onClick(Dialog dialog, boolean confirm) {
-                        if(confirm){
+                        if (confirm) {
                             dialog.dismiss();
                             serverLogin();
-                        }else{
+                        } else {
 
                         }
                     }
@@ -522,16 +529,16 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
                 WindowManager windowManager = getActivity().getWindowManager();
                 Display display = windowManager.getDefaultDisplay();
                 WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
-                lp.width = (int)(display.getWidth()); //设置宽度
+                lp.width = (int) (display.getWidth()); //设置宽度
                 dialog.getWindow().setAttributes(lp);
                 break;
         }
     }
 
-    private void serverLogin(){
-        String phone=APP.getInstance().getUserInfo().getTelephone();
-        final String pwd=APP.getInstance().getUserInfo().getPassword();
-        Log.e("pwd",pwd);
+    private void serverLogin() {
+        String phone = APP.getInstance().getUserInfo().getTelephone();
+        final String pwd = APP.getInstance().getUserInfo().getPassword();
+        Log.e("pwd", pwd);
         Map<String, Object> params = new HashMap<>();
         params.put("telephone", phone);
         params.put("password", pwd);
@@ -543,19 +550,19 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
                     int resultCode = object.getInt("resultCode");
                     if (resultCode == 0) {
                         JSONObject data = object.getJSONObject("data");
-                        Log.e("pwd",pwd);
+                        Log.e("pwd", pwd);
                         ServerUserInfo userInfo = new Gson().fromJson(data.toString(), ServerUserInfo.class);
                         userInfo.setPassword(pwd);
                         ServerUserInfoSharedPre intance = ServerUserInfoSharedPre.getIntance(getActivity());
                         intance.saveServerUserInfo(userInfo, true);
-                        UserInfoSharedPre userInfoSharedPre=UserInfoSharedPre.getIntance(getActivity());
+                        UserInfoSharedPre userInfoSharedPre = UserInfoSharedPre.getIntance(getActivity());
                         userInfoSharedPre.clearUserInfo();
-                        Intent intent=new Intent(getActivity(), ServerMainActivity.class);
-                        intent.putExtra("flag",false);
+                        Intent intent = new Intent(getActivity(), ServerMainActivity.class);
+                        intent.putExtra("flag", false);
                         startActivity(intent);
                         getActivity().finish();
                     } else {
-                        Log.e("pwd","pwd");
+                        Log.e("pwd", "pwd");
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

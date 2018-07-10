@@ -1,5 +1,6 @@
 package com.example.meimeng.activity;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,8 +11,10 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -34,6 +37,7 @@ import com.example.meimeng.constant.PlatformContans;
 import com.example.meimeng.http.HttpProxy;
 import com.example.meimeng.http.ICallBack;
 import com.example.meimeng.util.AutoNewLineLayout;
+import com.example.meimeng.util.CommomDialog;
 import com.example.meimeng.util.FlowLayout;
 import com.example.meimeng.util.ToaskUtil;
 import com.google.gson.Gson;
@@ -85,7 +89,8 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
         SharedPreferences preferences = getSharedPreferences("medhistory", MODE_PRIVATE);
         hisList=new ArrayList<>();
         int count=preferences.getInt("count",0);
-        if(count!=0){
+        if(count!=0)
+        {
             String h1=preferences.getString("h1","");
             String h2=preferences.getString("h2","");
             String h3=preferences.getString("h3","");
@@ -105,18 +110,18 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
             Set<String> set = new HashSet<String>(hisList);
             // 得到去重后的新集合
             List<String> newList = new ArrayList<String>(set);
-             adapter=new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,newList);
-            lv_his.setAdapter(adapter);
-            lv_his.setVisibility(View.GONE);
+            adapter=new ArrayAdapter<String>(this,R.layout.item_history,newList);
             lv_his.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                     TextView textView= (TextView) view;
                     Intent intent=new Intent(SearchActivity.this,MedSearchActivity.class);
                     intent.putExtra("name",textView.getText().toString());
-                    startActivityForResult(intent,3);
+                    startActivityForResult(intent,4);
                 }
             });
+
+
         }else{
             his_layput.setVisibility(View.GONE);
             lv_his.setVisibility(View.GONE);
@@ -124,12 +129,30 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
         del.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SharedPreferences preferences = getSharedPreferences("medhistory", MODE_PRIVATE);
-                SharedPreferences.Editor editor = preferences.edit();
-                editor.clear();
-                adapter.clear();
-                his_layput.setVisibility(View.GONE);
-                editor.commit();
+                CommomDialog dialog=new CommomDialog(SearchActivity.this, R.style.dialog, "是否删除历史记录？", new CommomDialog.OnCloseListener() {
+                    @Override
+                    public void onClick(Dialog dialog, boolean confirm) {
+                        if(confirm){
+                            dialog.dismiss();
+                            SharedPreferences preferences = getSharedPreferences("medhistory", MODE_PRIVATE);
+                            SharedPreferences.Editor editor = preferences.edit();
+                            editor.clear();
+                            adapter.clear();
+                            his_layput.setVisibility(View.GONE);
+                            editor.commit();
+                        }else{
+                            dialog.dismiss();
+                        }
+                    }
+                });
+
+                dialog.setTitle("提示").show();
+                WindowManager windowManager = getWindowManager();
+                Display display = windowManager.getDefaultDisplay();
+                WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
+                lp.width = (int)(display.getWidth()*0.8); //设置宽度
+                dialog.getWindow().setAttributes(lp);
+
             }
         });
         Intent intent = getIntent();
@@ -163,6 +186,7 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
         String h3=preferences.getString("h3","");
         String h4=preferences.getString("h4","");
         String h5=preferences.getString("h5","");
+        Log.e("h:",h1+h2+h3+h4+h5);
         if (h1!="")
             hisList.add(h1);
         if (h2!="")
@@ -173,10 +197,7 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
             hisList.add(h4);
         if (h5!="")
             hisList.add(h5);
-        Set<String> set = new HashSet<String>(hisList);
-        // 得到去重后的新集合
-        List<String> newList = new ArrayList<String>(set);
-        adapter=new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,newList);
+        adapter=new ArrayAdapter<String>(this,R.layout.item_history,hisList);
         lv_his.setAdapter(adapter);
         his_layput.setVisibility(View.VISIBLE);
     }
@@ -283,6 +304,7 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
                                         }
                                     });
                                 }
+                                lv_his.setAdapter(adapter);
                                 lv_his.setVisibility(View.VISIBLE);
                                 SharedPreferences preferences = getSharedPreferences("medhistory", MODE_PRIVATE);
                                 int count=preferences.getInt("count",0);

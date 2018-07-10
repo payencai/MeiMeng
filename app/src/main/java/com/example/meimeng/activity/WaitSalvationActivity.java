@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -41,7 +42,9 @@ import com.example.meimeng.base.BaseActivity;
 import com.example.meimeng.bean.LoginAccount.ServerUserInfo;
 import com.example.meimeng.bean.LoginAccount.UserInfo;
 import com.example.meimeng.bean.Point;
+import com.example.meimeng.bean.ServerUser;
 import com.example.meimeng.constant.PlatformContans;
+import com.example.meimeng.fragment.HomeFragment;
 import com.example.meimeng.http.HttpProxy;
 import com.example.meimeng.http.ICallBack;
 import com.example.meimeng.manager.ActivityManager;
@@ -74,8 +77,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 public class WaitSalvationActivity extends BaseActivity implements View.OnClickListener {
 
@@ -92,7 +97,8 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
     private double lon;
     private double lat;
 
-    private LruCache<String, Bitmap> lruCache;
+    private LruCache<String, Bitmap> mMemoryCache;
+    private Set<BitmapWorkerTask> taskCollection;
 
     //    private Fragment mContentFragment;
     private FragmentManager fm;
@@ -154,12 +160,12 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
             return;
         }
         loginHx();
-
+        taskCollection = new HashSet<>();
         //获取系统给每一个应用所分配的内存大小
         long maxMemory = Runtime.getRuntime().maxMemory();
         int maxSize = (int) (maxMemory / 8);
         //参数表示LruCache中可缓存的图片总大小
-        lruCache = new LruCache<String, Bitmap>(maxSize) {
+        mMemoryCache = new LruCache<String, Bitmap>(maxSize) {
             @Override
             protected int sizeOf(String key, Bitmap value) {
                 //返回图片的大小，默认返回图片的数量
@@ -443,6 +449,9 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
                     }
                 }
             }
+//            Message message = Message.obtain();
+//            message.what = UPDATA_OVERLAY;
+//            message.obj = image;
             mHandler.sendEmptyMessage(UPDATA_OVERLAY);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -612,7 +621,7 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
                     for (String s : locationMap.keySet()) {
                         Point point1 = locationMap.get(s);
                         Log.d("handleMessage", "handleMessage: " + point1.toString());
-                        activity.setMarkerByNet(point1);
+                        activity.setMarkerByNet(point1, 0);
                     }
                     break;
                 //0名用户正在赶来，等待时间00:00:00
@@ -667,88 +676,56 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
     /**
      * 添加marker
      */
-    private void setMarkerByNet(Point point) {
+    private void setMarkerByNet(Point point, int type) {
         //定义Maker坐标点
         //构建Marker图标
         LatLng loPoint = new LatLng(point.latitude, point.longitude);
-        Log.d("handleMessage", "setMarkerByNet: lat:" + loPoint.latitude + ",lon:" + loPoint.longitude);
+        View view = LayoutInflater.from(this).inflate(R.layout.avator_view, null);
+
+        ImageView backgroundSex = (ImageView) view.findViewById(R.id.background_sex);
+        ImageView friendHead = (ImageView) view.findViewById(R.id.friend_touxiang);
+        backgroundSex.setImageResource(R.drawable.jijiurenyuan3x);
+
+        Bitmap chacheBitmap = getBitmapFromMemoryCache(point.image);
+        if (chacheBitmap == null) {
+            if (type == 0) {
+                BitmapWorkerTask task = new BitmapWorkerTask(point);
+                taskCollection.add(task);
+                task.execute();
+                return;
+            } else {
+                chacheBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.volunteer1);
+                friendHead.setImageBitmap(chacheBitmap);
+            }
+        } else {
+            friendHead.setImageBitmap(chacheBitmap);
+        }
+
         BitmapDescriptor bitmap = BitmapDescriptorFactory
                 .fromResource(R.mipmap.ic_high_volunteer);
-//        BitmapDescriptor bitmap1 = BitmapDescriptorFactory.fromBitmap(getBitmap(point.image, point.imageKey));
-//        if (bitmap1 == null) {
-//            bitmap1 = bitmap;
-//        }
-        //方法中设置asBitmap可以设置回调类型
-        //构建MarkerOption，用于在地图上添加Marker
+
+
+        Bitmap bitmapView = getViewBitmap(view);
+        BitmapDescriptor bitmap3 = BitmapDescriptorFactory.fromBitmap(bitmapView);
         OverlayOptions option = new MarkerOptions()
                 .position(loPoint)
-                .icon(bitmap);
+                .icon(bitmap3);
         //在地图上添加Marker，并显示
         mBaiduMap.addOverlay(option);
     }
 
-    public Bitmap getBitmap(String imgUrl, String imgKey) {
-        //从内存中加载一张图片
-        Bitmap bitmap = lruCache.get(imgKey);
-        if (bitmap == null) {
-            //从SD卡加载图片出来
-            bitmap = getBitmapFromSDCard(imgKey);
-            if (bitmap == null) {
-                downloadImg(imgUrl, imgKey);
-                return BitmapFactory.decodeResource(getResources(), R.mipmap.ic_high_volunteer);
-            } else {//从sd卡中有图片，放入缓存
-                lruCache.put(imgKey, bitmap);
-                return bitmap;
-            }
-        } else {//存储中有图片，直接显示
-            return bitmap;
-        }
-    }
-
-    private void downloadImg(final String imgUrl, final String imgKey) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                HttpURLConnection con;
-                try {
-                    URL url = new URL(imgUrl);
-                    con = (HttpURLConnection) url.openConnection();
-                    con.setConnectTimeout(5 * 1000);
-                    con.connect();
-                    if (con.getResponseCode() == 200) {
-                        Bitmap bitmap = BitmapFactory.decodeStream(con.getInputStream());
-                        saveBitmap2SDCard(bitmap, imgKey);
-                        lruCache.put(imgKey, bitmap);
-//                        Message msg = mHandler.obtainMessage();
-//                        msg.obj = bitmap;
-//                        mHandler.sendMessage(msg);
-                    }
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-    }
-
-    private void saveBitmap2SDCard(Bitmap bitmap, String imgKey) {
-        File externalCacheDir = this.getExternalCacheDir();
-        try {
-            FileOutputStream fos = new FileOutputStream(new File(externalCacheDir, imgKey));
-            if (imgKey.endsWith(".png") || imgKey.endsWith(".PNG")) {
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
-            } else {
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private Bitmap getBitmapFromSDCard(String imgKey) {
-        File file = this.getExternalCacheDir();
-        return BitmapFactory.decodeFile(new File(file, imgKey).getAbsolutePath());
+    private Bitmap getViewBitmap(View addViewContent) {
+        addViewContent.setDrawingCacheEnabled(true);
+        addViewContent.measure(
+                View.MeasureSpec.makeMeasureSpec(114, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(138, View.MeasureSpec.EXACTLY));
+        addViewContent.layout(0, 0,
+                addViewContent.getMeasuredWidth(),
+                addViewContent.getMeasuredHeight());
+        addViewContent.buildDrawingCache();
+        Bitmap cacheBitmap = addViewContent.getDrawingCache();
+        Bitmap bitmap = Bitmap.createBitmap(cacheBitmap);
+        return bitmap;
     }
 
     private void closeRescue(View view, String closeName, String closeTelephone) {
@@ -951,5 +928,108 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
         mHandler.sendEmptyMessage(SEND_LOCATION_CODE);
     }
 
+    /**
+     * 异步下载图片的任务。
+     *
+     * @author guolin
+     */
+    class BitmapWorkerTask extends AsyncTask<String, Void, Bitmap> {
+
+        /**
+         * 图片的URL地址
+         */
+        private String imageUrl;
+        private Point point;
+
+        public BitmapWorkerTask(Point point) {
+            this.point = point;
+        }
+
+        @Override
+        protected Bitmap doInBackground(String... params) {
+            if (isCancelled()) {
+                return null;
+            }
+            imageUrl = point.image;
+            // 在后台开始下载图片
+            Bitmap bitmap = downloadBitmap(imageUrl);
+            if (bitmap != null) {
+                // 图片下载完成后缓存到LrcCache中
+                addBitmapToMemoryCache(imageUrl, bitmap);
+            }
+            return bitmap;
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+            if (isCancelled()) {
+                return;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            super.onPostExecute(bitmap);
+            taskCollection.remove(this);
+            setMarkerByNet(point, 1);
+        }
+
+        /**
+         * 建立HTTP请求，并获取Bitmap对象。
+         *
+         * @param imageUrl 图片的URL地址
+         * @return 解析后的Bitmap对象
+         */
+        private Bitmap downloadBitmap(String imageUrl) {
+            Bitmap bitmap = null;
+            HttpURLConnection con = null;
+            try {
+                URL url = new URL(imageUrl);
+                con = (HttpURLConnection) url.openConnection();
+                con.setConnectTimeout(5 * 1000);
+                con.setReadTimeout(10 * 1000);
+                bitmap = BitmapFactory.decodeStream(con.getInputStream());
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (con != null) {
+                    con.disconnect();
+                }
+            }
+            return bitmap;
+        }
+    }
+
+
+    /**
+     * 将一张图片存储到LruCache中。
+     *
+     * @param key    LruCache的键，这里传入图片的URL地址。
+     * @param bitmap LruCache的键，这里传入从网络上下载的Bitmap对象。
+     */
+    public void addBitmapToMemoryCache(String key, Bitmap bitmap) {
+        if (getBitmapFromMemoryCache(key) == null) {
+            mMemoryCache.put(key, bitmap);
+        }
+    }
+
+    /**
+     * 从LruCache中获取一张图片，如果不存在就返回null。
+     *
+     * @param key LruCache的键，这里传入图片的URL地址。
+     * @return 对应传入键的Bitmap对象，或者null。
+     */
+    public Bitmap getBitmapFromMemoryCache(String key) {
+        Bitmap bitmap = mMemoryCache.get(key);
+        return bitmap;
+//        if (bitmap == null) {
+//            BitmapWorkerTask task = new BitmapWorkerTask();
+//            task.execute(key);
+//            return null;
+//        } else {
+//            return bitmap;
+//        }
+    }
 
 }

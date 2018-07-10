@@ -2,11 +2,16 @@ package com.example.meimeng.fragment;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.util.LruCache;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
@@ -23,7 +28,6 @@ import android.widget.Toast;
 import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
 import com.baidu.location.LocationClient;
-import com.baidu.location.Poi;
 import com.baidu.mapapi.bikenavi.BikeNavigateHelper;
 import com.baidu.mapapi.bikenavi.params.BikeNaviLaunchParam;
 import com.baidu.mapapi.map.BaiduMap;
@@ -51,11 +55,13 @@ import com.baidu.mapapi.walknavi.adapter.IWEngineInitListener;
 import com.baidu.mapapi.walknavi.adapter.IWRoutePlanListener;
 import com.baidu.mapapi.walknavi.model.WalkRoutePlanError;
 import com.baidu.mapapi.walknavi.params.WalkNaviLaunchParam;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.example.meimeng.APP;
 import com.example.meimeng.R;
 import com.example.meimeng.activity.AddAEDActivity;
 import com.example.meimeng.activity.CityPickerActivity;
-import com.example.meimeng.activity.PathPlanActivity;
 import com.example.meimeng.activity.SearchActivity;
 import com.example.meimeng.activity.SystemMsgActivity;
 import com.example.meimeng.activity.VolunteerActivity;
@@ -65,6 +71,7 @@ import com.example.meimeng.bean.AEDInfo;
 import com.example.meimeng.bean.AddressBean;
 import com.example.meimeng.bean.ServerUser;
 import com.example.meimeng.constant.PlatformContans;
+import com.example.meimeng.custom.VolunteerView;
 import com.example.meimeng.http.HttpProxy;
 import com.example.meimeng.http.ICallBack;
 import com.example.meimeng.service.LocationService;
@@ -85,10 +92,16 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class HomeFragment extends BaseFragment implements View.OnClickListener {
 
@@ -121,6 +134,7 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
     String mCurrentCity = "";//当前城市
 
     private GeoCoder mGeoCoderSearch;
+    private LruCache<String, Bitmap> mMemoryCache;
 
     private double lat;
     private double lon;
@@ -130,6 +144,12 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
     private int count = 0;
     //    private Snackbar snackbar;
     private TextView locationName;
+
+    /**
+     * 记录所有正在下载或等待下载的任务。
+     */
+
+    private Set<BitmapWorkerTask> taskCollection;
 
     @Nullable
     @Override
@@ -141,8 +161,24 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         //获取locationservice实例，建议应用中只初始化1个location实例，
         // 然后使用，可以参考其他示例的activity，都是通过此种方式获取locationservice实例的
         locationService.registerListener(myListener);
+        initCache();
         initView(view);
         return view;
+    }
+
+    private void initCache() {
+        taskCollection = new HashSet<BitmapWorkerTask>();
+        //获取系统给每一个应用所分配的内存大小
+        long maxMemory = Runtime.getRuntime().maxMemory();
+        int maxSize = (int) (maxMemory / 8);
+        //参数表示LruCache中可缓存的图片总大小
+        mMemoryCache = new LruCache<String, Bitmap>(maxSize) {
+            @Override
+            protected int sizeOf(String key, Bitmap value) {
+                //返回图片的大小，默认返回图片的数量
+                return value.getByteCount();
+            }
+        };
     }
 
     private void initView(View view) {
@@ -342,6 +378,7 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
             lon = selectlon;
             //count++;
             //Log.e("tag",count+"");
+
             getServerUserByUser();
         }
 
@@ -399,6 +436,11 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
      * 获取自愿者位置信息
      */
     private void getServerUserByUser() {
+
+        for (BitmapWorkerTask task : taskCollection) {
+            task.cancel(true);
+        }
+        taskCollection.clear();
         String token;
         if (APP.sUserType == 0) {
             token = APP.getInstance().getUserInfo().getToken();
@@ -430,7 +472,6 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
                             ServerUser serverUser = gson.fromJson(item.toString(), ServerUser.class);
                             list.add(serverUser);
                         }
-                        mBaiduMap.clear();//清除地图上所有覆盖物，无法分成批删除
                         batchAddMarker(list);
                     }
                 } catch (JSONException e) {
@@ -544,6 +585,10 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         locationService.unregisterListener(myListener); //注销掉监听
         locationService.stop(); //停止定位服务
         mMapView.onDestroy();
+        for (BitmapWorkerTask task : taskCollection) {
+            task.cancel(true);
+        }
+        taskCollection.clear();
 
     }
 
@@ -602,51 +647,127 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
      * @param list 批量添加 覆盖物
      */
     private void batchAddMarker(List<ServerUser> list) {
-        List<OverlayOptions> options = new ArrayList<OverlayOptions>();
-        //构建Marker图标
-        //当前自己的位置
+        mBaiduMap.clear();//清除地图上所有覆盖物，无法分成批删除
+
         LatLng pointcur = new LatLng(lat, lon);
-        BitmapDescriptor bitmap1 = BitmapDescriptorFactory
-                .fromResource(R.mipmap.ic_high_volunteer);
-        //构建Marker图标
-        BitmapDescriptor bitmap2 = BitmapDescriptorFactory
-                .fromResource(R.mipmap.ic_low_volunteer);
+
+        View view = LayoutInflater.from(getContext()).inflate(R.layout.avator_view, null);
+        Bitmap bitmap = getViewBitmap(view);
+        BitmapDescriptor bitmap3 = BitmapDescriptorFactory.fromBitmap(bitmap);
+
         for (ServerUser serverUser : list) {
+            addSingleMarker(serverUser, 0);
+
             //isCertificate 1为高级，2为普通
             //workLongitude  经度
             //workLatitude 维度
-            int isCertificate = serverUser.getIsCertificate();
-            String workLatitude = serverUser.getWorkLatitude();
-            String workLongitude = serverUser.getWorkLongitude();
-            double latNumber = 0;
-            double lonNumber = 0;
-            LatLng point;
-            try {
-                latNumber = Double.parseDouble(workLatitude);
-                lonNumber = Double.parseDouble(workLongitude);
-            } catch (Exception e) {
-
-            }
-            point = new LatLng(latNumber, lonNumber);
-            MarkerOptions position = new MarkerOptions().position(point);
-            OverlayOptions option;
-            if (isCertificate == 1) {
-                option = position.icon(bitmap1);
-            } else {
-                option = position.icon(bitmap2);
-            }
-//            options.add(option);
-            int distance = (int) DistanceUtil.getDistance(pointcur, point);
-            Marker marker = (Marker) mBaiduMap.addOverlay(option);
-            Bundle bundle = new Bundle();
-            bundle.putInt("type", 1);//0为AED 1为志愿者覆盖物
-            bundle.putInt("distance", distance);
-            bundle.putString("telephone", serverUser.getAccount());
-            bundle.putDouble("latNumber", latNumber);
-            bundle.putDouble("lonNumber", lonNumber);
-            marker.setExtraInfo(bundle);
+//            int isCertificate = serverUser.getIsCertificate();
+//            String workLatitude = serverUser.getWorkLatitude();
+//            String workLongitude = serverUser.getWorkLongitude();
+//            double latNumber = 0;
+//            double lonNumber = 0;
+//            LatLng point;
+//            try {
+//                latNumber = Double.parseDouble(workLatitude);
+//                lonNumber = Double.parseDouble(workLongitude);
+//            } catch (Exception e) {
+//
+//            }
+//            point = new LatLng(latNumber, lonNumber);
+//            MarkerOptions position = new MarkerOptions().position(point);
+//            OverlayOptions option;
+//            if (isCertificate == 1) {
+//                option = position.icon(bitmap1);
+//            } else {
+//                option = position.icon(bitmap3);
+//            }
+////            options.add(option);
+//            int distance = (int) DistanceUtil.getDistance(pointcur, point);
+//            Marker marker = (Marker) mBaiduMap.addOverlay(option);
+//            Bundle bundle = new Bundle();
+//            bundle.putInt("type", 1);//0为AED 1为志愿者覆盖物
+//            bundle.putInt("distance", distance);
+//            bundle.putString("telephone", serverUser.getAccount());
+//            bundle.putDouble("latNumber", latNumber);
+//            bundle.putDouble("lonNumber", lonNumber);
+//            marker.setExtraInfo(bundle);
         }
     }
+
+    private void addSingleMarker(ServerUser serverUser, int type) {
+        LatLng pointcur = new LatLng(lat, lon);
+        int isCertificate = serverUser.getIsCertificate();
+        String workLatitude = serverUser.getWorkLatitude();
+        String workLongitude = serverUser.getWorkLongitude();
+        double latNumber = 0;
+        double lonNumber = 0;
+        LatLng point;
+        try {
+            latNumber = Double.parseDouble(workLatitude);
+            lonNumber = Double.parseDouble(workLongitude);
+        } catch (Exception e) {
+
+        }
+        point = new LatLng(latNumber, lonNumber);
+        MarkerOptions position = new MarkerOptions().position(point);
+        OverlayOptions option;
+        View view = LayoutInflater.from(getContext()).inflate(R.layout.avator_view, null);
+        ImageView backgroundSex = (ImageView) view.findViewById(R.id.background_sex);
+        ImageView friendHead = (ImageView) view.findViewById(R.id.friend_touxiang);
+
+        Bitmap chacheBitmap = getBitmapFromMemoryCache(serverUser.getImage());
+        if (chacheBitmap == null) {
+            if (type == 0) {
+                BitmapWorkerTask task = new BitmapWorkerTask(serverUser);
+                taskCollection.add(task);
+                task.execute();
+                return;
+            } else {
+                if (isCertificate == 1) {
+                    chacheBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.volunteer1);
+                } else {
+                    chacheBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.volunteer2);
+                }
+                friendHead.setImageBitmap(chacheBitmap);
+            }
+        } else {
+            friendHead.setImageBitmap(chacheBitmap);
+        }
+        if (isCertificate == 1) {
+            backgroundSex.setImageResource(R.drawable.jijiurenyuan3x);
+        } else {
+            backgroundSex.setImageResource(R.drawable.xiezhurenyuan3x);
+        }
+        Bitmap bitmap = getViewBitmap(view);
+        BitmapDescriptor bitmap3 = BitmapDescriptorFactory.fromBitmap(bitmap);
+        option = position.icon(bitmap3);
+
+//            options.add(option);
+        int distance = (int) DistanceUtil.getDistance(pointcur, point);
+        Marker marker = (Marker) mBaiduMap.addOverlay(option);
+        Bundle bundle = new Bundle();
+        bundle.putInt("type", 1);//0为AED 1为志愿者覆盖物
+        bundle.putInt("distance", distance);
+        bundle.putString("telephone", serverUser.getAccount());
+        bundle.putDouble("latNumber", latNumber);
+        bundle.putDouble("lonNumber", lonNumber);
+        marker.setExtraInfo(bundle);
+    }
+
+    private Bitmap getViewBitmap(View addViewContent) {
+        addViewContent.setDrawingCacheEnabled(true);
+        addViewContent.measure(
+                View.MeasureSpec.makeMeasureSpec(114, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(138, View.MeasureSpec.EXACTLY));
+        addViewContent.layout(0, 0,
+                addViewContent.getMeasuredWidth(),
+                addViewContent.getMeasuredHeight());
+        addViewContent.buildDrawingCache();
+        Bitmap cacheBitmap = addViewContent.getDrawingCache();
+        Bitmap bitmap = Bitmap.createBitmap(cacheBitmap);
+        return bitmap;
+    }
+
 
     private void batchAddAED(List<AEDInfo> list) {
         List<OverlayOptions> options = new ArrayList<OverlayOptions>();
@@ -1018,4 +1139,140 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
     };
 
 
+    /**
+     * 将一张图片存储到LruCache中。
+     *
+     * @param key    LruCache的键，这里传入图片的URL地址。
+     * @param bitmap LruCache的键，这里传入从网络上下载的Bitmap对象。
+     */
+    public void addBitmapToMemoryCache(String key, Bitmap bitmap) {
+        if (getBitmapFromMemoryCache(key) == null) {
+            mMemoryCache.put(key, bitmap);
+        }
+    }
+
+    /**
+     * 从LruCache中获取一张图片，如果不存在就返回null。
+     *
+     * @param key LruCache的键，这里传入图片的URL地址。
+     * @return 对应传入键的Bitmap对象，或者null。
+     */
+    public Bitmap getBitmapFromMemoryCache(String key) {
+        Bitmap bitmap = mMemoryCache.get(key);
+        return bitmap;
+//        if (bitmap == null) {
+//            BitmapWorkerTask task = new BitmapWorkerTask();
+//            task.execute(key);
+//            return null;
+//        } else {
+//            return bitmap;
+//        }
+    }
+
+    /**
+     * 异步下载图片的任务。
+     *
+     * @author guolin
+     */
+    class BitmapWorkerTask extends AsyncTask<String, Void, Bitmap> {
+
+        /**
+         * 图片的URL地址
+         */
+        private String imageUrl;
+        private ServerUser serverUser;
+
+        public BitmapWorkerTask(ServerUser serverUser) {
+            this.serverUser = serverUser;
+        }
+
+        @Override
+        protected Bitmap doInBackground(String... params) {
+            if (isCancelled()) {
+                return null;
+            }
+            imageUrl = serverUser.getImage();
+            // 在后台开始下载图片
+            Bitmap bitmap = downloadBitmap(imageUrl);
+            if (bitmap != null) {
+                // 图片下载完成后缓存到LrcCache中
+                addBitmapToMemoryCache(imageUrl, bitmap);
+            }
+            return bitmap;
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+            if (isCancelled()) {
+                return;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            super.onPostExecute(bitmap);
+            taskCollection.remove(this);
+            addSingleMarker(serverUser, 1);
+        }
+
+        /**
+         * 建立HTTP请求，并获取Bitmap对象。
+         *
+         * @param imageUrl 图片的URL地址
+         * @return 解析后的Bitmap对象
+         */
+        private Bitmap downloadBitmap(String imageUrl) {
+            Bitmap bitmap = null;
+            HttpURLConnection con = null;
+            try {
+                URL url = new URL(imageUrl);
+                con = (HttpURLConnection) url.openConnection();
+                con.setConnectTimeout(5 * 1000);
+                con.setReadTimeout(10 * 1000);
+                bitmap = BitmapFactory.decodeStream(con.getInputStream());
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (con != null) {
+                    con.disconnect();
+                }
+            }
+            return bitmap;
+        }
+    }
+
+    public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        // 源图片的高度和宽度
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+        if (height > reqHeight || width > reqWidth) {
+            // 计算出实际宽高和目标宽高的比率
+            final int heightRatio = Math.round((float) height / (float) reqHeight);
+            final int widthRatio = Math.round((float) width / (float) reqWidth);
+            // 选择宽和高中最小的比率作为inSampleSize的值，这样可以保证最终图片的宽和高
+            // 一定都会大于等于目标的宽和高。
+            inSampleSize = heightRatio < widthRatio ? heightRatio : widthRatio;
+        }
+        return inSampleSize;
+    }
+
+    public static Bitmap decodeSampledBitmapFromResource(Resources res, int resId,
+                                                         int reqWidth, int reqHeight) {
+        // 第一次解析将inJustDecodeBounds设置为true，来获取图片大小
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeResource(res, resId, options);
+        // 调用上面定义的方法计算inSampleSize值
+        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+        // 使用获取到的inSampleSize值再次解析图片
+        options.inJustDecodeBounds = false;
+        return BitmapFactory.decodeResource(res, resId, options);
+    }
+
+    //回调接口
+    private interface ResultListener {
+        void onReturnResult(View view);
+    }
 }

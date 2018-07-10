@@ -4,6 +4,7 @@ package com.example.meimeng.activity;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -25,6 +26,7 @@ import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -338,7 +340,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             case R.id.imgSos:
 //                setBackgroundDrakValue(0.8f);
 //                setBackgroundDrakValue(1f);
-                showPopupW(v);
+                showSoSDialog();
+                //showPopupW(v);
                 break;
 
         }
@@ -391,7 +394,58 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             Toast.makeText(this, "你还没有设置紧急联系人!", Toast.LENGTH_LONG).show();
         }
     }
-
+    private void showSoSDialog() {
+        final Dialog dialog = new Dialog(this, R.style.dialog);
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.popup_call_help, null);
+        //获得dialog的window窗口
+        Window window = dialog.getWindow();
+        //设置dialog在屏幕底部
+        window.setGravity(Gravity.CENTER);
+        //设置dialog弹出时的动画效果，从屏幕底部向上弹出
+        //window.setWindowAnimations(R.style.mypopwindow_anim_style);
+        window.getDecorView().setPadding(0, 0, 0, 0);
+        //获得window窗口的属性
+        android.view.WindowManager.LayoutParams lp = window.getAttributes();
+        //设置窗口宽度为充满全屏
+        lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+        //设置窗口高度为包裹内容
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        //将设置好的属性set回去
+        window.setAttributes(lp);
+        //将自定义布局加载到dialog上
+        dialog.setContentView(dialogView);
+        dialog.findViewById(R.id.callFirstAidImg).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (dialog != null) {
+                    dialog.dismiss();
+                }
+                startActivity(new Intent(MainActivity.this, WaitSoSActivity.class));
+            }
+        });
+        dialog.findViewById(R.id.call120).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (dialog != null) {
+                    dialog.dismiss();
+                }
+                curCallTel = "10086";
+                checkPower();
+            }
+        });
+        dialog.findViewById(R.id.callEmergencyContact).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (dialog != null) {
+                    dialog.dismiss();
+                }
+                curCallTel = "10010";
+                //checkPower();
+                showDialog();
+            }
+        });
+        dialog.show();
+    }
     private void showPopupW(View view) {
 
 //        View shareview = LayoutInflater.from(this).inflate(R.layout.popup_call_help, null);

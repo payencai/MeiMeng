@@ -36,6 +36,7 @@
                     android:textSize="@dimen/text_size_14sp" />
 
                 <EditText
+                    android:textColor="@color/text_9"
                     android:id="@+id/et_userinfo_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -71,6 +72,7 @@
                     android:textSize="@dimen/text_size_14sp" />
 
                 <EditText
+                    android:textColor="@color/text_9"
                     android:id="@+id/et_userinfo_phone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -107,6 +109,7 @@
                     android:textSize="@dimen/text_size_14sp" />
 
                 <EditText
+                    android:textColor="@color/text_9"
                     android:id="@+id/et_userinfo_fixphone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -142,25 +145,26 @@
                     android:textSize="@dimen/text_size_14sp"/>
 
                 <TextView
-
                     android:id="@+id/et_user_address"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
-                    android:layout_marginEnd="40dp"
+                    android:layout_marginEnd="@dimen/margin_35dp"
                     android:background="@color/color_white_100"
                     android:hint="详细家庭住址"
                     android:maxLength="25"
                     android:maxLines="2"
+                    android:maxWidth="210dp"
+                    android:textColor="@color/text_9"
                     android:textSize="@dimen/text_size_14sp"/>
 
                 <ImageView
                     android:layout_width="22dp"
                     android:layout_height="15dp"
+                    android:layout_marginEnd="@dimen/margin_20dp"
                     android:layout_centerVertical="true"
-                    android:layout_marginStart="-40dp"
-                    android:layout_toEndOf="@+id/et_user_address"
+                    android:layout_alignParentEnd="true"
                     android:src="@mipmap/ic_arrows_right"/>
 
             </RelativeLayout>
@@ -193,6 +197,7 @@
                     android:orientation="horizontal">
 
                     <RadioButton
+                        android:textColor="@color/text_9"
                         android:id="@+id/rb_userinfo_man"
                         style="@style/common_font"
                         android:layout_width="wrap_content"
@@ -203,6 +208,7 @@
                         android:text="男" />
 
                     <RadioButton
+                        android:textColor="@color/text_9"
                         android:id="@+id/rb_userinfo_nv"
                         style="@style/common_font"
                         android:layout_width="wrap_content"
@@ -239,6 +245,7 @@
                     android:textSize="@dimen/text_size_14sp"/>
 
                 <EditText
+                    android:textColor="@color/text_9"
                     android:id="@+id/et_userinfo_age"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -283,6 +290,7 @@
                     android:paddingRight="5dp">
 
                     <TextView
+                        android:textColor="@color/text_9"
                         android:id="@+id/tv_value"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -343,7 +351,7 @@
                     android:textSize="@dimen/text_size_14sp" />
 
                 <EditText
-
+                    android:textColor="@color/text_9"
                     android:id="@+id/et_userinfo_sicken"
                     android:layout_width="200dp"
                     android:layout_height="wrap_content"
@@ -379,6 +387,7 @@
                     android:textSize="@dimen/text_size_14sp" />
 
                 <EditText
+                    android:textColor="@color/text_9"
                     android:id="@+id/et_userinfo_othersicken"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -417,6 +426,7 @@
                     android:textSize="@dimen/text_size_14sp"/>
 
                 <TextView
+                    android:textColor="@color/text_9"
                     android:id="@+id/et_userinfo_lianxi1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -452,6 +462,7 @@
                     android:textSize="@dimen/text_size_14sp"/>
 
                 <TextView
+                    android:textColor="@color/text_9"
                     android:id="@+id/et_userinfo_lianxi2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -486,6 +497,7 @@
                     android:textSize="@dimen/text_size_14sp"/>
 
                 <TextView
+                    android:textColor="@color/text_9"
                     android:id="@+id/et_userinfo_lianxi3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

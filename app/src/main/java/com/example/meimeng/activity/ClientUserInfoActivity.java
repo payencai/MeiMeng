@@ -174,7 +174,7 @@ public class ClientUserInfoActivity extends BaseActivity {
                     String addressStr = address.getAddress();
                     if (!TextUtils.isEmpty(addressStr)) {
                         et_address.setText(addressStr);
-                        et_address.setTextColor(ContextCompat.getColor(this, R.color.text_333));
+                       // et_address.setTextColor(ContextCompat.getColor(this, R.color.text_333));
                     }
                 }
 
@@ -308,7 +308,7 @@ public class ClientUserInfoActivity extends BaseActivity {
                         bloodtype = data.getString("bloodType");
                         tvValue.setText(bloodtype + "");
                         et_address.setText(data.getString("address") + "");
-                        et_address.setTextColor(ContextCompat.getColor(ClientUserInfoActivity.this, R.color.text_333));
+                        //et_address.setTextColor(ContextCompat.getColor(ClientUserInfoActivity.this, R.color.text_333));
                         et_phone.setText(data.getString("telephone") + "");
                         et_age.setText(data.getInt("age") + "");
                         String sex = data.getString("sex");

@@ -242,11 +242,13 @@ public class AddAEDActivity extends BaseActivity implements View.OnClickListener
 
     private void addAed() {
         String token = "";
-        String data = returnJson();
+        String data;
         if (APP.sUserType == 0) {
             token = APP.getInstance().getUserInfo().getToken();
+            data = returnJson(0);
         } else {
             token = APP.getInstance().getServerUserInfo().getToken();
+            data = returnJson(1);
         }
         HttpProxy.obtain().post(PlatformContans.AedController.sAddAed, token, data, new ICallBack() {
             @Override
@@ -282,13 +284,17 @@ public class AddAEDActivity extends BaseActivity implements View.OnClickListener
         });
     }
 
-    private String returnJson() {
+    private String returnJson(int type) {
         Map<String, Object> params = new HashMap<>();
         params.put("address", consignSite.getText().toString());
         params.put("brank", AEDBrand.getText().toString());
         params.put("expiryDate", deadline.getText().toString());
         params.put("image", urls);
-        params.put("tel", APP.getInstance().getServerUserInfo().getTelephone());
+        if (type == 0) {
+            params.put("tel", APP.getInstance().getUserInfo().getTelephone());
+        } else {
+            params.put("tel", APP.getInstance().getServerUserInfo().getTelephone());
+        }
         params.put("isPass", 1);
         params.put("latitude", latitude);
         params.put("longitude", longitude);

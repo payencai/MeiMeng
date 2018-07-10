@@ -7,7 +7,10 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -18,6 +21,7 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.util.LruCache;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -68,6 +72,7 @@ import com.example.meimeng.bean.AddressBean;
 import com.example.meimeng.bean.CurrentHelpInfo;
 import com.example.meimeng.bean.LoginAccount.ServerUserInfo;
 import com.example.meimeng.bean.LoginAccount.UserInfo;
+import com.example.meimeng.bean.Point;
 import com.example.meimeng.bean.ServerUser;
 import com.example.meimeng.constant.PlatformContans;
 import com.example.meimeng.http.HttpProxy;
@@ -99,12 +104,16 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -181,8 +190,10 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
 
     RoutePlanSearch mSearch = null;    // 搜索模块，也可去掉地图模块独立使用
 
-    @Override
+    private LruCache<String, Bitmap> mMemoryCache;
+    private Set<BitmapWorkerTask> taskCollection;
 
+    @Override
     protected int getContentId() {
         //在使用SDK各组件之前初始化context信息，传入ApplicationContext
         //注意该方法要再setContentView方法之前实现
@@ -204,6 +215,19 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
 
         mCurLat = lat;
         mCurLon = lon;
+
+        taskCollection = new HashSet<>();
+        //获取系统给每一个应用所分配的内存大小
+        long maxMemory = Runtime.getRuntime().maxMemory();
+        int maxSize = (int) (maxMemory / 8);
+        //参数表示LruCache中可缓存的图片总大小
+        mMemoryCache = new LruCache<String, Bitmap>(maxSize) {
+            @Override
+            protected int sizeOf(String key, Bitmap value) {
+                //返回图片的大小，默认返回图片的数量
+                return value.getByteCount();
+            }
+        };
 
         Intent intent = getIntent();
         mCurrentHelpInfo = (CurrentHelpInfo) intent.getSerializableExtra("currentHelpInfo");
@@ -1252,5 +1276,109 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
                     break;
             }
         }
+    }
+
+    /**
+     * 异步下载图片的任务。
+     *
+     * @author guolin
+     */
+    class BitmapWorkerTask extends AsyncTask<String, Void, Bitmap> {
+
+        /**
+         * 图片的URL地址
+         */
+        private String imageUrl;
+        private Point point;
+
+        public BitmapWorkerTask(Point point) {
+            this.point = point;
+        }
+
+        @Override
+        protected Bitmap doInBackground(String... params) {
+            if (isCancelled()) {
+                return null;
+            }
+            imageUrl = point.image;
+            // 在后台开始下载图片
+            Bitmap bitmap = downloadBitmap(imageUrl);
+            if (bitmap != null) {
+                // 图片下载完成后缓存到LrcCache中
+                addBitmapToMemoryCache(imageUrl, bitmap);
+            }
+            return bitmap;
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+            if (isCancelled()) {
+                return;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            super.onPostExecute(bitmap);
+            taskCollection.remove(this);
+//            setMarkerByNet(point, 1);
+        }
+
+        /**
+         * 建立HTTP请求，并获取Bitmap对象。
+         *
+         * @param imageUrl 图片的URL地址
+         * @return 解析后的Bitmap对象
+         */
+        private Bitmap downloadBitmap(String imageUrl) {
+            Bitmap bitmap = null;
+            HttpURLConnection con = null;
+            try {
+                URL url = new URL(imageUrl);
+                con = (HttpURLConnection) url.openConnection();
+                con.setConnectTimeout(5 * 1000);
+                con.setReadTimeout(10 * 1000);
+                bitmap = BitmapFactory.decodeStream(con.getInputStream());
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (con != null) {
+                    con.disconnect();
+                }
+            }
+            return bitmap;
+        }
+    }
+
+
+    /**
+     * 将一张图片存储到LruCache中。
+     *
+     * @param key    LruCache的键，这里传入图片的URL地址。
+     * @param bitmap LruCache的键，这里传入从网络上下载的Bitmap对象。
+     */
+    public void addBitmapToMemoryCache(String key, Bitmap bitmap) {
+        if (getBitmapFromMemoryCache(key) == null) {
+            mMemoryCache.put(key, bitmap);
+        }
+    }
+
+    /**
+     * 从LruCache中获取一张图片，如果不存在就返回null。
+     *
+     * @param key LruCache的键，这里传入图片的URL地址。
+     * @return 对应传入键的Bitmap对象，或者null。
+     */
+    public Bitmap getBitmapFromMemoryCache(String key) {
+        Bitmap bitmap = mMemoryCache.get(key);
+        return bitmap;
+//        if (bitmap == null) {
+//            BitmapWorkerTask task = new BitmapWorkerTask();
+//            task.execute(key);
+//            return null;
+//        } else {
+//            return bitmap;
+//        }
     }
 }

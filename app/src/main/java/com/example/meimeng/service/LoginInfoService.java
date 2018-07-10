@@ -122,9 +122,14 @@ public class LoginInfoService extends Service {
                             LoginSharedUilt intance = LoginSharedUilt.getIntance(context);
                             String deviceOnlyId = intance.getDeviceOnlyId();
                             if (!deviceOnlyId.equals(data)) {
+//                                if (APP.IS_DEBUG) {
+//                                    return;
+//                                }
                                 ActivityManager.getInstance().finishAllActivity();
                                 Intent intent = new Intent(context, LoginActivity.class);
                                 intent.putExtra("resetLogin", true);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 context.startActivity(intent);
                             } else {
                                 sendEmptyMessageDelayed(REUQEST_DEVICE_INFO_CODE, 10 * 1000);

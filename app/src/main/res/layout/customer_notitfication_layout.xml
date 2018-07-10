@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:paddingLeft="@dimen/margin_20dp"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content">
+              <LinearLayout
+                  android:orientation="horizontal"
+                  android:layout_width="@dimen/margin_60dp"
+                  android:layout_height="wrap_content">
+                  <ImageView
+                      android:layout_marginTop="@dimen/margin_10dp"
+                      android:src="@mipmap/logo"
+                      android:id="@+id/icon"
+                      android:layout_width="@dimen/margin_15dp"
+                      android:layout_height="20dp"/>
+                  <TextView
+                      android:textSize="@dimen/text_size_11sp"
+                      android:layout_marginLeft="5dp"
+                      android:layout_marginTop="12dp"
+                      android:text="美盟"
+                      android:id="@+id/appname"
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"/>
+              </LinearLayout>
+
+              <TextView
+                  android:textStyle="bold"
+                  android:text="你好"
+                  android:id="@+id/title"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"/>
+    <TextView
+        android:layout_marginRight="@dimen/margin_20dp"
+        android:text="我的功夫的诗歌风格服饰改动方式过分过分国发股份但是过分的"
+        android:id="@+id/text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+</LinearLayout>

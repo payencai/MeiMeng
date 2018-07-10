@@ -150,6 +150,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     @Override
     protected void onResume() {
         super.onResume();
+        /*单点登录*/
         Intent intent = getIntent();
         boolean resetLogin = intent.getBooleanExtra("resetLogin", false);
         if (resetLogin) {
@@ -213,12 +214,12 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 }
                 if (APP.IS_DEBUG) {
                     if (userLoginState == 0) {
-                        tel = "17306676089";
-                        psw = "123456";
+                        tel = "13202908144";
+                        psw = "12345678";
                     } else {
-                        tel = "17306676089";
+                        tel = "13202908144";
                         //tel = "17306676089";
-                        psw = "123456";
+                        psw = "12345678";
                     }
                 } else {
                     if (userLoginState == 0) {//用户登录

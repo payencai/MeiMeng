@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
@@ -23,6 +24,7 @@ import org.json.JSONObject;
 import java.util.Iterator;
 
 import cn.jpush.android.api.BasicPushNotificationBuilder;
+import cn.jpush.android.api.CustomPushNotificationBuilder;
 import cn.jpush.android.api.JPushInterface;
 
 /**
@@ -38,6 +40,23 @@ public class MyReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+
+        if(Build.VERSION.SDK_INT >=26) {
+
+            CustomPushNotificationBuilder builder = new
+                    CustomPushNotificationBuilder(context,
+                    R.layout.customer_notitfication_layout,
+                    R.id.icon,
+                    R.id.title,
+                    R.id.text);
+            // 指定定制的 Notification Layout
+            builder.statusBarDrawable = R.mipmap.logo;
+            // 指定最顶层状态栏小图标
+            builder.layoutIconDrawable = R.drawable.jpush_notification_icon;
+            // 指定下拉状态栏时显示的通知图标
+            JPushInterface.setPushNotificationBuilder(2, builder);
+        }
+
         try {
             Bundle bundle = intent.getExtras();
 //            Logger.d(TAG, "[MyReceiver] onReceive - " + intent.getAction() + ", extras: " + printBundle(bundle));

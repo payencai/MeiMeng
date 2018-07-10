@@ -334,6 +334,8 @@ public class ServerMainActivity extends BaseActivity {
         HttpProxy.obtain().get(PlatformContans.ForHelp.sGetCurrentHelp, params, token, new ICallBack() {
             @Override
             public void OnSuccess(String result) {
+                Log.e("result",result);
+                mSwipeRefreshLayout.setRefreshing(false);
                 MLog.log(TAG, result);
                 JSONObject jsonObject = null;
                 try {
@@ -345,20 +347,20 @@ public class ServerMainActivity extends BaseActivity {
                         Gson gson = new Gson();
                         for (int i = 0; i < beanlist.length(); i++) {
                             JSONObject item = beanlist.getJSONObject(i);
-                            CurrentHelpInfo bean = gson.fromJson(item.toString(), CurrentHelpInfo.class);
-                            list.add(bean);
-//                            CurrentHelpInfo currentHelpInfo = new CurrentHelpInfo();
-//                            JSONObject object = (JSONObject) beanlist.get(i);
-//                            currentHelpInfo.setImage(object.getString("image"));
-//                            currentHelpInfo.setHelpNum(object.getInt("helpNum"));
-//                            currentHelpInfo.setDistance(object.getInt("distance"));
-//                            currentHelpInfo.setCreateTime(object.getString("createTime"));
-//                            currentHelpInfo.setUseUserName(object.getString("useUserName"));
-//                            currentHelpInfo.setUserAddress(object.getString("userAddress"));
-//                            list.add(currentHelpInfo);
+                            //CurrentHelpInfo bean = gson.fromJson(item.toString(), CurrentHelpInfo.class);
+                           // list.add(bean);
+                            CurrentHelpInfo currentHelpInfo = new CurrentHelpInfo();
+                            JSONObject object = (JSONObject) beanlist.get(i);
+                            currentHelpInfo.setImage(object.getString("image"));
+                            currentHelpInfo.setHelpNum(object.getInt("helpNum"));
+                            currentHelpInfo.setDistance(object.getInt("distance"));
+                            currentHelpInfo.setCreateTime(object.getString("createTime"));
+                            currentHelpInfo.setUseUserName(object.getString("useUserName"));
+                            currentHelpInfo.setUserAddress(object.getString("userAddress"));
+                            list.add(currentHelpInfo);
                         }
                         adapter.reset(list);
-                        mSwipeRefreshLayout.setRefreshing(false);
+
                     }
                     if (code == 9999) {
 

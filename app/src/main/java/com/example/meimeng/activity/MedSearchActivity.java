@@ -243,15 +243,18 @@ public class MedSearchActivity extends BaseActivity {
         String longitude = "113.4033126831055";
         String token = "";
         if (APP.sUserType == 0) {
+
             token = APP.getInstance().getUserInfo().getToken();
+            Log.e("token",token);
             latitude=APP.getInstance().getUserInfo().getLatitude();
             longitude=APP.getInstance().getUserInfo().getLongitude();
 
         } else {
             token = APP.getInstance().getServerUserInfo().getToken();
-            latitude=APP.getInstance().getServerUserInfo().getHomeLatitude();
-            longitude=APP.getInstance().getServerUserInfo().getHomeLongitude();
+            latitude=APP.getInstance().getServerUserInfo().getWorkLatitude();
+            longitude=APP.getInstance().getServerUserInfo().getWorkLongitude();
         }
+
         params.put("latitude", latitude);
         params.put("longitude", longitude);
         params.put("name", medname);

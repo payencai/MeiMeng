@@ -33,7 +33,7 @@ import cn.jpush.android.api.JPushInterface;
 public class APP extends Application {
 
     private static final String TAG = "Application";
-    public static final boolean IS_DEBUG = true;//是否是调试
+    public static final boolean IS_DEBUG = false;//是否是调试
     public LocationService locationService;
     public Vibrator mVibrator;
     private UserInfo mUserInfo;//用户类型

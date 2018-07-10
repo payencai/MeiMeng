@@ -7,6 +7,13 @@
     android:orientation="vertical"
     tools:context=".activity.MedSearchActivity">
     <include layout="@layout/toobar_head_layout"></include>
+    <TextView
+        android:visibility="gone"
+        android:id="@+id/search_null"
+        android:gravity="center"
+        android:text="没有搜索到药品!"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/margin_50dp"/>
     <android.support.v7.widget.RecyclerView
         android:id="@+id/med_rv"
         android:layout_width="match_parent"

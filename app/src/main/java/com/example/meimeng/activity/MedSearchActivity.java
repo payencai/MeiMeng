@@ -45,7 +45,7 @@ import java.util.Map;
 public class MedSearchActivity extends BaseActivity {
     private RecyclerView drugRv;
     RVBaseAdapter<DrugInfo> adapter;
-
+    TextView mTextView;
     @Override
     protected int getContentId() {
         return R.layout.activity_med_search;
@@ -64,8 +64,10 @@ public class MedSearchActivity extends BaseActivity {
         }
         return false;
     }
+    private int flag=0;
     @Override
     protected void initView() {
+        mTextView=findViewById(R.id.search_null);
         ImageView back=findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,11 +81,30 @@ public class MedSearchActivity extends BaseActivity {
             SharedPreferences preferences = getSharedPreferences("medhistory", MODE_PRIVATE);
             SharedPreferences.Editor editor = preferences.edit();
             int count= preferences.getInt("count",0);
+            flag= preferences.getInt("flag",0);
+            Log.e("falg",flag+"");
             if(!isIsits(name)){
                 if(count>=5)
                 {
-                    editor.putString("h5",name);
-                    editor.commit();
+                    switch (flag){
+                        case 0:
+                        case 1:
+                        case 2:
+                        case 3:
+                        case 4:
+                            flag++;
+                            editor.putString("h"+flag,name);
+                            if(flag<5){
+                                editor.putInt("flag",flag);
+                            }else{
+                                editor.putInt("flag",0);
+                            }
+                            editor.commit();
+                            break;
+                        default:
+                            break;
+                    }
+
                 }else{
                     int newNum=count+1;
                     String val="h"+newNum;
@@ -247,6 +268,7 @@ public class MedSearchActivity extends BaseActivity {
                         List<DrugInfo> list = new ArrayList<>();
                         JSONArray beanlist = jsonObject.getJSONArray("data");
                         if (beanlist.length() == 0) {
+                            mTextView.setVisibility(View.VISIBLE);
                             adapter.setData(list);
                             drugRv.setLayoutManager(new LinearLayoutManager(MedSearchActivity.this));
                             drugRv.setAdapter(adapter);

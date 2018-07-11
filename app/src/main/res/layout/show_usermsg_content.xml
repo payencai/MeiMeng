@@ -135,6 +135,7 @@
                 android:orientation="horizontal">
 
                 <TextView
+                    android:layout_marginRight="@dimen/margin_20dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
@@ -145,17 +146,17 @@
                     android:textSize="@dimen/text_size_14sp"/>
 
                 <TextView
+                    android:ellipsize="end"
                     android:id="@+id/et_user_address"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
-                    android:layout_marginEnd="@dimen/margin_35dp"
+                    android:layout_marginEnd="@dimen/margin_40dp"
                     android:background="@color/color_white_100"
                     android:hint="详细家庭住址"
-                    android:maxLength="25"
-                    android:maxLines="2"
-                    android:maxWidth="210dp"
+                    android:maxEms="15"
+                    android:singleLine="true"
                     android:textColor="@color/text_9"
                     android:textSize="@dimen/text_size_14sp"/>
 

@@ -42,7 +42,7 @@
 
     <LinearLayout
         android:id="@+id/pop_call"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="@dimen/length_view_35dp"
         android:layout_marginLeft="34dp"
         android:layout_marginRight="34dp"

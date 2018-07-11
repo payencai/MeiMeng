@@ -125,7 +125,7 @@ public class ServerMainActivity extends BaseActivity {
         time.setText(userInfo.getOnlineTime() + "");
         count.setText(userInfo.getHelpNum() + "");
         distance.setText(userInfo.getHelpDistance() + "");
-
+        Log.e("kele",userInfo.getOnlineTime()+"");
         Glide.with(this).load(userInfo.getImage()).into(iv_head);
         enter_main.setOnClickListener(new View.OnClickListener() {
             @Override

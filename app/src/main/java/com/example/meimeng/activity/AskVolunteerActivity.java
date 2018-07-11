@@ -1,5 +1,6 @@
 package com.example.meimeng.activity;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
@@ -7,7 +8,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Display;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -19,15 +22,18 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.donkingliang.imageselector.utils.ImageSelectorUtils;
 import com.example.meimeng.APP;
 import com.example.meimeng.R;
 import com.example.meimeng.adapter.PictureAdapter;
 import com.example.meimeng.base.BaseActivity;
 import com.example.meimeng.bean.AddressBean;
+import com.example.meimeng.bean.LoginAccount.ServerUserInfo;
 import com.example.meimeng.constant.PlatformContans;
 import com.example.meimeng.http.HttpProxy;
 import com.example.meimeng.http.ICallBack;
@@ -73,11 +79,11 @@ public class AskVolunteerActivity extends BaseActivity {
     @BindView(R.id.et_volunteer_number)
     EditText number;
     @BindView(R.id.et_volunteer_home)
-    LinearLayout home;
+    RelativeLayout home;
     @BindView(R.id.et_volunteer_work)
-    LinearLayout work;
+    RelativeLayout work;
     @BindView(R.id.et_volunteer_time)
-    LinearLayout time;
+    RelativeLayout time;
     @BindView(R.id.rg_vol_sex)
     RadioGroup sex;
     @BindView(R.id.rb_vol_nan)
@@ -97,6 +103,116 @@ public class AskVolunteerActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
+    private String isAskServerUser(){
+        String value="";
+        String servertype=APP.getInstance().getUserInfo().getServerType();
+        //String server=APP.getInstance().getUserInfo().getServerUser();
+        Log.e("server",APP.getInstance().getUserInfo().getToken()+"");
+        switch (servertype){
+            case "1":
+                value="你还没有申请支援者";
+                break;
+            case "2":
+                value="你的申请审核中,请耐心等候";
+                break;
+            case "3":
+                value="你已经是志愿者";
+                break;
+            case "4":
+                value="你的申请被驳回";
+                break;
+            default:
+                value="你的申请已通过";
+                break;
+        }
+       return value;
+    }
+    private void showAskDialog(String val) {
+        Log.e("val",val);
+        final Dialog dialog = new Dialog(this, R.style.dialog);
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_tishi, null);
+        //获得dialog的window窗口
+        Window window = dialog.getWindow();
+        //设置dialog在屏幕底部
+        window.setGravity(Gravity.CENTER);
+        //设置dialog弹出时的动画效果，从屏幕底部向上弹出
+        //window.setWindowAnimations(R.style.mypopwindow_anim_style);
+        window.getDecorView().setPadding(0, 0, 0, 0);
+        //获得window窗口的属性
+        WindowManager.LayoutParams lp=window.getAttributes();
+        Display display=getWindowManager().getDefaultDisplay();
+        //android.view.WindowManager.LayoutParams lp = window.getAttributes();
+        //设置窗口宽度为充满全屏
+        lp.width = (int) (display.getWidth()*0.7);
+
+        //将设置好的属性set回去
+        window.setAttributes(lp);
+        //将自定义布局加载到dialog上
+        dialog.setContentView(dialogView);
+        TextView textView=(TextView) dialog.findViewById(R.id.dialog_value);
+        textView.setText(val);
+        dialog.findViewById(R.id.dialog_iknow).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+    }
+    private void getUserInfo(){
+        HttpProxy.obtain().get(PlatformContans.UseUser.sGetUseUser, APP.getInstance().getUserInfo().getToken(), new ICallBack() {
+            @Override
+            public void OnSuccess(String result) {
+                Log.e("result",result);
+                JSONObject jsonObject = null;
+                try {
+                    jsonObject = new JSONObject(result);
+                    int code = jsonObject.getInt("resultCode");
+                    if (code == 0) {
+                        JSONObject object = jsonObject.getJSONObject("data");
+                        JSONObject server=object.getJSONObject("serverUser");
+                        if (server!=null){
+                            String name=server.getString("name");
+                            String idNumber=server.getString("idNumber");
+                            String wordaddr=server.getString("workAddress");
+                            String homeaddr=server.getString("homeAddress");
+                            String sex=server.getString("sex");
+                            String worktime=server.getString("workTime");
+                            Log.e("idNumber",idNumber);
+                            tv_name.setText(name);
+                            number.setText(idNumber);
+                            detailhome.setText(homeaddr);
+                            detailwork.setText(wordaddr);
+                            if(TextUtils.isEmpty(worktime)){
+                                detailtime.setText("单休");
+                            }else
+                                detailtime.setText(worktime);
+                            if(sex.equals("男")){
+                                man.setChecked(true);
+                                nv.setChecked(false);
+                            }
+
+                        }
+
+
+                    }
+                    if (code == 9999) {
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+            }
+
+            @Override
+            public void onFailure(String error) {
+
+            }
+        });
+    }
 
     @Override
     protected void initView() {
@@ -104,9 +220,7 @@ public class AskVolunteerActivity extends BaseActivity {
         title=findViewById(R.id.title);
         upload=findViewById(R.id.ask_upload);
         ask_show_pic=findViewById(R.id.ask_show_pic);
-
         title.setText("志愿者招募");
-
         Drawable drawable= getResources().getDrawable(R.drawable.sex_selector);
         drawable.setBounds(0,0,30,30);//将drawable设置为宽100 高100固定大小
         man.setCompoundDrawables(drawable,null,null,null);
@@ -114,7 +228,10 @@ public class AskVolunteerActivity extends BaseActivity {
         drawable2.setBounds(0,0,30,30);//将drawable设置为宽100 高100固定大小
         nv.setCompoundDrawables(drawable2,null,null,null);
         nv.setChecked(true);
-
+        showAskDialog(isAskServerUser());
+        if(APP.getInstance().getUserInfo().getServerType().equals("3")||APP.getInstance().getUserInfo().getServerType().equals("2")){
+            getUserInfo();
+        }
         ImageView back;
         back=findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {
@@ -307,13 +424,20 @@ public class AskVolunteerActivity extends BaseActivity {
                 });
                 break;
             case R.id.btn_vol_commit:
-                if(!isInputEmpty()){
-                    commitAll();
-                }
-                else{
-                    Toast.makeText(this,msg,Toast.LENGTH_SHORT).show();
+                if(APP.getInstance().getUserInfo().getServerType().equals("3")||APP.getInstance().getUserInfo().getServerType().equals("2")){
+                    Toast.makeText(this,"你已经是志愿者或者已经申请志愿者，请不要重复操作！",Toast.LENGTH_LONG).show();
+                    commit.setEnabled(false);
+                }else{
+                    if(!isInputEmpty()){
+                        commitAll();
+                    }
+                    else{
+                        Toast.makeText(this,msg,Toast.LENGTH_SHORT).show();
+                    }
+
                 }
                 break;
+
         }
 
     }

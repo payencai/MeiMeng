@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
               android:id="@+id/server_main"
+              android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:orientation="vertical">
+
     <include layout="@layout/toobar_head_layout"></include>
 
     <LinearLayout
@@ -21,8 +22,8 @@
             android:orientation="vertical">
 
 
-            <LinearLayout
-                android:gravity="center_vertical"
+            <RelativeLayout
+
                 android:id="@+id/server_updatemname"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
@@ -33,27 +34,32 @@
                 android:paddingTop="5dp">
 
                 <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_weight="8"
-                    android:text="修改昵称"
-                    style="@style/font_14sp_333"/>
-                <TextView
+                    style="@style/font_14sp_333"
+                    android:layout_width="wrap_content"
 
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:text="修改昵称"/>
+
+                <TextView
                     android:id="@+id/tv_server_nick"
-                    android:layout_marginRight="@dimen/margin_10dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:text=""
-                    style="@style/font_14sp_333"/>
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="40dp"
+                    android:text="去设置"
+                    android:textColor="@color/text_9"/>
+
                 <ImageView
                     android:layout_width="8dp"
                     android:layout_height="15dp"
-                    android:layout_marginRight="15dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="20dp"
                     android:src="@mipmap/ic_arrows_right"/>
-            </LinearLayout>
+            </RelativeLayout>
 
             <View
                 android:layout_width="match_parent"
@@ -63,12 +69,12 @@
                 android:background="@color/bg_e5e5e5"/>
 
 
-            <LinearLayout
-                android:gravity="center_vertical"
+            <RelativeLayout
+
                 android:id="@+id/server_home"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:layout_gravity="center_vertical"
+
                 android:layout_marginLeft="@dimen/margin_15dp"
 
                 android:orientation="horizontal"
@@ -76,27 +82,34 @@
 
                 <TextView
                     style="@style/font_14sp_333"
-                    android:layout_width="319dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="24dp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_weight="8"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
                     android:text="家庭住址"/>
+
                 <TextView
-                    android:maxWidth="200dp"
-                    android:maxLines="2"
+                    android:ellipsize="end"
+                    android:singleLine="true"
                     android:id="@+id/tv_server_home"
-                    android:layout_marginRight="@dimen/margin_10dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:text=""
-                    style="@style/font_14sp_333"/>
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="37dp"
+                    android:maxLines="1"
+                    android:maxWidth="200dp"
+                    android:text="请输入详细住址"
+                    android:textColor="@color/text_9"/>
+
                 <ImageView
                     android:layout_width="8dp"
                     android:layout_height="15dp"
-                    android:layout_marginRight="15dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="20dp"
                     android:src="@mipmap/ic_arrows_right"/>
-            </LinearLayout>
+            </RelativeLayout>
 
             <View
                 android:layout_width="match_parent"
@@ -104,8 +117,7 @@
                 android:layout_marginLeft="15dp"
                 android:background="@color/bg_e5e5e5"/>
 
-            <LinearLayout
-                android:gravity="center_vertical"
+            <RelativeLayout
                 android:id="@+id/server_work"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
@@ -116,29 +128,35 @@
                 android:paddingTop="5dp">
 
                 <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_weight="8"
-                    android:text="工作住址"
-                    style="@style/font_14sp_333"/>
-                <TextView
-
-                    android:maxWidth="200dp"
-                    android:maxLines="2"
-                    android:id="@+id/tv_server_work"
-                    android:layout_marginRight="@dimen/margin_10dp"
+                    style="@style/font_14sp_333"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:text=""
-                    style="@style/font_14sp_333"/>
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:text="工作住址"/>
+
+                <TextView
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:id="@+id/tv_server_work"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="36dp"
+                    android:maxLines="1"
+                    android:maxWidth="200dp"
+                        android:text="请输入详细住址"
+                    android:textColor="@color/text_9"/>
+
                 <ImageView
                     android:layout_width="8dp"
                     android:layout_height="15dp"
-                    android:layout_marginRight="15dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="20dp"
                     android:src="@mipmap/ic_arrows_right"/>
-            </LinearLayout>
+            </RelativeLayout>
 
             <View
                 android:layout_width="match_parent"
@@ -148,8 +166,7 @@
                 android:background="@color/bg_e5e5e5"/>
 
 
-            <LinearLayout
-                android:gravity="center_vertical"
+            <RelativeLayout
                 android:id="@+id/server_time"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
@@ -160,26 +177,31 @@
                 android:paddingTop="5dp">
 
                 <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_weight="8"
-                    android:text="工作时间"
-                    style="@style/font_14sp_333"/>
-                <TextView
-                    android:id="@+id/tv_server_time"
-                    android:layout_marginRight="@dimen/margin_10dp"
+                    style="@style/font_14sp_333"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:text=""
-                    style="@style/font_14sp_333"/>
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:text="工作时间"/>
+
+                <TextView
+                    android:id="@+id/tv_server_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="43dp"
+                    android:text="单休"
+                    android:textColor="@color/text_9"/>
+
                 <ImageView
                     android:layout_width="8dp"
                     android:layout_height="15dp"
-                    android:layout_marginRight="15dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="20dp"
                     android:src="@mipmap/ic_arrows_right"/>
-            </LinearLayout>
+            </RelativeLayout>
         </LinearLayout>
 
         <Button

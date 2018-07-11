@@ -2,6 +2,7 @@ package com.example.meimeng.activity;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -23,6 +24,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -106,7 +108,52 @@ public class ServerCenterActivity extends BaseActivity {
         ButterKnife.bind(this);
         serverInitView();
     }
-
+    private void showDialog() {
+        final Dialog dialog = new Dialog(this, R.style.dialog);
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_select_photo, null);
+        //获得dialog的window窗口
+        Window window = dialog.getWindow();
+        //设置dialog在屏幕底部
+        window.setGravity(Gravity.BOTTOM);
+        //设置dialog弹出时的动画效果，从屏幕底部向上弹出
+        window.setWindowAnimations(R.style.mypopwindow_anim_style);
+        window.getDecorView().setPadding(0, 0, 0, 0);
+        //获得window窗口的属性
+        android.view.WindowManager.LayoutParams lp = window.getAttributes();
+        //设置窗口宽度为充满全屏
+        lp.width = WindowManager.LayoutParams.WRAP_CONTENT;
+        //设置窗口高度为包裹内容
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        //将设置好的属性set回去
+        window.setAttributes(lp);
+        //将自定义布局加载到dialog上
+        dialog.setContentView(dialogView);
+        dialog.findViewById(R.id.tv_select_cancel).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+        dialog.findViewById(R.id.tv_select_camera).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+                if (isCameraPermission(ServerCenterActivity.this, 0x007))
+                    startCamera();
+            }
+        });
+        dialog.findViewById(R.id.tv_select_gallery).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+                Intent mIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                mIntent.addCategory(Intent.CATEGORY_OPENABLE);
+                mIntent.setType("image/*");
+                startActivityForResult(mIntent, 2);
+            }
+        });
+        dialog.show();
+    }
     private void setPopupWindow() {
         final Window window = this.getWindow();
         final ImageSelectPopWindow mPop = new ImageSelectPopWindow(this);
@@ -170,7 +217,7 @@ public class ServerCenterActivity extends BaseActivity {
                         JSONObject object = jsonObject.getJSONObject("data");
                         name = object.getString("nickname");
                         image = object.getString("image");
-                        if (name == null) {
+                        if (TextUtils.isEmpty(name)) {
                             mServerUsername.setText("朵雪花,你好");
                         } else {
                             mServerUsername.setText(name + ",你好");
@@ -225,10 +272,7 @@ public class ServerCenterActivity extends BaseActivity {
                 startActivity(new Intent(this, LoginActivity.class));
                 break;
             case R.id.server_cv_head:
-                //ToaskUtil.showToast(ServerCenterActivity.this,"上传头像");
-                setPopupWindow();
-//                if (isCameraPermission(ServerCenterActivity.this, 0x007))
-//                    byCamera();
+                showDialog();
                 break;
             case R.id.comeBack:
                 finish();

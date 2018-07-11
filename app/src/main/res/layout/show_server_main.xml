@@ -93,7 +93,7 @@
         android:background="@color/color_white_100"
         android:orientation="vertical">
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="64dp"
             android:orientation="horizontal">
@@ -101,8 +101,10 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
                 android:layout_gravity="center"
-                android:layout_marginLeft="@dimen/margin_15dp"
+                android:layout_marginStart="20dp"
                 android:orientation="vertical">
 
                 <TextView
@@ -110,29 +112,32 @@
                     style="@style/font_14sp_333"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="距离升星还有200日" />
+                    android:text="距离升星还有200日"/>
 
                 <TextView
                     android:id="@+id/tv_or_help"
                     style="@style/font_14sp_333"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="或救援10次" />
+                    android:text="或救援10次"/>
             </LinearLayout>
 
             <TextView
                 style="@style/font_14sp_333"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
                 android:layout_gravity="center"
-                android:layout_marginLeft="@dimen/margin_35dp"
-                android:text="当前等级" />
+                android:layout_marginEnd="150dp"
+                android:text="当前等级"/>
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_marginLeft="@dimen/margin_40dp"
-                android:layout_marginRight="@dimen/margin_5dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginEnd="34dp"
                 android:orientation="horizontal">
 
                 <ImageView
@@ -140,7 +145,7 @@
                     android:layout_width="15dp"
                     android:layout_height="16dp"
                     android:layout_marginTop="@dimen/margin_30dp"
-                    android:src="@mipmap/ic_dengji" />
+                    android:src="@mipmap/ic_dengji"/>
 
                 <ImageView
                     android:id="@+id/sun2"
@@ -148,7 +153,7 @@
 
                     android:layout_height="16dp"
                     android:layout_marginTop="10dp"
-                    android:src="@mipmap/ic_dengji" />
+                    android:src="@mipmap/ic_dengji"/>
 
                 <ImageView
                     android:id="@+id/sun3"
@@ -156,7 +161,7 @@
 
                     android:layout_height="16dp"
                     android:layout_marginTop="@dimen/margin_30dp"
-                    android:src="@mipmap/ic_dengji" />
+                    android:src="@mipmap/ic_dengji"/>
 
                 <ImageView
                     android:id="@+id/sun4"
@@ -164,7 +169,7 @@
 
                     android:layout_height="16dp"
                     android:layout_marginTop="@dimen/margin_10dp"
-                    android:src="@mipmap/ic_dengji" />
+                    android:src="@mipmap/ic_dengji"/>
 
                 <ImageView
                     android:id="@+id/sun5"
@@ -172,10 +177,10 @@
 
                     android:layout_height="16dp"
                     android:layout_marginTop="@dimen/margin_30dp"
-                    android:src="@mipmap/ic_dengji" />
+                    android:src="@mipmap/ic_dengji"/>
 
             </LinearLayout>
-        </LinearLayout>
+        </RelativeLayout>
 
         <View
             android:layout_width="match_parent"

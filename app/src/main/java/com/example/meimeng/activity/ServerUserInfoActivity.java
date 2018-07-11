@@ -13,9 +13,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.meimeng.APP;
 import com.example.meimeng.R;
 import com.example.meimeng.base.BaseActivity;
@@ -36,10 +38,10 @@ import java.util.Map;
 
 public class ServerUserInfoActivity extends BaseActivity implements View.OnClickListener{
     TextView title;
-    LinearLayout updatename;
-    LinearLayout homeaddress;
-    LinearLayout workaddress;
-    LinearLayout time;
+    RelativeLayout updatename;
+    RelativeLayout homeaddress;
+    RelativeLayout workaddress;
+    RelativeLayout time;
     TextView tv_name;
     TextView tv_home;
     TextView tv_work;
@@ -66,7 +68,11 @@ public class ServerUserInfoActivity extends BaseActivity implements View.OnClick
         tv_home=findViewById(R.id.tv_server_home);
         tv_work=findViewById(R.id.tv_server_work);
         tv_time=findViewById(R.id.tv_server_time);
-
+        tv_name.setText(APP.getInstance().getServerUserInfo().getNickname());
+        tv_work.setText(APP.getInstance().getServerUserInfo().getWorkAddress());
+        tv_home.setText(APP.getInstance().getServerUserInfo().getHomeAddress());
+        tv_time.setText(APP.getInstance().getServerUserInfo().getWorkTime());
+        getServerUser();
         save=findViewById(R.id.server_save);
         updatename.setOnClickListener(this);
         workaddress.setOnClickListener(this);
@@ -82,7 +88,36 @@ public class ServerUserInfoActivity extends BaseActivity implements View.OnClick
             }
         });
     }
+    public void getServerUser() {
+        HttpProxy.obtain().get(PlatformContans.Serveruser.sGetServerUser, APP.getInstance().getServerUserInfo().getToken(), new ICallBack() {
+            @Override
+            public void OnSuccess(String result) {
+                Log.e("why",result);
+                JSONObject jsonObject = null;
+                try {
+                    jsonObject = new JSONObject(result);
+                    int code = jsonObject.getInt("resultCode");
+                    if (code == 0) {
+                        JSONObject object = jsonObject.getJSONObject("data");
+                        tv_name.setText(object.getString("nickname"));
+                        tv_work.setText(object.getString("workAddress"));
+                        tv_home.setText(object.getString("homeAddress"));
+                        tv_time.setText(object.getString("workTime"));
+                    }
+                    if (code == 9999) {
 
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(String error) {
+
+            }
+        });
+    }
     @Override
     protected int getContentId() {
         return R.layout.server_userinfo;
@@ -136,13 +171,13 @@ public class ServerUserInfoActivity extends BaseActivity implements View.OnClick
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.server_home:
-                SelectAddressActivity.startSelectAddressActivity(this, "address", 1, "");
+                SelectAddressActivity.startSelectAddressActivity(this, "address", 1, tv_home.getText().toString());
                 break;
             case R.id.server_updatemname:
                startActivityForResult(new Intent(ServerUserInfoActivity.this,UpdateNameActivity.class),2);
                 break;
             case R.id.server_work:
-                SelectAddressActivity.startSelectAddressActivity(this, "address", 3, "");
+                SelectAddressActivity.startSelectAddressActivity(this, "address", 3, tv_work.getText().toString());
                 break;
             case R.id.server_time:
                 final Window window=this.getWindow();
@@ -168,7 +203,6 @@ public class ServerUserInfoActivity extends BaseActivity implements View.OnClick
                          switch (v.getId()){
                              case R.id.pop_cancel:
                                  mPop.dismiss();
-                                 tv_time.setText("");
                                  break;
                              case R.id.pop_right:
                                  mPop.dismiss();
@@ -191,6 +225,7 @@ public class ServerUserInfoActivity extends BaseActivity implements View.OnClick
                     public void OnSuccess(String result) {
                         JSONObject jsonObject= null;
                         try {
+                            Log.e("sup",result);
                             jsonObject = new JSONObject(result);
                             int code=jsonObject.getInt("resultCode");
                             if(code==0){
@@ -233,6 +268,10 @@ public class ServerUserInfoActivity extends BaseActivity implements View.OnClick
         params.put("homeAddress",tv_home.getText().toString());
         params.put("workAddress",tv_work.getText().toString());
         params.put("workTime",tv_time.getText().toString());
+        params.put("workLatitude",worklat);
+        params.put("workLongitude",worklon);
+        params.put("homeLatitude",homelat);
+        params.put("homeLongitude",homelon);
         Gson gson = new GsonBuilder().enableComplexMapKeySerialization().create();
         return gson.toJson(params);
     }

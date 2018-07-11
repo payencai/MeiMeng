@@ -20,186 +20,229 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <LinearLayout
+            <RelativeLayout
                 android:focusable="true"
                 android:focusableInTouchMode="true"
-
                 android:layout_marginLeft="@dimen/margin_15dp"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="45dp">
+
                 <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
                     android:layout_gravity="center_vertical"
-                    android:layout_weight="8"
-                    android:textColor="#333333"
-                    android:textSize="@dimen/text_size_14sp"
                     android:text="姓名"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:textColor="#333333"
+                    android:textSize="@dimen/text_size_14sp"/>
+
                 <EditText
-                    android:layout_gravity="center_vertical"
                     android:id="@+id/et_volunteer_name"
-                    android:gravity="right|center_vertical"
-                    android:maxLength="10"
-                    android:layout_marginRight="@dimen/margin_20dp"
-                    android:background="@color/color_white_100"
-                    android:textSize="@dimen/text_size_14sp"
-                    android:hint="请输入真实姓名"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-            </LinearLayout>
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="22dp"
+                    android:background="@color/color_white_100"
+                    android:gravity="right|center_vertical"
+                    android:hint="请输入真实姓名"
+                    android:maxLength="10"
+                    android:textColor="@color/text_9"
+                    android:textSize="@dimen/text_size_14sp"/>
+            </RelativeLayout>
             <View
                 android:layout_marginLeft="@dimen/margin_15dp"
 
                 android:background="@color/bg_f2f2f2"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"></View>
-            <LinearLayout
+
+            <View
+                android:layout_marginLeft="@dimen/margin_15dp"
+                android:background="@color/bg_f2f2f2"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"></View>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:layout_marginLeft="@dimen/margin_15dp"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
-                android:layout_marginLeft="@dimen/margin_15dp"
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="45dp">
+                android:orientation="horizontal">
+
                 <TextView
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="8"
-                    android:textColor="#333333"
-                    android:textSize="@dimen/text_size_14sp"
-                    android:text="身份证号"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-                <EditText
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
                     android:layout_gravity="center_vertical"
+                    android:text="身份证号"
+                    android:textColor="#333333"
+                    android:textSize="@dimen/text_size_14sp"/>
+
+                <EditText
+                    android:id="@+id/et_volunteer_number"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="20dp"
+                    android:background="@color/color_white_100"
                     android:digits="0123456789qwertyuioplkjhgfdsazxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"
                     android:gravity="right|center_vertical"
-                    android:id="@+id/et_volunteer_number"
-                    android:maxLength="20"
-                    android:layout_marginRight="@dimen/margin_20dp"
-                    android:background="@color/color_white_100"
-                    android:textSize="@dimen/text_size_14sp"
                     android:hint="请输入有效的证件号码"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-            </LinearLayout>
+                    android:maxLength="20"
+                    android:textColor="@color/text_9"
+                    android:textSize="@dimen/text_size_14sp"/>
+            </RelativeLayout>
             <View
                 android:layout_marginLeft="@dimen/margin_15dp"
                 android:background="@color/bg_f2f2f2"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"></View>
-            <LinearLayout
+            <RelativeLayout
                 android:id="@+id/et_volunteer_home"
-
                 android:layout_marginLeft="@dimen/margin_15dp"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="45dp">
+
                 <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
                     android:layout_gravity="center_vertical"
                     android:layout_weight="8"
-                    android:textColor="#333333"
-                    android:textSize="@dimen/text_size_14sp"
                     android:text="家庭住址"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:textColor="#333333"
+                    android:textSize="@dimen/text_size_14sp"/>
+
                 <TextView
-                    android:layout_gravity="center_vertical"
-                    android:maxWidth="200dp"
+                    android:ellipsize="end"
                     android:id="@+id/vol_detail_home"
-                    android:textColor="#999999"
-                    android:text="详细家庭地址"
-                    android:gravity="right"
-                    android:maxLength="40"
-                    android:maxLines="2"
-                    android:layout_marginRight="@dimen/margin_10dp"
-                    android:background="@color/color_white_100"
-                    android:textSize="@dimen/text_size_14sp"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-                <ImageView
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginRight="20dp"
-                    android:src="@mipmap/ic_arrows_right"
+                    android:layout_marginEnd="40dp"
+                    android:background="@color/color_white_100"
+                    android:gravity="right"
+                    android:maxEms="12"
+                    android:maxLines="1"
+                    android:text="详细家庭地址"
+                    android:textColor="#999999"
+                    android:textSize="@dimen/text_size_14sp"/>
+
+                <ImageView
                     android:layout_width="10dp"
-                    android:layout_height="15dp"/>
-            </LinearLayout>
+                    android:layout_height="15dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="23dp"
+                    android:src="@mipmap/ic_arrows_right"/>
+            </RelativeLayout>
             <View
                 android:layout_marginLeft="@dimen/margin_15dp"
                 android:background="@color/bg_f2f2f2"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"></View>
-            <LinearLayout
+            <RelativeLayout
                 android:id="@+id/et_volunteer_work"
                 android:layout_marginLeft="@dimen/margin_15dp"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="45dp">
+
                 <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
                     android:layout_gravity="center_vertical"
                     android:layout_weight="8"
-                    android:textColor="#333333"
-                    android:textSize="@dimen/text_size_14sp"
                     android:text="工作地址"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:textColor="#333333"
+                    android:textSize="@dimen/text_size_14sp"/>
+
                 <TextView
-                    android:maxWidth="200dp"
-                    android:layout_gravity="center_vertical"
+                    android:ellipsize="end"
                     android:id="@+id/vol_detail_work"
-                    android:textColor="#999999"
-                    android:text="详细工作地址"
-                    android:gravity="right|center_vertical"
-                    android:maxLength="40"
-                    android:maxLines="2"
-                    android:layout_marginRight="@dimen/margin_10dp"
-                    android:background="@color/color_white_100"
-                    android:textSize="@dimen/text_size_14sp"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-                <ImageView
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginRight="20dp"
-                    android:src="@mipmap/ic_arrows_right"
+                    android:layout_marginEnd="39dp"
+                    android:background="@color/color_white_100"
+                    android:gravity="right|center_vertical"
+                    android:maxLength="12"
+                    android:maxLines="1"
+                    android:text="详细工作地址"
+                    android:textColor="#999999"
+                    android:textSize="@dimen/text_size_14sp"/>
+
+                <ImageView
                     android:layout_width="10dp"
-                    android:layout_height="15dp"/>
-            </LinearLayout>
+                    android:layout_height="15dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="21dp"
+                    android:src="@mipmap/ic_arrows_right"/>
+            </RelativeLayout>
             <View
                 android:layout_marginLeft="@dimen/margin_15dp"
                 android:background="@color/bg_f2f2f2"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"></View>
-            <LinearLayout
+            <RelativeLayout
                 android:id="@+id/et_volunteer_time"
-                android:layout_marginTop="@dimen/margin_15dp"
+
                 android:layout_marginLeft="@dimen/margin_15dp"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="45dp">
+
                 <TextView
 
-                    android:layout_weight="8"
-                    android:textColor="#333333"
-                    android:textSize="@dimen/text_size_14sp"
-                    android:text="工作时间"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_weight="8"
+                    android:text="工作时间"
+                    android:textColor="#333333"
+                    android:textSize="@dimen/text_size_14sp"/>
+
                 <TextView
                     android:id="@+id/vol_detail_time"
-                    android:layout_marginRight="@dimen/margin_10dp"
-                    android:text="单休"
-                    android:textColor="#333333"
-                    android:textSize="@dimen/text_size_14sp"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="45dp"
+                    android:text="单休"
+                    android:textColor="@color/text_9"
+                    android:textSize="@dimen/text_size_14sp"/>
+
                 <ImageView
-                    android:layout_marginRight="20dp"
-                    android:src="@mipmap/ic_arrows_right"
-                    android:layout_width="10dp"
-                    android:layout_height="15dp"/>
-            </LinearLayout>
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="21dp"
+                    android:src="@mipmap/ic_arrows_right"/>
+            </RelativeLayout>
             <View
                 android:layout_marginLeft="@dimen/margin_15dp"
-                android:layout_marginTop="@dimen/margin_10dp"
                 android:background="@color/bg_f2f2f2"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"></View>
@@ -231,7 +274,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginRight="@dimen/margin_20dp"
                         android:button="@null"
-
+                        android:textColor="@color/text_9"
                         android:drawablePadding="8dp"
                         android:text="男"/>
 
@@ -240,7 +283,7 @@
                         android:drawablePadding="8dp"
 
                         android:button="@null"
-
+                        android:textColor="@color/text_9"
                         android:layout_marginRight="@dimen/margin_20dp"
                         android:text="女"
                         android:layout_width="wrap_content"

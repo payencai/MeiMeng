@@ -272,7 +272,7 @@ public class AskVolunteerActivity extends BaseActivity {
                     Log.d("onActivityResult", "onActivityResult: 经度：" + lon + ",维度:" + lat);
                     if (!TextUtils.isEmpty(addressStr)) {
                         detailhome.setText(addressStr);
-                        detailhome.setTextColor(ContextCompat.getColor(this,R.color.text_333));
+                        detailhome.setTextColor(ContextCompat.getColor(this,R.color.text_9));
                     }
                 }
                 else{
@@ -295,7 +295,7 @@ public class AskVolunteerActivity extends BaseActivity {
                     Log.d("onActivityResult", "onActivityResult: 经度：" + lon + ",维度:" + lat);
                     if (!TextUtils.isEmpty(addressStr)) {
                         detailwork.setText(addressStr);
-                        detailwork.setTextColor(ContextCompat.getColor(this,R.color.text_333));
+                        detailwork.setTextColor(ContextCompat.getColor(this,R.color.text_9));
                     }
                 }else{
                     isWorkEmpty=true;

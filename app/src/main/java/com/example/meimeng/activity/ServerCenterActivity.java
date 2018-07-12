@@ -275,6 +275,11 @@ public class ServerCenterActivity extends BaseActivity {
                 showDialog();
                 break;
             case R.id.comeBack:
+                Intent data = new Intent();
+                Bundle bundle = new Bundle();
+                bundle.putString("image", updateimage);
+                data.putExtras(bundle);
+                setResult(1, data);
                 finish();
                 break;
         }

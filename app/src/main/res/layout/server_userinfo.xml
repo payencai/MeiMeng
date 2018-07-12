@@ -89,16 +89,16 @@
                     android:text="家庭住址"/>
 
                 <TextView
-                    android:ellipsize="end"
-                    android:singleLine="true"
                     android:id="@+id/tv_server_home"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:layout_marginEnd="37dp"
+                    android:ellipsize="end"
                     android:maxLines="1"
                     android:maxWidth="200dp"
+                    android:singleLine="true"
                     android:text="请输入详细住址"
                     android:textColor="@color/text_9"/>
 
@@ -136,17 +136,17 @@
                     android:text="工作住址"/>
 
                 <TextView
-                    android:ellipsize="end"
-                    android:singleLine="true"
                     android:id="@+id/tv_server_work"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:layout_marginEnd="36dp"
+                    android:ellipsize="end"
                     android:maxLines="1"
                     android:maxWidth="200dp"
-                        android:text="请输入详细住址"
+                    android:singleLine="true"
+                    android:text="请输入详细住址"
                     android:textColor="@color/text_9"/>
 
                 <ImageView

@@ -648,7 +648,7 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
      */
     private void batchAddMarker(List<ServerUser> list) {
         mBaiduMap.clear();//清除地图上所有覆盖物，无法分成批删除
-
+        setMarker();//从新设置marker
         LatLng pointcur = new LatLng(lat, lon);
 
         View view = LayoutInflater.from(getContext()).inflate(R.layout.avator_view, null);

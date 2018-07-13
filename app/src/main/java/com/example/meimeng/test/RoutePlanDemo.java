@@ -207,6 +207,14 @@ public class RoutePlanDemo extends Activity implements BaiduMap.OnMapClickListen
             setMarker(startPt);
             setUserMapCenter(startPt);
         }
+
+
+        PlanNode stNode = PlanNode.withLocation(new LatLng(lat, lon));
+        PlanNode enNode = PlanNode.withLocation(new LatLng(mLatNumber, mLonNumber));
+        mSearch.drivingSearch((new DrivingRoutePlanOption())
+                .from(stNode).to(enNode));
+        nowSearchType = 1;
+
         //显示主页
         resetView(0);
         walkParam = new WalkNaviLaunchParam().stPt(startPt).endPt(endPt);
@@ -361,12 +369,12 @@ public class RoutePlanDemo extends Activity implements BaiduMap.OnMapClickListen
             mSearch.bikingSearch((new BikingRoutePlanOption())
                     .from(stNode).to(enNode));
             nowSearchType = 4;
-        } else if (v.getId() == R.id.myDrive) {
+        } else if (v.getId() == R.id.myDrive) {//驾车
             mSearch.drivingSearch((new DrivingRoutePlanOption())
                     .from(stNode).to(enNode));
             nowSearchType = 1;
             resetView(0);
-        } else if (v.getId() == R.id.myWalk) {
+        } else if (v.getId() == R.id.myWalk) {//步行
             mSearch.walkingSearch((new WalkingRoutePlanOption())
                     .from(stNode).to(enNode));
             nowSearchType = 3;

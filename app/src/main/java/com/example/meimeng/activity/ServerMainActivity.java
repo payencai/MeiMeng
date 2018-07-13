@@ -161,16 +161,19 @@ public class ServerMainActivity extends BaseActivity {
         adapter = new RVBaseAdapter<CurrentHelpInfo>() {
             @Override
             protected void onViewHolderBound(RVBaseViewHolder holder, int position) {
+
             }
 
             @Override
             protected void onClick(final RVBaseViewHolder holder, final int position) {
+
                 holder.getView(R.id.item).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         if (isLoginHx) {
                             Context context = holder.getItemView().getContext();
                             CurrentHelpInfo currentHelpInfo = mData.get(position);
+                            if(currentHelpInfo!=null)
                             requestLeaveHelp(context, currentHelpInfo);
                         } else {
                             if (isCanRequest) {
@@ -351,9 +354,18 @@ public class ServerMainActivity extends BaseActivity {
                            // list.add(bean);
                             CurrentHelpInfo currentHelpInfo = new CurrentHelpInfo();
                             JSONObject object = (JSONObject) beanlist.get(i);
+                            currentHelpInfo.setId(object.getString("id"));
                             currentHelpInfo.setImage(object.getString("image"));
+                            currentHelpInfo.setType(object.getInt("type"));
+                            currentHelpInfo.setOpenId(object.getString("openId"));
                             currentHelpInfo.setHelpNum(object.getInt("helpNum"));
+                            currentHelpInfo.setGroupId(object.getString("groupId"));
+                            currentHelpInfo.setLatitude(object.getString("latitude"));
+                            currentHelpInfo.setLongitude(object.getString("longitude"));
                             currentHelpInfo.setDistance(object.getInt("distance"));
+                            currentHelpInfo.setUseUserTelephone(object.getString("useUserTelephone"));
+                            currentHelpInfo.setUseUserId(object.getString("useUserId"));
+                            currentHelpInfo.setGeohash(object.getString("geohash"));
                             currentHelpInfo.setCreateTime(object.getString("createTime"));
                             currentHelpInfo.setUseUserName(object.getString("useUserName"));
                             currentHelpInfo.setUserAddress(object.getString("userAddress"));
@@ -388,8 +400,8 @@ public class ServerMainActivity extends BaseActivity {
         }
         LoginSharedUilt intance = LoginSharedUilt.getIntance(this);
         String helpId = currentHelpInfo.getId();
-        double lon = intance.getLon();
-        double lat = intance.getLat();
+        String lon = currentHelpInfo.getLongitude();
+        String lat = currentHelpInfo.getLatitude();
         JSONObject json = null;
         try {
             json = new JSONObject();
@@ -401,7 +413,7 @@ public class ServerMainActivity extends BaseActivity {
         }
 
         String jsonString = json.toString();
-        Log.d("ForHelpInfoByGet", "requestLeaveHelp: " + jsonString);
+        Log.d("jsonstr", "" + jsonString);
         HttpProxy.obtain().post(PlatformContans.ForHelp.sUpdateForHelpInfoByGet, token, jsonString, new ICallBack() {
             @Override
             public void OnSuccess(String result) {

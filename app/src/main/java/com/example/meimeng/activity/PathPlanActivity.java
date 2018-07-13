@@ -33,7 +33,6 @@ import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
 import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
 import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
 import com.baidu.mapapi.search.route.BikingRouteResult;
-import com.baidu.mapapi.search.route.DrivingRoutePlanOption;
 import com.baidu.mapapi.search.route.DrivingRouteResult;
 import com.baidu.mapapi.search.route.IndoorRouteResult;
 import com.baidu.mapapi.search.route.MassTransitRouteResult;
@@ -52,10 +51,8 @@ import com.example.meimeng.R;
 import com.example.meimeng.base.BaseActivity;
 import com.example.meimeng.bean.AddressBean;
 import com.example.meimeng.test.BNaviGuideActivity;
-import com.example.meimeng.test.RoutePlanDemo;
 import com.example.meimeng.test.TestWNaviGuideActivity;
 import com.example.meimeng.util.LoginSharedUilt;
-import com.example.meimeng.util.ToaskUtil;
 
 import java.util.ArrayList;
 import java.util.List;

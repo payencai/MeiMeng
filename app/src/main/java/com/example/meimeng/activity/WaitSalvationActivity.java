@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -128,7 +129,7 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
     private LocationService locationService;
 
     private int mSalvationState = 0;//救助状态：0为取消求助，1为完成救助,2为救援完成，未退出当前界面
-
+    private MediaPlayer mMediaPlayer;
     //是否登录环信
     private boolean isLoginHx = false;
 
@@ -152,6 +153,16 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
         LoginSharedUilt intance = LoginSharedUilt.getIntance(this);
         lon = intance.getLon();
         lat = intance.getLat();
+
+        mMediaPlayer = MediaPlayer.create(this, R.raw.hujiu);
+        mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                mMediaPlayer.start();
+                mMediaPlayer.setLooping(true);
+            }
+        });
+        mMediaPlayer.start();
         mWaitTimeNumber = intance.getHelpTime();
         mGroupId = intance.getGroupId();
         if (TextUtils.isEmpty(mGroupId)) {
@@ -267,6 +278,8 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        mMediaPlayer.stop();
+        mMediaPlayer = null;
         mMapView.onDestroy();
         isLoginHx = false;
         //在activity执行onDestroy时执行mMapView.onDestroy()，实现地图生命周期管理

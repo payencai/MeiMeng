@@ -15,6 +15,10 @@ import com.baidu.mapapi.bikenavi.adapter.IBTTSPlayer;
 import com.baidu.mapapi.bikenavi.model.BikeRouteDetailInfo;
 import com.baidu.mapapi.bikenavi.model.RouteGuideKind;
 import com.baidu.mapapi.bikenavi.params.BikeNaviLaunchParam;
+import com.baidu.tts.client.SpeechError;
+import com.baidu.tts.client.SpeechSynthesizer;
+import com.baidu.tts.client.SpeechSynthesizerListener;
+import com.baidu.tts.client.TtsMode;
 
 public class BNaviGuideActivity extends Activity {
 
@@ -47,13 +51,6 @@ public class BNaviGuideActivity extends Activity {
 
         mNaviHelper.startBikeNavi(BNaviGuideActivity.this);
 
-        mNaviHelper.setTTsPlayer(new IBTTSPlayer() {
-            @Override
-            public int playTTSText(String s, boolean b) {
-                Log.d("tts", s);
-                return 0;
-            }
-        });
 
         mNaviHelper.setRouteGuidanceListener(this, new IBRouteGuidanceListener() {
             @Override
@@ -116,6 +113,64 @@ public class BNaviGuideActivity extends Activity {
 
             }
         });
-    }
+        mNaviHelper.setTTsPlayer(new IBTTSPlayer() {
+            @Override
+            public int playTTSText(String s, boolean b) {
+                Log.e("tts", s);
+                initMySpeed(s);
+                return 0;
+            }
+        });
 
+    }
+    public void initMySpeed(String s){
+        final SpeechSynthesizer mSpeechSynthesizer = SpeechSynthesizer.getInstance();
+        mSpeechSynthesizer.setContext(this);
+        mSpeechSynthesizer.setSpeechSynthesizerListener(new SpeechSynthesizerListener() {
+            @Override
+            public void onSynthesizeStart(String s) {
+
+            }
+
+            @Override
+            public void onSynthesizeDataArrived(String s, byte[] bytes, int i) {
+
+            }
+
+            @Override
+            public void onSynthesizeFinish(String s) {
+
+            }
+
+            @Override
+            public void onSpeechStart(String s) {
+
+            }
+
+            @Override
+            public void onSpeechProgressChanged(String s, int i) {
+
+            }
+
+            @Override
+            public void onSpeechFinish(String s) {
+
+            }
+
+            @Override
+            public void onError(String s, SpeechError speechError) {
+
+            }
+        });
+        String AppId = "11532458";
+        String AppKey = "HCU15Ee2aR535Ez9NcirIY7I";
+        String AppSecret = "MIr5GKaautEnl01dc4VQu6PmHzsDHs3O";
+        mSpeechSynthesizer.setAppId(AppId);
+        mSpeechSynthesizer.setApiKey(AppKey, AppSecret);
+        mSpeechSynthesizer.auth(TtsMode.MIX);  // 纯在线
+//或 mSpeechSynthesizer.auth(TtsMode.MIX); // 离在线混合
+        mSpeechSynthesizer.setParam(SpeechSynthesizer.PARAM_SPEAKER, "0"); // 设置发声的人声音，在线生效
+        mSpeechSynthesizer.initTts(TtsMode.MIX);
+        mSpeechSynthesizer.speak(s);
+    }
 }

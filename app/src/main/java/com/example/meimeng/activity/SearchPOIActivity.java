@@ -174,7 +174,7 @@ public class SearchPOIActivity extends BaseActivity implements View.OnClickListe
                     String district = info.district;
                     String key = info.key;
                     LatLng pt = info.pt;
-                    Log.d("initView", "onGetSuggestionResult: " + address);
+                   // Log.d("initView", "onGetSuggestionResult: " + address);
 //                    list.add(new AddressBean(address, address));
                 }
                 mAdapter.reset(list);
@@ -201,7 +201,7 @@ public class SearchPOIActivity extends BaseActivity implements View.OnClickListe
                     LatLng location = poiInfo.location;
                     double longitude = location.longitude;//经度
                     double latitude = location.latitude;//维度
-                    Log.d("onGetPoiResult", "onGetPoiResult: 经度：" + longitude + ",维度:" + latitude);
+                   // Log.d("onGetPoiResult", "onGetPoiResult: 经度：" + longitude + ",维度:" + latitude);
                     String address = poiInfo.address;
                     String name = poiInfo.name;
                     String uid = poiInfo.uid;

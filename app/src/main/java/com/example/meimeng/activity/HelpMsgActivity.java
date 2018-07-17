@@ -90,7 +90,7 @@ public class HelpMsgActivity extends AbsBaseActivity<HelpMsg> {
                 try {
                     JSONObject jsonObject=new JSONObject(result);
                     int code=jsonObject.getInt("resultCode");
-                    Log.e("msg--",result);
+                    //Log.e("msg--",result);
                     if(code==0){
                         JSONObject data = jsonObject.getJSONObject("data");
                         JSONArray beanList = data.getJSONArray("beanList");

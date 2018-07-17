@@ -46,6 +46,7 @@ public class CertActivity extends BaseActivity {
 
     @Override
     protected void initView() {
+        String id=APP.getInstance().getUserInfo().getIdNumber();
         title = findViewById(R.id.title);
         et_name = findViewById(R.id.et_realname);
         et_number = findViewById(R.id.et_certnumber);
@@ -53,7 +54,6 @@ public class CertActivity extends BaseActivity {
         rb_nv = findViewById(R.id.rb_nv);
         rg_sex = findViewById(R.id.rg_sex);
         title.setText("实名认证");
-
 
         Drawable drawable= getResources().getDrawable(R.drawable.sex_selector);
         drawable.setBounds(0,0,30,30);//将drawable设置为宽100 高100固定大小
@@ -70,11 +70,22 @@ public class CertActivity extends BaseActivity {
                 finish();
             }
         });
-        if (APP.getInstance().getUserInfo().getSex() == "男") {
-            rb_man.setChecked(true);
-            rb_nv.setChecked(false);
-        }
+
         summit = findViewById(R.id.btn_renzhen);
+        if(!TextUtils.isEmpty(id)){
+            summit.setVisibility(View.GONE);
+            et_name.setText(APP.getInstance().getUserInfo().getName());
+            et_number.setText(APP.getInstance().getUserInfo().getIdNumber());
+            et_number.setEnabled(false);
+            et_name.setEnabled(false);
+            String sex=APP.getInstance().getUserInfo().getSex();
+            if (TextUtils.equals(sex,"男")) {
+                rb_man.setChecked(true);
+                rb_nv.setChecked(false);
+                rb_nv.setEnabled(false);
+            }
+        }
+
         summit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

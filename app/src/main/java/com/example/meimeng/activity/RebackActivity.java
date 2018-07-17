@@ -72,11 +72,11 @@ public class RebackActivity extends BaseActivity {
             token=APP.getInstance().getServerUserInfo().getToken();
             data = gson.toJson(p);
         }
-        Log.e("token",token);
+       // Log.e("token",token);
         HttpProxy.obtain().post(PlatformContans.MessageController.sAddFeedBack, token, data, new ICallBack() {
             @Override
             public void OnSuccess(String result) {
-                Log.e("TAG",result);
+               // Log.e("TAG",result);
                 JSONObject jsonObject= null;
                 try {
                     jsonObject = new JSONObject(result);

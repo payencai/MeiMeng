@@ -186,7 +186,7 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
         String h3=preferences.getString("h3","");
         String h4=preferences.getString("h4","");
         String h5=preferences.getString("h5","");
-        Log.e("h:",h1+h2+h3+h4+h5);
+        //Log.e("h:",h1+h2+h3+h4+h5);
         if (h1!="")
             hisList.add(h1);
         if (h2!="")

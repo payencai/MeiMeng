@@ -46,7 +46,7 @@
         <ImageView
             android:id="@+id/iv_record_location"
             android:layout_marginLeft="@dimen/margin_10dp"
-            android:src="@mipmap/ic_location"
+            android:src="@mipmap/ic_locate"
             android:layout_width="14dp"
             android:layout_height="14dp"/>
         <TextView

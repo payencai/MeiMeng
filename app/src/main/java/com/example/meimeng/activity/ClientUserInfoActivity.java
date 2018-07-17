@@ -101,6 +101,8 @@ public class ClientUserInfoActivity extends BaseActivity {
     RelativeLayout contacts2;
     @BindView(R.id.contacts3)
     RelativeLayout contacts3;
+    private String lon;
+    private String lat;
     @Override
     protected void initView() {
 
@@ -163,15 +165,15 @@ public class ClientUserInfoActivity extends BaseActivity {
 
 
     }
-
+    private AddressBean mAddressBean=null;
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (data != null) {
             if (requestCode == 0) {
-                AddressBean address = (AddressBean) data.getSerializableExtra("address");
-                if (address != null) {
-                    String addressStr = address.getAddress();
+                mAddressBean = (AddressBean) data.getSerializableExtra("address");
+                if (mAddressBean != null) {
+                    String addressStr = mAddressBean.getAddress();
                     if (!TextUtils.isEmpty(addressStr)) {
                         et_address.setText(addressStr);
                        // et_address.setTextColor(ContextCompat.getColor(this, R.color.text_333));
@@ -182,17 +184,29 @@ public class ClientUserInfoActivity extends BaseActivity {
             else if (requestCode == 1) {
                 String name = data.getStringExtra("name");
                 String tel = data.getStringExtra("tel");
+                if (TextUtils.isEmpty(name)&&TextUtils.isEmpty(tel)){
+                    et_lianxi1.setText("");
+                    return;
+                }
                 String showString = name + ": " + tel;
                 et_lianxi1.setText(showString);
             } else if (requestCode == 2) {
                 String name = data.getStringExtra("name");
                 String tel = data.getStringExtra("tel");
+                if (TextUtils.isEmpty(name)&&TextUtils.isEmpty(tel)){
+                    et_lianxi2.setText("");
+                    return;
+                }
                 String showString = name + ": " + tel;
                 et_lianxi2.setText(showString);
 
             } else if (requestCode == 3) {
                 String name = data.getStringExtra("name");
                 String tel = data.getStringExtra("tel");
+                if (TextUtils.isEmpty(name)&&TextUtils.isEmpty(tel)){
+                    et_lianxi3.setText("");
+                    return;
+                }
                 String showString = name + ": " + tel;
                 et_lianxi3.setText(showString);
             }
@@ -251,26 +265,11 @@ public class ClientUserInfoActivity extends BaseActivity {
         String linkman2 = et_lianxi2.getText().toString();
         String linkman3 = et_lianxi3.getText().toString();
         int age = Integer.parseInt(et_age.getEditableText().toString());
-        String area = userInfo.getArea();
-        String city = userInfo.getCity();
-        String province = userInfo.getProvince();
-        String latitude = userInfo.getLatitude();
-        String longitude = userInfo.getLongitude();
-        if (area == null) {
-            area = "";
-        }
-        if (city == null) {
-            city = "";
-        }
-        if (province == null) {
-            province = "";
-        }
-        if (latitude == null) {
-            latitude = "1";
-        }
-        if (longitude == null) {
-            longitude = "1";
-        }
+        String area = mAddressBean.getArea();
+        String city = mAddressBean.getCity();
+        String province = mAddressBean.getProvince();
+        String latitude = String.valueOf(mAddressBean.getLat());
+        String longitude = String.valueOf(mAddressBean.getLon());
 
         params.put("age", age);
         params.put("bloodType", tvValue.getText().toString());
@@ -319,6 +318,9 @@ public class ClientUserInfoActivity extends BaseActivity {
                         } else {
                             rb_nv.setChecked(false);
                         }
+                        if(sex.equals("null")){
+                            rb_man.setChecked(true);
+                        }
                         rb_nv.setEnabled(false);
                         rb_man.setEnabled(false);
                         et_sicken.setText(data.getString("sickenHistory") + "");
@@ -336,7 +338,7 @@ public class ClientUserInfoActivity extends BaseActivity {
 
             @Override
             public void onFailure(String error) {
-                Log.e("user", error);
+                //Log.e("user", error);
             }
         });
 

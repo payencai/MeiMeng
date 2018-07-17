@@ -73,7 +73,7 @@ public class ClientRecordActivity extends AbsBaseActivity<ClientRecordBean> {
             @Override
             public void OnSuccess(String result) {
                 mBaseAdapter.hideLoadMore();
-                Log.e("TAG", result);
+                //Log.e("TAG", result);
                 List<ClientRecordBean> list = new ArrayList<>();
                 Gson gson = new Gson();
                 RecordResponse recordResponse = (RecordResponse) gson.fromJson(result, RecordResponse.class);
@@ -113,7 +113,7 @@ public class ClientRecordActivity extends AbsBaseActivity<ClientRecordBean> {
 
             @Override
             public void onFailure(String error) {
-                Log.e("TAG", error);
+                //Log.e("TAG", error);
             }
         });
 

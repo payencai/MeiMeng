@@ -2,6 +2,7 @@ package com.example.meimeng.fragment;
 
 import android.content.Intent;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.example.meimeng.APP;
 import com.example.meimeng.activity.LoginActivity;
@@ -36,7 +37,7 @@ public class FirstAidSkillragment extends AbsBaseFragment<FirstAidSkillOption> {
     @Override
     public void onRecyclerViewInitialized() {
         loadHead();
-        loadData();
+        load2Page();
     }
 
     private void loadHead() {
@@ -55,7 +56,8 @@ public class FirstAidSkillragment extends AbsBaseFragment<FirstAidSkillOption> {
 //                setRefreshing(false);
 //            }
 //        }, 2000);
-        loadData();
+        mBaseAdapter.clear();
+        load2Page();
 
     }
 
@@ -64,7 +66,103 @@ public class FirstAidSkillragment extends AbsBaseFragment<FirstAidSkillOption> {
         page++;
         loadData();
     }
+    private void load2Page(){
+        String token = null;
+        if (APP.sUserType == 0) {
+            token = APP.getInstance().getUserInfo().getToken();
+        }else {
+            token = APP.getInstance().getServerUserInfo().getToken();
+        }
 
+        if (TextUtils.isEmpty(token)) {
+            ToaskUtil.showToast(getContext(), "登录异常");
+            startActivity(new Intent(getContext(), LoginActivity.class));
+            ActivityManager.getInstance().finishAllActivity();
+            return;
+        }
+        Map<String, Object> params = new HashMap<>();
+        params.put("page", 1);
+        params.put("type", 1);
+        HttpProxy.obtain().get(PlatformContans.AidKnowController.sGetAidKnowByManage, params, token, new ICallBack() {
+            @Override
+            public void OnSuccess(String result) {
+                try {
+                    JSONObject object = new JSONObject(result);
+                    int resultCode = object.getInt("resultCode");
+                    if (resultCode == 0) {
+                        JSONObject data = object.getJSONObject("data");
+                        JSONArray beanList = data.getJSONArray("beanList");
+                        int length = beanList.length();
+                        Gson gson = new Gson();
+                        final List<FirstAidSkillOption> list = new ArrayList<>();
+                        for (int i = 0; i < length; i++) {
+                            JSONObject item = beanList.getJSONObject(i);
+                            FirstAidSkillOption bean = gson.fromJson(item.toString(), FirstAidSkillOption.class);
+                            bean.layoutType = 1;
+                            list.add(bean);
+                        }
+                        Map<String, Object> params = new HashMap<>();
+                        params.put("page", 2);
+                        params.put("type", 1);
+                        page++;
+                        HttpProxy.obtain().get(PlatformContans.AidKnowController.sGetAidKnowByManage, params, APP.getInstance().getUserInfo().getToken(), new ICallBack() {
+                            @Override
+                            public void OnSuccess(String result) {
+                                Log.e("page",result+"");
+                                JSONObject object = null;
+                                try {
+                                    object = new JSONObject(result);
+                                    int resultCode = object.getInt("resultCode");
+                                    if (resultCode == 0) {
+                                        JSONObject data = object.getJSONObject("data");
+                                        JSONArray beanList = data.getJSONArray("beanList");
+                                        int length = beanList.length();
+                                        Gson gson = new Gson();
+                                        for (int i = 0; i < length; i++) {
+                                            JSONObject item = beanList.getJSONObject(i);
+                                            FirstAidSkillOption bean = gson.fromJson(item.toString(), FirstAidSkillOption.class);
+                                            bean.layoutType = 1;
+                                            list.add(bean);
+                                        }
+                                        if (isRefresh) {
+                                            isRefresh = false;
+                                            mBaseAdapter.clear();
+                                            loadHead();
+                                            mBaseAdapter.addAll(list);
+
+                                        } else {
+                                            mBaseAdapter.addAll(list);
+                                        }
+                                        mSwipeRefreshLayout.setRefreshing(isRefresh);
+                                    }
+
+
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+
+                            }
+
+                            @Override
+                            public void onFailure(String error) {
+
+                            }
+                        });
+
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(String error) {
+                mBaseAdapter.hideLoadMore();
+                ToaskUtil.showToast(getContext(), "请检查网络");
+            }
+        });
+    }
     @Override
     protected List<Cell> getCells(List<FirstAidSkillOption> list) {
         return null;

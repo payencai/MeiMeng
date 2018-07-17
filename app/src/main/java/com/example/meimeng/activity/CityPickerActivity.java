@@ -74,7 +74,7 @@ public class CityPickerActivity extends BaseActivity {
                     latitude = location.latitude;//维度
                 }
 
-                Log.e("bbb",longitude+"： "+latitude);
+                //Log.e("bbb",longitude+"： "+latitude);
                 Intent intent = new Intent();
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("city", info);

@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -32,6 +33,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestBuilder;
 import com.donkingliang.imageselector.utils.ImageSelectorUtils;
 import com.example.meimeng.APP;
 import com.example.meimeng.R;
@@ -139,7 +141,7 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
         mClientQrcode = view.findViewById(R.id.layout_qrcode);
         client_head = view.findViewById(R.id.client_cv_head);
         mClientSetting = view.findViewById(R.id.iv_client_settings);
-        mClientUsername = view.findViewById(R.id.tv_client_username);
+        mClientUsername = view.findViewById(R.id.tv_username);
         mClientUserinfo = view.findViewById(R.id.userinfo_client_layout);
         mClientCert = view.findViewById(R.id.certification_client_layout);
         mClientVolunteer = view.findViewById(R.id.volunteer_client_layout);
@@ -148,9 +150,14 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
         mClientReback = view.findViewById(R.id.reback_client_layout);
         mClientAboutus = view.findViewById(R.id.aboutus_client_layout);
         mSwitch = view.findViewById(R.id.iv_switch_account);
+        String type="";
+        if(APP.getInstance().getUserInfo()!=null)
+        {
+            type=APP.getInstance().getUserInfo().getServerType()+"";
+        }
 
-        if (APP.getInstance().getUserInfo().getServerType().equals("3")){
-            Log.e("type",APP.getInstance().getUserInfo().getServerType());
+        if (type.equals("3")){
+            //Log.e("type",APP.getInstance().getUserInfo().getServerType());
             mSwitch.setVisibility(View.VISIBLE);}
         else{
             mSwitch.setVisibility(View.GONE);
@@ -162,12 +169,12 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
         //Log.d("clientInitView", "clientInitView: " + image);
 
     }
-
+    String defImg="http://memen.oss-cn-shenzhen.aliyuncs.com/null?Expires=1531860064&OSSAccessKeyId=LTAIu2UT56nIQWZI&Signature=R6eVtpsF%2FagQTxzvpXJpR9oFqu0%3D";
     public void getUserInfo() {
         HttpProxy.obtain().get(PlatformContans.UseUser.sGetUseUser, APP.getInstance().getUserInfo().getToken(), new ICallBack() {
             @Override
             public void OnSuccess(String result) {
-                Log.e("result",result);
+                Log.e("vvv",result);
                 JSONObject jsonObject = null;
                 try {
                     jsonObject = new JSONObject(result);
@@ -176,13 +183,15 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
                         JSONObject object = jsonObject.getJSONObject("data");
                         String name = object.getString("nickname");
                         String image = object.getString("image");
-                        if (name == null) {
-                            mClientUsername.setText("朵雪花,你好");
-                        } else {
+                        if (!TextUtils.equals("null",name)&&!TextUtils.isEmpty(name)) {
                             mClientUsername.setText(name + ",你好");
+                        } else {
+                            mClientUsername.setText("朵雪花,你好");
                         }
-                        if (!TextUtils.isEmpty(image)) {
-                            Glide.with(getActivity()).load(image).into(client_head);
+                        if (!image.contains("null")) {
+                            Glide.with(getContext()).load(image).into(client_head);
+                        }else{
+                            client_head.setImageResource(R.mipmap.ic_me_head);
                         }
                     }
                     if (code == 9999) {

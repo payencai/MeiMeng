@@ -59,7 +59,10 @@ public class MakeContactsActivity extends BaseActivity implements View.OnClickLi
     }
 
     private boolean checkForm(String name, String tel) {
-        if (TextUtils.isEmpty(name)) {
+        if(TextUtils.isEmpty(name)&&TextUtils.isEmpty(tel)){
+            return true;
+        }
+        if (TextUtils.isEmpty(name)&&!TextUtils.isEmpty(tel)) {
             ToaskUtil.showToast(this, "名称不能为空");
             return false;
         }

@@ -120,14 +120,14 @@ public class AddAEDActivity extends BaseActivity implements View.OnClickListener
 
     //弹出选择时间
     private void initDatePicker() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.CHINA);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
         Date date = new Date();
         String now = sdf.format(date);
         deadline.setText(now);
         customDatePicker = new CustomDatePicker(this, new CustomDatePicker.ResultHandler() {
             @Override
             public void handle(String time) { // 回调接口，获得选中的时间
-                deadline.setText(time);
+                deadline.setText(time.substring(0,10));
             }
         }, now, "2099-01-01 00:00"); // 初始化日期格式请用：yyyy-MM-dd HH:mm，否则不能正常运行
         customDatePicker.showSpecificTime(false); // 显示时和分
@@ -182,7 +182,7 @@ public class AddAEDActivity extends BaseActivity implements View.OnClickListener
 
         if (selected.size() != 0) {
             for (String filepath : selected) {
-                Log.e("aaa", "aaa");
+               // Log.e("aaa", "aaa");
                 upImage(PlatformContans.Image.sUpdateImage, filepath);
             }
         }
@@ -218,7 +218,7 @@ public class AddAEDActivity extends BaseActivity implements View.OnClickListener
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String string = response.body().string();
-                Log.e("tag", "onResponse: " + string);
+                //Log.e("tag", "onResponse: " + string);
                 try {
                     JSONObject object = new JSONObject(string);
                     int resultCode = object.getInt("resultCode");
@@ -226,7 +226,7 @@ public class AddAEDActivity extends BaseActivity implements View.OnClickListener
                     if (resultCode == 0) {
                         count++;
                         if (count == selected.size()) {
-                            Log.e("commit", count + "");
+                         //   Log.e("commit", count + "");
                             addAed();
                         }
                     } else {
@@ -326,7 +326,7 @@ public class AddAEDActivity extends BaseActivity implements View.OnClickListener
                     double lat = address.getLat();
                     longitude = lon + "";
                     latitude = lat + "";
-                    Log.d("onActivityResult", "onActivityResult: 经度：" + lon + ",维度:" + lat);
+                   // Log.d("onActivityResult", "onActivityResult: 经度：" + lon + ",维度:" + lat);
                     if (!TextUtils.isEmpty(addressStr)) {
                         consignSite.setText(addressStr);
                     }

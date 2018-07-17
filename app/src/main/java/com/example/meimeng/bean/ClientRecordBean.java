@@ -71,7 +71,7 @@ public class ClientRecordBean extends RVBaseCell {
         holder.setText(R.id.tv_complete,"已完成");
         holder.setText(R.id.tv_sendhelp,"你发起了求救");
         holder.setText(R.id.tv_canjia,"参与本次救助人员");
-        holder.setImageView(R.id.iv_record_location,R.mipmap.ic_location);
+        holder.setImageView(R.id.iv_record_location,R.mipmap.ic_locate);
         holder.setText(R.id.tv_createhelp_time,completeTime);
         holder.setText(R.id.tv_help_address,address);
         addGroupImg(holder,position,imgList);

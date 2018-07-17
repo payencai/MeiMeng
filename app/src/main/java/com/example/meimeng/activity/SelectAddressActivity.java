@@ -9,6 +9,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.meimeng.R;
 import com.example.meimeng.base.BaseActivity;
@@ -52,7 +53,6 @@ public class SelectAddressActivity extends BaseActivity implements View.OnClickL
         save = findViewById(R.id.saveText);
         title = findViewById(R.id.title);
         et_input_address = findViewById(R.id.et_input_address);
-        et_input_address.setEnabled(false);
         title.setText("选择地址");
         save.setVisibility(View.VISIBLE);
         if (!TextUtils.isEmpty(consignSite)) {
@@ -83,6 +83,10 @@ public class SelectAddressActivity extends BaseActivity implements View.OnClickL
                 AddressSelectionActivity.startAddressSelectionActivity(this, REQUEST_CODE_FROM_SELECTADDRESSACTIVITY);
                 break;
             case R.id.saveText:
+                if(mAddress==null){
+                    Toast.makeText(this,"请选择地址！",Toast.LENGTH_LONG).show();
+                    return;
+                }
                 Intent intent = new Intent();
                 intent.putExtra(mTag, mAddress);
                 setResult(responseCode, intent);
@@ -95,13 +99,13 @@ public class SelectAddressActivity extends BaseActivity implements View.OnClickL
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (data != null) {
-
+            et_input_address.setEnabled(true);
             if (requestCode == REQUEST_CODE_FROM_SELECTADDRESSACTIVITY) {
+                et_input_address.setEnabled(true);
 //                String address = data.getStringExtra("address");
                 mAddress = (AddressBean) data.getSerializableExtra("address");
                 String addressString = mAddress.getAddress();
                 if (!TextUtils.isEmpty(addressString)) {
-                    //et_input_address.setEnabled(true);
                     et_input_address.setText(addressString);
                 }
             }

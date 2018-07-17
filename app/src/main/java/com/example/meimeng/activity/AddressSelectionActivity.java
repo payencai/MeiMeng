@@ -402,7 +402,7 @@ public class AddressSelectionActivity extends BaseActivity implements View.OnCli
              * PoiInfo中包含了经纬度、城市、地址信息、poi名称、uid、邮编、电话等等信息；
              有了这些，你是不是可以可以在这里画一个自定义的图层了，然后添加点击事件，做一些操作了呢
              */
-            Log.d("onGetPoiResult", "onGetPoiResult: 我去。。。");
+            //Log.d("onGetPoiResult", "onGetPoiResult: 我去。。。");
 
             List<PoiInfo> poiInfos = poiResult.getAllPoi();
             if (poiInfos != null) {
@@ -417,9 +417,9 @@ public class AddressSelectionActivity extends BaseActivity implements View.OnCli
                     String phoneNum = poiInfo.phoneNum;
                     String postCode = poiInfo.postCode;
 
-                    Log.d("onGetPoiResult", "onGetPoiResult: address:" + address + ",name:" + name + ",uid:" + uid + ",province:" + province + ",city:" + city + ",area:" + area
-                            + ",streed_id:" + street_id + ",phoneNum:" + phoneNum + ",postCode:" + postCode);
-                    Log.d("onGetPoiResult", "onGetPoiResult: --------------");
+                    //Log.d("onGetPoiResult", "onGetPoiResult: address:" + address + ",name:" + name + ",uid:" + uid + ",province:" + province + ",city:" + city + ",area:" + area
+                   //         + ",streed_id:" + street_id + ",phoneNum:" + phoneNum + ",postCode:" + postCode);
+                  //  Log.d("onGetPoiResult", "onGetPoiResult: --------------");
 
 
                 }

@@ -107,7 +107,7 @@ public class AskVolunteerActivity extends BaseActivity {
         String value="";
         String servertype=APP.getInstance().getUserInfo().getServerType();
         //String server=APP.getInstance().getUserInfo().getServerUser();
-        Log.e("server",APP.getInstance().getUserInfo().getToken()+"");
+        //Log.e("server",APP.getInstance().getUserInfo().getToken()+"");
         switch (servertype){
             case "1":
                 value="你还没有申请支援者";
@@ -128,7 +128,7 @@ public class AskVolunteerActivity extends BaseActivity {
        return value;
     }
     private void showAskDialog(String val) {
-        Log.e("val",val);
+        //Log.e("val",val);
         final Dialog dialog = new Dialog(this, R.style.dialog);
         View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_tishi, null);
         //获得dialog的window窗口

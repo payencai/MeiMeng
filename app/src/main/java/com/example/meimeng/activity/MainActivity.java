@@ -48,6 +48,8 @@ import com.example.meimeng.fragment.FirstAidFragment;
 import com.example.meimeng.fragment.HomeFragment;
 import com.example.meimeng.fragment.UsFragment;
 import com.example.meimeng.fragment.UserCenterFragment;
+import com.example.meimeng.http.HttpProxy;
+import com.example.meimeng.http.ICallBack;
 import com.example.meimeng.manager.ActivityManager;
 import com.example.meimeng.service.LoginInfoService;
 import com.example.meimeng.util.CustomPopWindow;
@@ -63,6 +65,9 @@ import com.hyphenate.chat.EMGroup;
 import com.hyphenate.chat.EMGroupManager;
 import com.hyphenate.chat.EMGroupOptions;
 import com.hyphenate.util.NetUtils;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -256,25 +261,25 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private void resetStateForTagbar(int viewId) {
         selected();
         if (viewId == R.id.home) {
-            Log.d("resetStateForTagbar", "resetStateForTagbar: 11111");
+            //Log.d("resetStateForTagbar", "resetStateForTagbar: 11111");
             homeImg.setSelected(true);
             homeText.setSelected(true);
             return;
         }
         if (viewId == R.id.firstAid) {
-            Log.d("resetStateForTagbar", "resetStateForTagbar: 22222");
+            //Log.d("resetStateForTagbar", "resetStateForTagbar: 22222");
             firstAidImg.setSelected(true);
             firstAidText.setSelected(true);
             return;
         }
         if (viewId == R.id.aboutUs) {
-            Log.d("resetStateForTagbar", "resetStateForTagbar: 33333");
+            //Log.d("resetStateForTagbar", "resetStateForTagbar: 33333");
             aboutUsImg.setSelected(true);
             aboutUsText.setSelected(true);
             return;
         }
         if (viewId == R.id.userCenter) {
-            Log.d("resetStateForTagbar", "resetStateForTagbar: 4444");
+            // Log.d("resetStateForTagbar", "resetStateForTagbar: 4444");
             userCenterImg.setSelected(true);
             userCenterText.setSelected(true);
             return;
@@ -350,50 +355,104 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     private void showDialog() {
-        int count = 0;
-        List<String> data = new ArrayList<>();
-        UserInfo userInfo = APP.getInstance().getUserInfo();
-        if (!TextUtils.isEmpty(userInfo.getLinkman1())) {
-            data.add(userInfo.getLinkman1());
-            count++;
-        }
-        if (!TextUtils.isEmpty(userInfo.getLinkman2())) {
-            data.add(userInfo.getLinkman2());
-            count++;
-        }
-        if (!TextUtils.isEmpty(userInfo.getLinkman3())) {
-            data.add(userInfo.getLinkman3());
-            count++;
-        }
-        if (count > 0) {
-            View dialog = LayoutInflater.from(this).inflate(R.layout.dialog_callhelp, null);
-            ListView listView = dialog.findViewById(R.id.lv_callhelp);
-            ListAdapter adapter = new ArrayAdapter<String>(this, R.layout.item, R.id.item_contacts, data);
-            listView.setAdapter(adapter);
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setView(dialog);
-            final AlertDialog alertDialog = builder.create();
-            alertDialog.show();
-            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    alertDialog.dismiss();
-                    TextView contacts = (TextView) view.findViewById(R.id.item_contacts);
-                    String contact = contacts.getText().toString();
-                    curCallTel = contact.substring(contact.length() - 11);
-                    checkPower();
-                    //Log.e("phone",contact.substring(contact.length()-11));
+
+        final List<String> data = new ArrayList<>();
+        HttpProxy.obtain().get(PlatformContans.UseUser.sGetUseUser, APP.getInstance().getUserInfo().getToken(), new ICallBack() {
+            @Override
+            public void OnSuccess(String result) {
+                JSONObject object = null;
+                try {
+                    int count = 0;
+                    int flag =0;
+                    object = new JSONObject(result);
+                    int resultCode = object.getInt("resultCode");
+                    if (resultCode == 0) {
+                        JSONObject msg = object.getJSONObject("data");
+                        if(!TextUtils.isEmpty(msg.getString("linkman1")))
+                        {
+                            flag = 1;
+                            count++;
+                            data.add(msg.getString("linkman1"));
+                        }
+                        if(!TextUtils.isEmpty(msg.getString("linkman2")))
+                        {
+                            flag = 2;
+                            count++;
+                            data.add(msg.getString("linkman2"));
+                        }
+
+                        if(!TextUtils.isEmpty(msg.getString("linkman3")))
+                        {
+                            flag = 3;
+                            count++;
+                            data.add(msg.getString("linkman3"));
+                        }
+                        if (count > 0)
+                        {
+                            if (count == 1) {
+                                switch (flag) {
+                                    case 1:
+                                        String contact=msg.getString("linkman1");
+                                        curCallTel = contact.substring(contact.length()-11);
+                                        checkPower();
+                                        break;
+                                    case 2:
+                                        String contact2=msg.getString("linkman2");
+                                        curCallTel = contact2.substring(contact2.length()-11);
+                                        checkPower();
+                                        break;
+                                    case 3:
+                                        String contact3=msg.getString("linkman3");
+                                        curCallTel = contact3.substring(contact3.length()-11);
+                                        checkPower();
+                                        break;
+                                }
+
+                                return;
+                            }
+                            View dialog = LayoutInflater.from(MainActivity.this).inflate(R.layout.dialog_callhelp, null);
+                            ListView listView = dialog.findViewById(R.id.lv_callhelp);
+                            ListAdapter adapter = new ArrayAdapter<String>(MainActivity.this, R.layout.item, R.id.item_contacts, data);
+                            listView.setAdapter(adapter);
+                            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                            builder.setView(dialog);
+                            final AlertDialog alertDialog = builder.create();
+                            alertDialog.show();
+                            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                @Override
+                                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                                    alertDialog.dismiss();
+                                    TextView contacts = (TextView) view.findViewById(R.id.item_contacts);
+                                    String contact = contacts.getText().toString();
+                                    curCallTel = contact.substring(contact.length() - 11);
+                                    checkPower();
+                                    //Log.e("phone",contact.substring(contact.length()-11));
+                                }
+                            });
+                            WindowManager m = getWindowManager();
+                            Display d = m.getDefaultDisplay();  //为获取屏幕宽、高
+                            android.view.WindowManager.LayoutParams p = alertDialog.getWindow().getAttributes();  //获取对话框当前的参数值
+                            p.width = (int) (d.getWidth() * 0.7);    //宽度设置为屏幕的0.5
+                            alertDialog.getWindow().setAttributes(p);     //设置生效
+                        } else {
+                            Toast.makeText(MainActivity.this, "你还没有设置紧急联系人!", Toast.LENGTH_LONG).show();
+                        }
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-            });
-            WindowManager m = getWindowManager();
-            Display d = m.getDefaultDisplay();  //为获取屏幕宽、高
-            android.view.WindowManager.LayoutParams p = alertDialog.getWindow().getAttributes();  //获取对话框当前的参数值
-            p.width = (int) (d.getWidth() * 0.7);    //宽度设置为屏幕的0.5
-            alertDialog.getWindow().setAttributes(p);     //设置生效
-        } else {
-            Toast.makeText(this, "你还没有设置紧急联系人!", Toast.LENGTH_LONG).show();
-        }
+            }
+
+            @Override
+            public void onFailure(String error) {
+
+            }
+        });
+
+
     }
+
     private void showSoSDialog() {
         final Dialog dialog = new Dialog(this, R.style.dialog);
         View dialogView = LayoutInflater.from(this).inflate(R.layout.popup_call_help, null);
@@ -446,6 +505,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         });
         dialog.show();
     }
+
     private void showPopupW(View view) {
 
 //        View shareview = LayoutInflater.from(this).inflate(R.layout.popup_call_help, null);

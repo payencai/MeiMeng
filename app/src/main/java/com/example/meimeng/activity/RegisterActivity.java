@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class RegisterActivity extends BaseActivity implements View.OnClickListener {
+
     private EditText userNumberEdit;
     private EditText passwordEdit;
     private EditText verificationEdit;

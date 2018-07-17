@@ -54,10 +54,10 @@ public class MedSearchActivity extends BaseActivity {
     private boolean isIsits(String name){
         SharedPreferences preferences = getSharedPreferences("medhistory", MODE_PRIVATE);
         int count= preferences.getInt("count",0);
-        Log.e("count",count+"");
+        //Log.e("count",count+"");
         for(int i=1;i<count+1;i++){
             String str=preferences.getString("h"+i,"");
-            Log.e("str",str);
+            //Log.e("str",str);
             if(TextUtils.equals(name,str)){
                     return true;
             }
@@ -82,7 +82,7 @@ public class MedSearchActivity extends BaseActivity {
             SharedPreferences.Editor editor = preferences.edit();
             int count= preferences.getInt("count",0);
             flag= preferences.getInt("flag",0);
-            Log.e("falg",flag+"");
+            //Log.e("falg",flag+"");
             if(!isIsits(name)){
                 if(count>=5)
                 {
@@ -124,7 +124,7 @@ public class MedSearchActivity extends BaseActivity {
                     @Override
                     public void onClick(View view) {
                         calledPhone=getData().get(position).getTelephone();
-                        Log.e("call","call");
+                        //Log.e("call","call");
                         call(calledPhone);
 
                     }
@@ -245,7 +245,7 @@ public class MedSearchActivity extends BaseActivity {
         if (APP.sUserType == 0) {
 
             token = APP.getInstance().getUserInfo().getToken();
-            Log.e("token",token);
+           // Log.e("token",token);
             latitude=APP.getInstance().getUserInfo().getLatitude();
             longitude=APP.getInstance().getUserInfo().getLongitude();
 
@@ -262,7 +262,7 @@ public class MedSearchActivity extends BaseActivity {
             @Override
             public void OnSuccess(String result) {
                 //mSearchText.setVisibility(View.GONE);
-                Log.e("search1", result);
+                //Log.e("search1", result);
                 JSONObject jsonObject = null;
                 try {
                     jsonObject = new JSONObject(result);

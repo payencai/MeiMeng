@@ -65,6 +65,6 @@ public class ServerRecordBean extends RVBaseCell {
         holder.setText(R.id.tv_createhelp_time,completeTime);
         holder.setText(R.id.tv_sendhelp,"用户"+name+"'发起了请求");
         holder.setText(R.id.tv_help_address,address);
-        holder.setText(R.id.tv_canjia,"你参与了本次救援");
+        holder.setText(R.id.tv_canjia,"您参与了急救");
     }
 }

@@ -708,7 +708,7 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
                 if (customPopWindow != null) {
                     customPopWindow.dissmiss();
                 }
-                helpEnd("2", mCurrentHelpInfo.getId(), 1);//这里有内存泄漏风险
+                //helpEnd("2", mCurrentHelpInfo.getId(), 1);//这里有内存泄漏风险
             }
         });
     }

@@ -89,7 +89,7 @@ public class APP extends Application {
 //        HMSPushHelper.getInstance().initHMSAgent(instance);
 
         //极光推送
-        JPushInterface.setDebugMode(true);
+        JPushInterface.setDebugMode(false);
         JPushInterface.init(this);
     }
 
@@ -157,7 +157,7 @@ public class APP extends Application {
         }
 
         //在做打包混淆时，关闭debug模式，避免消耗不必要的资源
-        EMClient.getInstance().setDebugMode(true);
+        EMClient.getInstance().setDebugMode(false);
     }
 
 }

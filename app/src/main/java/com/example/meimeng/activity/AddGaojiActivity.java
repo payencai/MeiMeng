@@ -118,7 +118,7 @@ public class AddGaojiActivity extends BaseActivity {
 
 
     private void upImage(String url, String filePath) {
-        Log.e("tag",url+filePath);
+        //Log.e("tag",url+filePath);
         OkHttpClient mOkHttpClent = new OkHttpClient();
         File file = new File(filePath);
         MultipartBody.Builder builder = new MultipartBody.Builder()
@@ -145,7 +145,7 @@ public class AddGaojiActivity extends BaseActivity {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String string = response.body().string();
-                Log.e("tag", "onResponse: " + string);
+                //Log.e("tag", "onResponse: " + string);
                 try {
                     JSONObject object = new JSONObject(string);
                     int resultCode = object.getInt("resultCode");
@@ -179,7 +179,7 @@ public class AddGaojiActivity extends BaseActivity {
                 try {
                         JSONObject object = new JSONObject(result);
                         int resultCode = object.getInt("resultCode");
-                        Log.e("tag",result);
+                        //Log.e("tag",result);
                         if (resultCode == 0) {
                                 Toast.makeText(AddGaojiActivity.this, "申请成功", Toast.LENGTH_SHORT).show();
                                 finish();

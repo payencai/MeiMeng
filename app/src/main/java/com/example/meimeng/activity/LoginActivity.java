@@ -351,6 +351,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
             private void userLogin(String result) {
                 try {
+                    Log.e("res",result);
                     JSONObject object = new JSONObject(result);
                     int resultCode = object.getInt("resultCode");
                     String message = object.getString("message");
@@ -361,8 +362,15 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                         userInfo.setPassword(psw);
                         UserInfoSharedPre intance = UserInfoSharedPre.getIntance(LoginActivity.this);
                         intance.saveUserInfo(userInfo, true);
-                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                        finish();
+                        String address=data.getString("address");
+                        if(address.equals("null")||TextUtils.isEmpty(address)){
+                            startActivity(new Intent(LoginActivity.this,UserInfoActivity.class));
+                            finish();
+                        }else{
+                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                            finish();
+                        }
+
 
                     } else {
                         ToaskUtil.showToast(LoginActivity.this, message);

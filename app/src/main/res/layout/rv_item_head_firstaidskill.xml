@@ -5,14 +5,18 @@
     android:orientation="vertical">
 
     <TextView
-        style="@style/common_font"
+        android:textColor="#545454"
         android:layout_width="match_parent"
-        android:layout_height="86dp"
+        android:layout_height="90dp"
         android:background="@color/color_white_100"
         android:gravity="start"
-        android:padding="12dp"
+        android:paddingLeft="10dp"
+        android:paddingTop="@dimen/margin_5dp"
+        android:paddingRight="@dimen/margin_10dp"
+        android:lineSpacingExtra="3dp"
+        android:lineSpacingMultiplier="1.5"
         android:text="《中华人民共和国民法总则》将于2017年10月1日正式实施，其中被俗称为“好人法”的第184条规定“因自愿实施紧急救助行为造成受助人损害的，救助人不承担民事责任”。"
-        android:textSize="12sp" />
+        android:textSize="13sp" />
 
     <View
         android:layout_width="match_parent"

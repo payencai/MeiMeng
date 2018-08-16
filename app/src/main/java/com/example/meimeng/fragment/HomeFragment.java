@@ -1047,6 +1047,8 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
             int LocType = location.getLocType();    //返回码
             lat = location.getLatitude();
             lon = location.getLongitude();
+            APP.lon=location.getLongitude();
+            APP.lat=location.getLatitude();
             Log.d("onReceiveLocation", "onReceiveLocation: 定位");
             location(city, addr);
             locationService.setLocationOption(locationService.getSingleLocationClientOption());

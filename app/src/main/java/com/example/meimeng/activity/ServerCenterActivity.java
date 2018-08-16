@@ -217,16 +217,21 @@ public class ServerCenterActivity extends BaseActivity {
                         JSONObject object = jsonObject.getJSONObject("data");
                         name = object.getString("nickname");
                         image = object.getString("image");
-                        if (TextUtils.isEmpty(name)) {
-                            mServerUsername.setText("朵雪花,你好");
-                        } else {
+                        if (!TextUtils.equals("null",name)&&!TextUtils.isEmpty(name)) {
                             mServerUsername.setText(name + ",你好");
+                        } else {
+                            mServerUsername.setText("朵雪花,你好");
                         }
-                        if (!TextUtils.isEmpty(image)) {
-                            if (server_head != null) {
-                                Glide.with(ServerCenterActivity.this).load(image).into(server_head);
-                            }
+                        if (!image.contains("null")) {
+                            Glide.with(ServerCenterActivity.this).load(image).into(server_head);
+                        }else{
+                            server_head.setImageResource(R.mipmap.ic_me_head);
                         }
+//                        if (!TextUtils.isEmpty(image)) {
+//                            if (server_head != null) {
+//                                Glide.with(ServerCenterActivity.this).load(image).into(server_head);
+//                            }
+//                        }
                     }
                     if (code == 9999) {
 

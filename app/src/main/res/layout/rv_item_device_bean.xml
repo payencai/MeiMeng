@@ -1,67 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingBottom="12dp">
+   >
 
     <TextView
-        android:id="@+id/company"
-        style="@style/common_font"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_marginRight="@dimen/margin_20dp"
         android:layout_marginLeft="@dimen/margin_15dp"
-        android:layout_marginTop="@dimen/margin_12dp"
-        android:ellipsize="end"
-        android:gravity="start"
-        android:maxLines="2"
-        android:text="某某某科技有限公司"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-
-    <TextView
-        android:id="@+id/userInfo"
-        style="@style/common_font"
-        android:layout_width="wrap_content"
+        android:textColor="@color/text_333"
+        android:id="@+id/content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="张三三   13420590260"
-        android:textColor="@color/text_6"
-        app:layout_constraintLeft_toLeftOf="@+id/company"
-        app:layout_constraintTop_toBottomOf="@+id/company" />
+        android:layout_marginTop="10dp"
+        android:gravity="left"
+        android:text="美国新增协会复旦复发美国新增协会复旦复发到美国新增协会复旦复发到到"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/company"/>
+    <RelativeLayout
+        android:layout_marginTop="@dimen/margin_10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+
+            android:id="@+id/company"
+            style="@style/common_font"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin_15dp"
+            android:ellipsize="end"
+            android:gravity="left"
+            android:maxLines="2"
+            android:layout_marginRight="@dimen/margin_20dp"
+            android:text="某某某某某某科技有限公司某某某科技有限公司科技有限公司 132545646565"
+            />
 
 
-    <ImageView
-        android:id="@+id/img1"
-        android:layout_width="11dp"
-        android:layout_height="14dp"
-        android:layout_marginTop="8dp"
-        android:scaleType="fitXY"
-        android:src="@mipmap/ic_location"
-        app:layout_constraintLeft_toLeftOf="@+id/userInfo"
-        app:layout_constraintTop_toBottomOf="@+id/userInfo" />
+
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:layout_marginTop="@dimen/margin_5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+
+
+            android:id="@+id/img1"
+            android:layout_width="11dp"
+            android:layout_height="14dp"
+            android:layout_marginLeft="15dp"
+
+            android:scaleType="fitXY"
+            android:src="@mipmap/ic_locate"
+            />
+
+        <TextView
+            android:layout_marginRight="20dp"
+            android:layout_toRightOf="@id/img1"
+            android:id="@+id/address"
+            style="@style/common_font"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:layout_marginLeft="10dp"
+            android:text="广州市天河广州市天河区天河公园广州市天河区天河公园区天河公园"
+            android:textColor="@color/text_9"
+            android:textSize="@dimen/text_size_12sp"
+            />
+
+    </RelativeLayout>
+
 
     <TextView
-        android:id="@+id/address"
-        style="@style/common_font"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        android:text="广州市天河区天河公园"
-        android:textColor="@color/text_9"
-        android:textSize="@dimen/text_size_12sp"
-        app:layout_constraintLeft_toRightOf="@+id/img1"
-        app:layout_constraintTop_toBottomOf="@+id/userInfo" />
-
-    <TextView
+        android:layout_marginTop="@dimen/margin_5dp"
+        android:layout_marginBottom="@dimen/margin_10dp"
+        android:layout_alignParentBottom="true"
         android:id="@+id/money"
         style="@style/common_font"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_marginLeft="@dimen/margin_15dp"
+        android:layout_width="wrap_content"
         android:text="￥500元"
-        app:layout_constraintLeft_toLeftOf="@+id/userInfo"
-        app:layout_constraintTop_toBottomOf="@+id/img1" />
+/>
 
-</android.support.constraint.ConstraintLayout>
+    <View
+        android:layout_marginLeft="@dimen/margin_15dp"
+        android:id="@+id/line"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#e2e2e2"
+
+        ></View>
+</LinearLayout>

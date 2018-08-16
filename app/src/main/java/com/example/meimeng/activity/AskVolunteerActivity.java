@@ -34,6 +34,7 @@ import com.example.meimeng.adapter.PictureAdapter;
 import com.example.meimeng.base.BaseActivity;
 import com.example.meimeng.bean.AddressBean;
 import com.example.meimeng.bean.LoginAccount.ServerUserInfo;
+import com.example.meimeng.bean.ServerUser;
 import com.example.meimeng.constant.PlatformContans;
 import com.example.meimeng.http.HttpProxy;
 import com.example.meimeng.http.ICallBack;
@@ -99,37 +100,46 @@ public class AskVolunteerActivity extends BaseActivity {
     @BindView(R.id.btn_vol_commit)
     Button commit;
     int count=0;
+    String value="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
-    private String isAskServerUser(){
-        String value="";
+    private void isAskServerUser(){
+
         String servertype=APP.getInstance().getUserInfo().getServerType();
-        //String server=APP.getInstance().getUserInfo().getServerUser();
-        //Log.e("server",APP.getInstance().getUserInfo().getToken()+"");
+        //ServerUserInfo server=APP.getInstance().getUserInfo().getServerUser();
+       // Log.e("server",server.getIsCertificate()+"");
+        if(!TextUtils.isEmpty(servertype))
         switch (servertype){
             case "1":
                 value="你还没有申请支援者";
+                showAskDialog();
                 break;
             case "2":
                 value="你的申请审核中,请耐心等候";
+                showAskDialog();
                 break;
             case "3":
-                value="你已经是志愿者";
+                getServerUserinfo();
                 break;
             case "4":
                 value="你的申请被驳回";
+                showAskDialog();
                 break;
             default:
                 value="你的申请已通过";
+                showAskDialog();
                 break;
         }
-       return value;
+
     }
-    private void showAskDialog(String val) {
+    Dialog dialog;
+    private void showAskDialog() {
+        //isAskServerUser();
         //Log.e("val",val);
-        final Dialog dialog = new Dialog(this, R.style.dialog);
+        dialog = new Dialog(this, R.style.dialog);
+        dialog.setCanceledOnTouchOutside(false);
         View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_tishi, null);
         //获得dialog的window窗口
         Window window = dialog.getWindow();
@@ -150,15 +160,51 @@ public class AskVolunteerActivity extends BaseActivity {
         //将自定义布局加载到dialog上
         dialog.setContentView(dialogView);
         TextView textView=(TextView) dialog.findViewById(R.id.dialog_value);
-        textView.setText(val);
+        textView.setText(value);
         dialog.findViewById(R.id.dialog_iknow).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 dialog.dismiss();
+                finish();
             }
         });
 
         dialog.show();
+    }
+    private void  getServerUserinfo(){
+        HttpProxy.obtain().get(PlatformContans.Serveruser.sGetServerUser, APP.getInstance().getUserInfo().getToken(), new ICallBack() {
+            @Override
+            public void OnSuccess(String result) {
+                Log.e("result",result);
+                JSONObject jsonObject = null;
+                try {
+                    jsonObject = new JSONObject(result);
+                    int code = jsonObject.getInt("resultCode");
+                    if (code == 0) {
+                        JSONObject object = jsonObject.getJSONObject("data");
+                        int  isCertificate=object.getInt("isCertificate");
+                        if (isCertificate == 1) {
+                            value="你已经是高级志愿者";
+                        }else{
+                            value="你已经是初级志愿者，可以去志愿者界面申请成为高级志愿者";
+                        }
+                        showAskDialog();
+                    }
+                    if (code == 9999) {
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+            }
+
+            @Override
+            public void onFailure(String error) {
+
+            }
+        });
     }
     private void getUserInfo(){
         HttpProxy.obtain().get(PlatformContans.UseUser.sGetUseUser, APP.getInstance().getUserInfo().getToken(), new ICallBack() {
@@ -228,7 +274,10 @@ public class AskVolunteerActivity extends BaseActivity {
         drawable2.setBounds(0,0,30,30);//将drawable设置为宽100 高100固定大小
         nv.setCompoundDrawables(drawable2,null,null,null);
         nv.setChecked(true);
-        showAskDialog(isAskServerUser());
+
+        if(!TextUtils.isEmpty(APP.getInstance().getUserInfo().getServerType()))
+            isAskServerUser();
+        if(!TextUtils.isEmpty(APP.getInstance().getUserInfo().getServerType()))
         if(APP.getInstance().getUserInfo().getServerType().equals("3")||APP.getInstance().getUserInfo().getServerType().equals("2")){
             getUserInfo();
         }
@@ -424,18 +473,29 @@ public class AskVolunteerActivity extends BaseActivity {
                 });
                 break;
             case R.id.btn_vol_commit:
-                if(APP.getInstance().getUserInfo().getServerType().equals("3")||APP.getInstance().getUserInfo().getServerType().equals("2")){
-                    Toast.makeText(this,"你已经是志愿者或者已经申请志愿者，请不要重复操作！",Toast.LENGTH_LONG).show();
-                    commit.setEnabled(false);
-                }else{
+                if(TextUtils.isEmpty(APP.getInstance().getUserInfo().getServerType())){
                     if(!isInputEmpty()){
                         commitAll();
                     }
                     else{
                         Toast.makeText(this,msg,Toast.LENGTH_SHORT).show();
                     }
-
+                }else{
+                    if(APP.getInstance().getUserInfo().getServerType().equals("3")||APP.getInstance().getUserInfo().getServerType().equals("2")){
+                        Toast.makeText(this,"你已经是志愿者或者已经申请志愿者，请不要重复操作！",Toast.LENGTH_LONG).show();
+                        commit.setEnabled(false);
+                    }
+                    else{
+                        if(!isInputEmpty()){
+                            commitAll();
+                        }
+                        else{
+                            Toast.makeText(this,msg,Toast.LENGTH_SHORT).show();
+                        }
+                    }
                 }
+
+
                 break;
 
         }

@@ -26,9 +26,10 @@ import java.util.List;
 import java.util.Map;
 
 public class SystemMsgActivity extends AbsBaseActivity<SystemMsgBean> {
-    private int page=1;
-    private boolean isRefresh=false;
+    private int page = 1;
+    private boolean isRefresh = false;
     private TextView mTitle;
+    private boolean isFirst = true;
 
     @Override
     public void onRecyclerViewInitialized() {
@@ -42,8 +43,9 @@ public class SystemMsgActivity extends AbsBaseActivity<SystemMsgBean> {
 
     @Override
     public void onPullRefresh() {
-        page=1;
-        isRefresh=true;
+        page = 1;
+        isRefresh = true;
+        isFirst = true;
         loadData();
     }
 
@@ -77,24 +79,24 @@ public class SystemMsgActivity extends AbsBaseActivity<SystemMsgBean> {
 
     private void loadData() {
         //addSysInfo();
-        Map<String,Object> params=new HashMap<>();
-        String token="";
-        if(APP.sUserType==0){
-            token=APP.getInstance().getUserInfo().getToken();
-        }else{
-            token=APP.getInstance().getServerUserInfo().getToken();
+        Map<String, Object> params = new HashMap<>();
+        String token = "";
+        if (APP.sUserType == 0) {
+            token = APP.getInstance().getUserInfo().getToken();
+        } else {
+            token = APP.getInstance().getServerUserInfo().getToken();
         }
-        params.put("type",1);
-        params.put("page",page);
-        HttpProxy.obtain().get(PlatformContans.MessageController.sGetSysInfoBytype, params,token, new ICallBack() {
+        params.put("type", 1);
+        params.put("page", page);
+        HttpProxy.obtain().get(PlatformContans.MessageController.sGetSysInfoBytype, params, token, new ICallBack() {
             @Override
             public void OnSuccess(String result) {
                 mBaseAdapter.hideLoadMore();
                 try {
-                    JSONObject jsonObject=new JSONObject(result);
-                    int code=jsonObject.getInt("resultCode");
-                    Log.e("tag",result);
-                    if(code==0){
+                    JSONObject jsonObject = new JSONObject(result);
+                    int code = jsonObject.getInt("resultCode");
+                    Log.e("tag", result);
+                    if (code == 0) {
                         JSONObject data = jsonObject.getJSONObject("data");
                         JSONArray beanList = data.getJSONArray("beanList");
                         List<SystemMsgBean> list = new ArrayList<>();
@@ -103,19 +105,23 @@ public class SystemMsgActivity extends AbsBaseActivity<SystemMsgBean> {
                         for (int i = 0; i < length; i++) {
                             JSONObject item = beanList.getJSONObject(i);
                             //TrainBean bean = gson.fromJson(item.toString(), TrainBean.class);
-                            SystemMsgBean bean=new SystemMsgBean();
+                            SystemMsgBean bean = new SystemMsgBean();
                             bean.setArticle(item.getString("article"));
-                            long time=item.getLong("createTime");
+                            long time = item.getLong("createTime");
                             bean.setCreateTime(time);
                             bean.setTitle(item.getString("title"));
                             bean.setId(item.getInt("id"));
                             list.add(bean);
                         }
+                        if (isFirst) {
+                            isFirst = false;
+                            mBaseAdapter.addAll(list);
+                            onLoadMore();
+                        }
                         if (isRefresh) {
                             isRefresh = false;
                             mBaseAdapter.clear();
                             mBaseAdapter.addAll(list);
-
                         } else {
                             mBaseAdapter.addAll(list);
                         }
@@ -133,24 +139,25 @@ public class SystemMsgActivity extends AbsBaseActivity<SystemMsgBean> {
             }
         });
     }
-    private void addSysInfo(){
-        Map<String,Object> params=new HashMap<>();
-        String token="";
-        if(APP.sUserType==0){
-            token=APP.getInstance().getUserInfo().getToken();
-        }else{
-            token=APP.getInstance().getServerUserInfo().getToken();
+
+    private void addSysInfo() {
+        Map<String, Object> params = new HashMap<>();
+        String token = "";
+        if (APP.sUserType == 0) {
+            token = APP.getInstance().getUserInfo().getToken();
+        } else {
+            token = APP.getInstance().getServerUserInfo().getToken();
         }
-        params.put("title","欢迎你");
-        params.put("article","我是系统信息的内容体");
-        HttpProxy.obtain().post(PlatformContans.MessageController.sAddSysInfo, token,params, new ICallBack() {
+        params.put("title", "欢迎你");
+        params.put("article", "我是系统信息的内容体");
+        HttpProxy.obtain().post(PlatformContans.MessageController.sAddSysInfo, token, params, new ICallBack() {
             @Override
             public void OnSuccess(String result) {
                 try {
-                    JSONObject jsonObject=new JSONObject(result);
-                    int code=jsonObject.getInt("resultCode");
-                    Log.e("tag",result);
-                    if(code==0){
+                    JSONObject jsonObject = new JSONObject(result);
+                    int code = jsonObject.getInt("resultCode");
+                    Log.e("tag", result);
+                    if (code == 0) {
 
                     }
 

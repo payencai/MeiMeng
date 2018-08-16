@@ -92,8 +92,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import butterknife.BindView;
@@ -415,7 +417,7 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
                 }
                 break;
             case R.id.callTel:
-                checkPower();
+                getVirtualPhone(mCurrentHelpInfo.getUseUserTelephone());
                 break;
             case R.id.metronome:
                 startActivity(new Intent(this, CPROptionActivity.class));
@@ -433,8 +435,31 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
                 break;
         }
     }
+    private void  getVirtualPhone(final String oldphone){
+        Map<String,Object> param=new HashMap<>();
+        param.put("callingPhone",APP.getInstance().getUserInfo().getAccount());
+        param.put("calledPhone",oldphone);
+        HttpProxy.obtain().get(PlatformContans.Medicine.sGetVirtualNumber, param, new ICallBack() {
+            @Override
+            public void OnSuccess(String result) {
+                JSONObject jsonObject = null;
+                try {
+                    jsonObject = new JSONObject(result);
+                     phone=jsonObject.getString("data");
+                    checkPower(phone);
+                    //requestPermission();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
 
-    private void checkPower() {
+            @Override
+            public void onFailure(String error) {
+
+            }
+        });
+    }
+    private void checkPower(String phone) {
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.CALL_PHONE)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -443,18 +468,18 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
                     new String[]{Manifest.permission.CALL_PHONE},
                     MY_PERMISSIONS_REQUEST_CALL_PHONE);
         } else {
-            callPhone();
+            callPhone(phone);
         }
     }
 
     @SuppressLint("MissingPermission")
-    public void callPhone() {
+    public void callPhone(String phone) {
         Intent intent = new Intent(Intent.ACTION_CALL);
-        Uri data = Uri.parse("tel:" + mCurrentHelpInfo.getUseUserTelephone());
+        Uri data = Uri.parse("tel:" + phone);
         intent.setData(data);
         startActivity(intent);
     }
-
+    String phone="";
     @Override
     public void onBackPressed() {
         if (isFristShowEnd) {
@@ -467,7 +492,7 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == MY_PERMISSIONS_REQUEST_CALL_PHONE) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                callPhone();
+                callPhone(phone);
             } else {
                 // Permission Denied
                 Toast.makeText(this, "权限拒绝", Toast.LENGTH_SHORT).show();

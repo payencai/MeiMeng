@@ -1,8 +1,10 @@
 package com.example.meimeng.bean;
 
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.example.meimeng.R;
 import com.example.meimeng.common.rv.base.RVBaseCell;
@@ -15,40 +17,12 @@ import java.io.Serializable;
  * 邮箱：771548229@qq..com
  */
 public class TrainBean extends RVBaseCell implements Serializable {
-    private int id;
-    private int flag;
     private String address;
     private String content;
-    private String company;
+    private int distance;
+    private int id;
     private int isCancel;
-    private String price;
-    private int submitTime;
-    private String username;
-    private String tel;
-
-    public int getFlag() {
-        return flag;
-    }
-
-    public void setFlag(int flag) {
-        this.flag = flag;
-    }
-
-    public String getCompany() {
-        return company;
-    }
-
-    public void setCompany(String company) {
-        this.company = company;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
+    private String latitude;
 
     public String getAddress() {
         return address;
@@ -66,12 +40,44 @@ public class TrainBean extends RVBaseCell implements Serializable {
         this.content = content;
     }
 
+    public int getDistance() {
+        return distance;
+    }
+
+    public void setDistance(int distance) {
+        this.distance = distance;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public int getIsCancel() {
         return isCancel;
     }
 
     public void setIsCancel(int isCancel) {
         this.isCancel = isCancel;
+    }
+
+    public String getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
+    }
+
+    public String getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
     }
 
     public String getPrice() {
@@ -90,6 +96,14 @@ public class TrainBean extends RVBaseCell implements Serializable {
         this.submitTime = submitTime;
     }
 
+    public String getTel() {
+        return tel;
+    }
+
+    public void setTel(String tel) {
+        this.tel = tel;
+    }
+
     public String getUsername() {
         return username;
     }
@@ -98,13 +112,11 @@ public class TrainBean extends RVBaseCell implements Serializable {
         this.username = username;
     }
 
-    public String getTel() {
-        return tel;
-    }
-
-    public void setTel(String tel) {
-        this.tel = tel;
-    }
+    private String longitude;
+    private String price;
+    private int submitTime;
+    private String tel;
+    private String username;
 
     public TrainBean() {
         super(null);
@@ -115,6 +127,14 @@ public class TrainBean extends RVBaseCell implements Serializable {
         return 0;
     }
 
+    private boolean isNum(String str){
+        try {
+            Integer.parseInt(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
     @Override
     public RVBaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.rv_item_device_bean, parent, false);
@@ -123,14 +143,19 @@ public class TrainBean extends RVBaseCell implements Serializable {
 
     @Override
     public void onBindViewHolder(RVBaseViewHolder holder, int position) {
-        if(flag==0){
-            holder.setText(R.id.company, content);
-        }else{
-            holder.setText(R.id.company, company);
+        holder.setIsRecyclable(false);
+        if(!TextUtils.isEmpty(content)){
+            TextView con=holder.getTextView(R.id.content);
+            con.setVisibility(View.VISIBLE);
+            holder.setText(R.id.content,content);
         }
+        holder.setText(R.id.company, username.trim()+"  "+tel);
 
-        holder.setText(R.id.userInfo,username+"  "+tel);
-        holder.setText(R.id.address,address);
-        holder.setText(R.id.money,price);
+        holder.setText(R.id.address, address.replace(" ",""));
+        if(isNum(price))
+        holder.setText(R.id.money, "￥"+price+0+"元");
+        else{
+            holder.setText(R.id.money, "￥0"+"元");
+        }
     }
 }

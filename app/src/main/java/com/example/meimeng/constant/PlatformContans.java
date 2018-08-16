@@ -12,7 +12,7 @@ import retrofit2.http.GET;
  */
 
 public class PlatformContans {
-
+    public static String newRoot="http://www.wewobang.com/login/";
     public static String root = "http://47.106.164.34/";//正式地址
     public static String rootUrl = root + "memen/";//
 //    public static String root = "http://192.168.1.18:8080/";//诗安测试地址
@@ -29,6 +29,7 @@ public class PlatformContans {
         public static final String sGetUseUser = sHead + "getUseUser";//登录用户获取。
         public static final String sGetServerUserByUser = sHead + "getServerUserByUser";//获取附近救援人员信息。
         public static final String sEquipment = sHead + "equipment";//获取设备信息。
+        public static final String sIsRegister=sHead+"getUserByTelephone";
 
     }
 
@@ -49,7 +50,7 @@ public class PlatformContans {
     public static class AedController {
         public static final String sHead = rootUrl + "aedController/";
         public static final String sAddAed = sHead + "addAed";
-        public static final String sGetContent = sHead + "getContent";
+        public static final String sGetContent = sHead + "getFacilityByApp";
         public static final String sGetFacility = sHead + "getFacility";
         public static final String sGetAed = sHead + "getAed";
         public static final String sGetDrone = sHead + "getDrone";//呼叫无人机AED

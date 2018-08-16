@@ -77,7 +77,6 @@ public class FirstAidRankFragment extends AbsBaseFragment<FirstAidRankBean> {
                             JSONObject item = beanList.getJSONObject(i);
                             //TrainBean bean = gson.fromJson(item.toString(), TrainBean.class);
                             TrainBean bean=new TrainBean();
-                            bean.setCompany(item.getString(("company")));
                             bean.setAddress(item.getString("address"));
                             bean.setContent(item.getString("content"));
                             bean.setPrice(item.getString("price"));
@@ -85,7 +84,6 @@ public class FirstAidRankFragment extends AbsBaseFragment<FirstAidRankBean> {
                             bean.setUsername(item.getString("username"));
                             bean.setId(item.getInt("id"));
                             bean.setIsCancel(item.getInt("isCancel"));
-                            bean.setFlag(1);
                             list.add(bean);
                         }
                         if (isRefresh) {

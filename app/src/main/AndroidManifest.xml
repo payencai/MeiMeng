@@ -355,6 +355,8 @@
         <!-- acab05447f9100856bf470a3 -->
         <activity android:name=".activity.UserInfoActivity">
         </activity>
+        <activity android:name=".activity.ProxyActivity">
+        </activity>
     </application>
 
 </manifest>

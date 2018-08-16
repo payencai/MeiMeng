@@ -265,11 +265,26 @@ public class ClientUserInfoActivity extends BaseActivity {
         String linkman2 = et_lianxi2.getText().toString();
         String linkman3 = et_lianxi3.getText().toString();
         int age = Integer.parseInt(et_age.getEditableText().toString());
-        String area = mAddressBean.getArea();
-        String city = mAddressBean.getCity();
-        String province = mAddressBean.getProvince();
-        String latitude = String.valueOf(mAddressBean.getLat());
-        String longitude = String.valueOf(mAddressBean.getLon());
+        String area;
+        String city;
+        String province;
+        String latitude;
+        String longitude;
+        if(mAddressBean!=null){
+            area = mAddressBean.getArea();
+            city = mAddressBean.getCity();
+            province = mAddressBean.getProvince();
+            latitude = String.valueOf(mAddressBean.getLat());
+            longitude = String.valueOf(mAddressBean.getLon());
+        }else{
+            UserInfo userInfo=APP.getInstance().getUserInfo();
+            area = userInfo.getArea();
+            city = userInfo.getCity();
+            province = userInfo.getProvince();
+            latitude = userInfo.getLatitude();
+            longitude =userInfo.getLongitude();
+        }
+
 
         params.put("age", age);
         params.put("bloodType", tvValue.getText().toString());

@@ -27,6 +27,7 @@ import com.example.meimeng.base.BaseActivity;
 import com.example.meimeng.bean.AddressBean;
 import com.example.meimeng.constant.PlatformContans;
 import com.example.meimeng.custom.CustomDatePicker;
+import com.example.meimeng.custom.Notepad;
 import com.example.meimeng.http.HttpProxy;
 import com.example.meimeng.http.ICallBack;
 import com.example.meimeng.util.CustomPopWindow;
@@ -71,7 +72,8 @@ public class AddAEDActivity extends BaseActivity implements View.OnClickListener
     private GridView imgShowGridView;
     private PictureAdapter mAdapter;
     private static final int RQUEST_ADDRESS_CODE = 2;
-
+    private EditText phone;
+    private Notepad note;
     @Override
     protected void initView() {
         ImageView back;
@@ -82,6 +84,8 @@ public class AddAEDActivity extends BaseActivity implements View.OnClickListener
                 finish();
             }
         });
+        note=findViewById(R.id.note);
+        phone=findViewById(R.id.phone);
         submit = findViewById(R.id.submit);
         title = ((TextView) findViewById(R.id.title));
         AEDBrand = ((TextView) findViewById(R.id.AEDBrand));
@@ -100,7 +104,18 @@ public class AddAEDActivity extends BaseActivity implements View.OnClickListener
         initPictureAdapter();
         initDatePicker();
     }
-
+   private boolean isEmpty(){
+      String address=consignSite.getText().toString();
+      if(TextUtils.equals(address,"存放详细地址")){
+          ToaskUtil.showToast(this,"地址为必填");
+          return false;}
+      if(selected.size()!=3)
+      {
+          ToaskUtil.showToast(this,"必须上传三张图片");
+          return false;
+      }
+      return true;
+   }
     private void initPictureAdapter() {
         mAdapter = new PictureAdapter(this, selected);
         imgShowGridView.setAdapter(mAdapter);
@@ -120,7 +135,7 @@ public class AddAEDActivity extends BaseActivity implements View.OnClickListener
 
     //弹出选择时间
     private void initDatePicker() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.CHINA);
         Date date = new Date();
         String now = sdf.format(date);
         deadline.setText(now);
@@ -161,7 +176,11 @@ public class AddAEDActivity extends BaseActivity implements View.OnClickListener
                 ImageSelectorUtils.openPhoto(this, REQUEST_PICTURE_CODE, false, 3, selected); // 把已选的传入。
                 break;
             case R.id.submit:
-                commit();
+                if(isEmpty())
+                    commit();
+                else{
+
+                }
                 break;
         }
     }
@@ -169,12 +188,10 @@ public class AddAEDActivity extends BaseActivity implements View.OnClickListener
     private int count = 0;
 
     private void commit() {
-        if (count == 0) {
-            addAed();
-        } else {
+
             commitImage();
 
-        }
+
 
     }
 
@@ -289,16 +306,13 @@ public class AddAEDActivity extends BaseActivity implements View.OnClickListener
         params.put("address", consignSite.getText().toString());
         params.put("brank", AEDBrand.getText().toString());
         params.put("expiryDate", deadline.getText().toString());
+        params.put("addressPoint",note.getEditableText().toString());
         params.put("image", urls);
-        if (type == 0) {
-            params.put("tel", APP.getInstance().getUserInfo().getTelephone());
-        } else {
-            params.put("tel", APP.getInstance().getServerUserInfo().getTelephone());
-        }
+        params.put("tel", phone.getEditableText().toString());
         params.put("isPass", 1);
         params.put("latitude", latitude);
         params.put("longitude", longitude);
-        params.put("role", 0);
+        params.put("role", type);
         Gson gson = new GsonBuilder().enableComplexMapKeySerialization().create();
         return gson.toJson(params);
     }

@@ -17,6 +17,7 @@ import com.example.meimeng.custom.KyLoadingBuilder;
 import com.example.meimeng.http.HttpProxy;
 import com.example.meimeng.http.ICallBack;
 import com.example.meimeng.util.MLog;
+import com.example.meimeng.util.TimerCount;
 import com.example.meimeng.util.ToaskUtil;
 
 import org.json.JSONException;
@@ -60,7 +61,6 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
         obtainCodeBtn = (TextView) findViewById(R.id.obtainCodeBtn);
         register = (Button) findViewById(R.id.register);
         headLayout = findViewById(R.id.headLayout);
-
         Intent intent = getIntent();
         mIntoType = intent.getIntExtra("intoType", 0);
         headLayout.setBackgroundColor(Color.parseColor("#00ffffff"));
@@ -72,13 +72,52 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
             title.setText("修改密码");
             register.setText("完成");
         }
-
-
+        findViewById(R.id.tv_xieyi).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(RegisterActivity.this,ProxyActivity.class));
+            }
+        });
         findViewById(R.id.back).setOnClickListener(this);
         obtainCodeBtn.setOnClickListener(this);
         register.setOnClickListener(this);
     }
+    private void checkIsRegister(final String tel){
+        Map<String, Object> params = new HashMap<>();
+        params.put("telephone", tel);
+        HttpProxy.obtain().get(PlatformContans.UseUser.sIsRegister, params, new ICallBack() {
+            @Override
+            public void OnSuccess(String result) {
+                obtainCodeBtn.setEnabled(true);
+                MLog.log("getAuthCode", result);
+                //{"resultCode":0,"message":"验证码已发送！"}
+                try {
+                    JSONObject object = new JSONObject(result);
+                    int resultCode = object.getInt("resultCode");
+                    String message = object.getString("message");
+                    if(resultCode==6003){
+                        ToaskUtil.showToast(RegisterActivity.this, message);
+                    }
+                    if(resultCode==0){
+                        TimerCount timer = new TimerCount(60000, 1000, obtainCodeBtn);
+                        timer.start();
+                        // obtainCodeBtn.setEnabled(false);
+                        getAuthCode(tel);
+                    }
 
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+            @Override
+            public void onFailure(String error) {
+                obtainCodeBtn.setEnabled(true);
+                ToaskUtil.showToast(RegisterActivity.this,"请检查网络");
+            }
+        });
+    }
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -88,8 +127,14 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
             case R.id.obtainCodeBtn:
                 String number = userNumberEdit.getEditableText().toString();
                 if (checkFormObtainCode(number)) {
-                    obtainCodeBtn.setEnabled(false);
-                    getAuthCode(number);
+                    if(mIntoType==0)
+                        checkIsRegister(number);
+                    else{
+                        TimerCount timer = new TimerCount(60000, 1000, obtainCodeBtn);
+                        timer.start();
+                        // obtainCodeBtn.setEnabled(false);
+                        getAuthCode(number);
+                    }
                 }
                 break;
             case R.id.register:

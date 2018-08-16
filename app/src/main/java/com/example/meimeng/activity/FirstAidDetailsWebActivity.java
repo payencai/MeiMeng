@@ -89,6 +89,8 @@ public class FirstAidDetailsWebActivity extends BaseActivity implements View.OnC
         WebSettings ws = webView.getSettings();
         //允许javascript执行
         ws.setJavaScriptEnabled(true);
+        ws.setUseWideViewPort(true);
+        ws.setLoadWithOverviewMode(true);
         //加载一个服务端网页
         webView.loadUrl(mUrl);
         //加载一个本地网页
@@ -111,6 +113,7 @@ public class FirstAidDetailsWebActivity extends BaseActivity implements View.OnC
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
+
             }
         });
         webView.setWebChromeClient(new WebChromeClient() {

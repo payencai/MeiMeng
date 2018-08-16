@@ -1,10 +1,16 @@
 package com.example.meimeng.activity;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Display;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -61,6 +67,7 @@ public class AddGaojiActivity extends BaseActivity {
         gaoji_show_pic=findViewById(R.id.gaoji_show_pic);
         title=findViewById(R.id.title);
         title.setText("高级急救人员");
+
         ImageView back;
         back=findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {
@@ -79,6 +86,10 @@ public class AddGaojiActivity extends BaseActivity {
         commit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(APP.getInstance().getServerUserInfo().getIsCertificate()==1){
+                    showAskDialog("你已经是高级志愿者");
+
+                }
                 if(selected.size()!=0){
                     for(String filepath:selected){
                         upImage(PlatformContans.Image.sUpdateImage,filepath);
@@ -89,9 +100,44 @@ public class AddGaojiActivity extends BaseActivity {
                 }
             }
         });
+
         initPictureAdapter();
     }
+    private void showAskDialog(String val) {
+        //Log.e("val",val);
+        final Dialog dialog = new Dialog(this, R.style.dialog);
+        dialog.setCanceledOnTouchOutside(false);
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_tishi, null);
+        //获得dialog的window窗口
+        Window window = dialog.getWindow();
+        //设置dialog在屏幕底部
+        window.setGravity(Gravity.CENTER);
+        //设置dialog弹出时的动画效果，从屏幕底部向上弹出
+        //window.setWindowAnimations(R.style.mypopwindow_anim_style);
+        window.getDecorView().setPadding(0, 0, 0, 0);
+        //获得window窗口的属性
+        WindowManager.LayoutParams lp=window.getAttributes();
+        Display display=getWindowManager().getDefaultDisplay();
+        //android.view.WindowManager.LayoutParams lp = window.getAttributes();
+        //设置窗口宽度为充满全屏
+        lp.width = (int) (display.getWidth()*0.7);
 
+        //将设置好的属性set回去
+        window.setAttributes(lp);
+        //将自定义布局加载到dialog上
+        dialog.setContentView(dialogView);
+        TextView textView=(TextView) dialog.findViewById(R.id.dialog_value);
+        textView.setText(val);
+        dialog.findViewById(R.id.dialog_iknow).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+                commit.setEnabled(false);
+            }
+        });
+
+        dialog.show();
+    }
     private void initPictureAdapter() {
         mAdapter = new PictureAdapter(this, selected);
         gaoji_show_pic.setAdapter(mAdapter);

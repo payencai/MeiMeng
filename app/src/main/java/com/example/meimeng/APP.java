@@ -40,7 +40,8 @@ public class APP extends Application {
     private ServerUserInfo mServerUserInfo;//志愿者类型
     private static APP sInstance;
     public static int sUserType = 0;//用户类型，0为用户，1为志愿者
-
+    public static double lat;
+    public static double lon;
 
     //志愿者测试账号 账号 13480197926  密码 123456
     public UserInfo getUserInfo() {

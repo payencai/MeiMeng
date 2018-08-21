@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
@@ -118,7 +119,20 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             return true;
         }
     }
-
+    private boolean isFirst=false;
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==3){
+            isFirst=true;
+        }
+    }
+    private void fillPhone(){
+        Bundle bundle=getIntent().getExtras();
+        if(bundle!=null){
+            userNumberEdit.setText(bundle.getString("phone"));
+        }
+    }
     @Override
     protected void initView() {
 
@@ -130,7 +144,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         register = (Button) findViewById(R.id.register);
         headLayout = findViewById(R.id.headLayout);
         findViewById(R.id.back).setVisibility(View.GONE);
-
+        fillPhone();
 
         headLayout.setBackgroundColor(Color.parseColor("#00ffffff"));
 
@@ -144,13 +158,10 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         submit.setOnClickListener(this);
         register.setOnClickListener(this);
         getPersimmions();
+        autoLogin();
 
     }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        /*单点登录*/
+    private void autoLogin(){
         Intent intent = getIntent();
         boolean resetLogin = intent.getBooleanExtra("resetLogin", false);
         if (resetLogin) {
@@ -174,8 +185,40 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         }
         if (!TextUtils.isEmpty(tel) && !TextUtils.isEmpty(psw)) {
             mLoginLoadView = openLoadView("");
-            requestLogin(url, tel, psw);
+            if(!isFirst)
+                requestLogin(url, tel, psw);
         }
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        /*单点登录*/
+//        Intent intent = getIntent();
+//        boolean resetLogin = intent.getBooleanExtra("resetLogin", false);
+//        if (resetLogin) {
+//            showResetLoginView();
+//            return;
+//        }
+        /*以下为自动登录代码*/
+//        String tel;
+//        String psw;
+//        String url;
+//        if (userLoginState == 0) {//用户登录
+//            UserInfoSharedPre intance = UserInfoSharedPre.getIntance(this);
+//            url = PlatformContans.UseUser.sLogin;
+//            tel = (String) intance.getUserInfoFiledValue("account");
+//            psw = (String) intance.getUserInfoFiledValue("password");
+//        } else {
+//            ServerUserInfoSharedPre intance = ServerUserInfoSharedPre.getIntance(this);
+//            url = PlatformContans.Serveruser.ServerUserLogin;
+//            tel = (String) intance.getServerUserFiledValue("account");
+//            psw = (String) intance.getServerUserFiledValue("password");
+//        }
+//        if (!TextUtils.isEmpty(tel) && !TextUtils.isEmpty(psw)) {
+//            mLoginLoadView = openLoadView("");
+//            if(!isFirst)
+//            requestLogin(url, tel, psw);
+//        }
     }
 
     private void showResetLoginView() {
@@ -364,8 +407,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                         intance.saveUserInfo(userInfo, true);
                         String address=data.getString("address");
                         if(address.equals("null")||TextUtils.isEmpty(address)){
-                            startActivity(new Intent(LoginActivity.this,UserInfoActivity.class));
-                            finish();
+                            startActivityForResult(new Intent(LoginActivity.this,UserInfoActivity.class),3);
+                            //finish();
                         }else{
                             startActivity(new Intent(LoginActivity.this, MainActivity.class));
                             finish();

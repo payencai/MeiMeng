@@ -29,6 +29,7 @@ import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.model.LatLngBounds;
 import com.baidu.mapapi.search.core.SearchResult;
 import com.baidu.mapapi.search.route.BikingRouteResult;
 import com.baidu.mapapi.search.route.DrivingRouteResult;
@@ -58,6 +59,7 @@ import com.example.meimeng.overlayutil.WalkingRouteOverlay;
 import com.example.meimeng.service.LocationService;
 import com.example.meimeng.test.RoutePlanDemo;
 import com.example.meimeng.util.MLog;
+import com.example.meimeng.util.MyWalkingRouteOverlay;
 import com.example.meimeng.util.ToaskUtil;
 import com.google.gson.Gson;
 
@@ -99,7 +101,7 @@ public class ShowAEDActivity extends BaseActivity implements OnGetRoutePlanResul
     private TextView uavAddress;
     private TextView uavPhoneNumber;
     private TextView uavDistance;
-
+    private boolean isEnter = true;
 
     public static void startShowAED(Context context, double lat, double lon) {
         Intent intent = new Intent(context, ShowAEDActivity.class);
@@ -253,6 +255,9 @@ public class ShowAEDActivity extends BaseActivity implements OnGetRoutePlanResul
 
     };
 
+    /**
+     * 获取aed信息 并且添加到图层
+     */
     private void getAEDController() {
         String token;
         if (APP.sUserType == 0) {
@@ -299,6 +304,12 @@ public class ShowAEDActivity extends BaseActivity implements OnGetRoutePlanResul
         });
     }
 
+    /**
+     * 添加aed Marker
+     */
+    private double clickLat = 0;
+    private double clickLon = 0;
+
     private void batchAddAED(List<AEDInfo> list) {
         List<OverlayOptions> options = new ArrayList<OverlayOptions>();
         //构建Marker图标
@@ -309,10 +320,11 @@ public class ShowAEDActivity extends BaseActivity implements OnGetRoutePlanResul
         //构建Marker图标
         BitmapDescriptor bitmap2 = BitmapDescriptorFactory
                 .fromResource(R.mipmap.ic_unexist_aed3);
-        for (AEDInfo AEDInfobean : list) {
+        for (int i = 0; i < list.size(); i++) {
             //isCertificate 1为高级，2为普通
             //workLongitude  经度
             //workLatitude 维度
+            AEDInfo AEDInfobean = list.get(i);
             AEDInfo.KeyBean key = AEDInfobean.getKey();
             int isPass = key.getIsPass();
             String workLatitude = key.getLatitude();
@@ -334,26 +346,41 @@ public class ShowAEDActivity extends BaseActivity implements OnGetRoutePlanResul
             } else {
                 option = position.icon(bitmap2);
             }
-//            options.add(option);
+//            options.add(option);23.044991:113.396773
+            //                    23.044986904956467:113.39676957663124
             int distance = (int) DistanceUtil.getDistance(pointcur, point);//距离定位的距离
-            Marker marker = (Marker) mBaiduMap.addOverlay(option);
-            String address = key.getAddress();//广州新东方学校大学城教学区广州市番禺区大学城中六路1号广州大学城信息枢纽楼814房
-            String expiryDate = key.getExpiryDate();//2018-05-23
-            String brank = key.getBrank();//回家你那边
-            Bundle bundle = new Bundle();
-            bundle.putInt("type", 0);//0为AED 1为志愿者覆盖物
-            bundle.putInt("distance", distance);
-            bundle.putString("telephone", key.getTel());
-            bundle.putDouble("latNumber", latNumber);
-            bundle.putDouble("lonNumber", lonNumber);
+            if (endLat != latNumber || endLon != lonNumber) {
+                Marker marker = (Marker) mBaiduMap.addOverlay(option);
+                String address = key.getAddress();//广州新东方学校大学城教学区广州市番禺区大学城中六路1号广州大学城信息枢纽楼814房
+                String expiryDate = key.getExpiryDate();//2018-05-23
+                String brank = key.getBrank();//回家你那边
+                Bundle bundle = new Bundle();
+                bundle.putInt("type", 0);//0为AED 1为志愿者覆盖物
+                bundle.putInt("distance", distance);
+                bundle.putString("telephone", key.getTel());
+                bundle.putDouble("latNumber", latNumber);
+                bundle.putDouble("lonNumber", lonNumber);
 
-            bundle.putString("address", address);
-            bundle.putString("expiryDate", expiryDate);
-            bundle.putString("brank", brank);
-            marker.setExtraInfo(bundle);
+                bundle.putString("address", address);
+                bundle.putString("expiryDate", expiryDate);
+                bundle.putString("brank", brank);
+                marker.setExtraInfo(bundle);
+                if (isEnter) {
+                    isEnter = false;
+                    if (i == 0) {
+                        showFirstAed(AEDInfobean, marker);
+                    }
+                }
+            }
+
+
         }
+
     }
 
+    /**
+     * 呼叫无人机
+     */
     private void requestUAV() {
         ServerUserInfo userInfo = APP.getInstance().getServerUserInfo();
         if (userInfo == null) {
@@ -418,6 +445,47 @@ public class ShowAEDActivity extends BaseActivity implements OnGetRoutePlanResul
         });
     }
 
+    /**
+     * 显示定位到最近aed的路径
+     */
+    private void showFirstAed(AEDInfo aedInfo, final Marker marker) {
+        LatLng start = new LatLng(lat, lon);
+        LatLng end = new LatLng(Double.parseDouble(aedInfo.getKey().getLatitude()), Double.parseDouble(aedInfo.getKey().getLongitude()));
+        // walkProject(start, end);
+        endLat = Double.parseDouble(aedInfo.getKey().getLatitude());
+        endLon = Double.parseDouble(aedInfo.getKey().getLongitude());
+        PlanNode stNode = PlanNode.withLocation(start);
+        PlanNode enNode = PlanNode.withLocation(end);
+        mSearch.walkingSearch((new WalkingRoutePlanOption())
+                .from(stNode).to(enNode));
+        String address = aedInfo.getKey().getAddress();
+        String expiryDate = aedInfo.getKey().getExpiryDate();
+        String brank = aedInfo.getKey().getBrank();
+        View view = LayoutInflater.from(ShowAEDActivity.this).inflate(R.layout.marker_aed_info_layout, null);
+        TextView brankText = (TextView) view.findViewById(R.id.brank);
+        TextView expiryDateText = (TextView) view.findViewById(R.id.expiryDate);
+        brankText.setText(brank);
+        mAddress.setText(address);
+        int distance = (int) DistanceUtil.getDistance(start, end);//距离定位的距离
+        phoneNumber.setText("电话号码 " + aedInfo.getKey().getTel());
+        mDistanceText.setText("AED距离" + distance + "米");
+        expiryDateText.setText("电池有效期限:" + expiryDate);
+
+        InfoWindow.OnInfoWindowClickListener listener = null;
+        listener = new InfoWindow.OnInfoWindowClickListener() {
+            public void onInfoWindowClick() {
+                LatLng ll = marker.getPosition();
+                marker.setPosition(ll);
+                mBaiduMap.hideInfoWindow();
+            }
+        };
+
+        LatLng ll = marker.getPosition();
+        InfoWindow infoWindow = new InfoWindow(BitmapDescriptorFactory.fromView(view), ll, -47, listener);
+        mBaiduMap.showInfoWindow(infoWindow);
+        showVol(marker);
+        marker.remove();
+    }
 
     BaiduMap.OnMarkerClickListener onMarkerClicklistener = new BaiduMap.OnMarkerClickListener() {
         /**
@@ -426,80 +494,88 @@ public class ShowAEDActivity extends BaseActivity implements OnGetRoutePlanResul
          */
         @Override
         public boolean onMarkerClick(final Marker marker) {
+
             Bundle bundle = marker.getExtraInfo();
-            int type = bundle.getInt("type");
-            int distance = bundle.getInt("distance");
-            String telephone = bundle.getString("telephone");
-            double lonNumber = bundle.getDouble("lonNumber");
-            double latNumber = bundle.getDouble("latNumber");
-            if (type == 0) {//AED
-                LatLng start = new LatLng(lat, lon);
-                LatLng end = new LatLng(latNumber, lonNumber);
-                endLat = latNumber;
-                endLon = lonNumber;
-                walkProject(start, end);
-                String address = bundle.getString("address");
-                String expiryDate = bundle.getString("expiryDate");
-                String brank = bundle.getString("brank");
-                View view = LayoutInflater.from(ShowAEDActivity.this).inflate(R.layout.marker_aed_info_layout, null);
-                TextView brankText = (TextView) view.findViewById(R.id.brank);
-                TextView expiryDateText = (TextView) view.findViewById(R.id.expiryDate);
-                brankText.setText(brank);
+            if (bundle != null) {
+                int type = bundle.getInt("type");
+                int distance = bundle.getInt("distance");
+                String telephone = bundle.getString("telephone");
+                double lonNumber = bundle.getDouble("lonNumber");
+                double latNumber = bundle.getDouble("latNumber");
+                if (type == 0) {//AED
+                    LatLng start = new LatLng(lat, lon);
+                    LatLng end = new LatLng(latNumber, lonNumber);
+                    endLat = latNumber;
+                    endLon = lonNumber;
 
-                mAddress.setText(address);
-                phoneNumber.setText("电话号码 " + telephone);
-                mDistanceText.setText("AED距离" + distance + "米");
-                expiryDateText.setText("电池有效期限:" + expiryDate);
+                    walkProject(start, end);
+                    String address = bundle.getString("address");
+                    String expiryDate = bundle.getString("expiryDate");
+                    String brank = bundle.getString("brank");
+                    View view = LayoutInflater.from(ShowAEDActivity.this).inflate(R.layout.marker_aed_info_layout, null);
+                    TextView brankText = (TextView) view.findViewById(R.id.brank);
+                    TextView expiryDateText = (TextView) view.findViewById(R.id.expiryDate);
+                    brankText.setText(brank);
 
-                InfoWindow.OnInfoWindowClickListener listener = null;
-                listener = new InfoWindow.OnInfoWindowClickListener() {
-                    public void onInfoWindowClick() {
-                        LatLng ll = marker.getPosition();
-                        marker.setPosition(ll);
-                        mBaiduMap.hideInfoWindow();
+                    mAddress.setText(address);
+                    phoneNumber.setText("电话号码 " + telephone);
+                    mDistanceText.setText("AED距离" + distance + "米");
+                    expiryDateText.setText("电池有效期限:" + expiryDate);
+
+                    InfoWindow.OnInfoWindowClickListener listener = null;
+                    listener = new InfoWindow.OnInfoWindowClickListener() {
+                        public void onInfoWindowClick() {
+                            LatLng ll = marker.getPosition();
+                            marker.setPosition(ll);
+                            mBaiduMap.hideInfoWindow();
+                        }
+                    };
+                    LatLng ll = marker.getPosition();
+                    InfoWindow infoWindow = new InfoWindow(BitmapDescriptorFactory.fromView(view), ll, -47, listener);
+                    mBaiduMap.showInfoWindow(infoWindow);
+
+                } else {//志愿者
+                    //创建InfoWindow展示的view
+                    View view = LayoutInflater.from(ShowAEDActivity.this).inflate(R.layout.marker_service_info_layout, null);
+                    String disString = "该志愿者距离您" + distance + "米";
+                    String telString = "志愿者：134****7692";
+                    try {
+                        String startStr = telephone.substring(0, 3);
+                        String endStr = telephone.substring(telephone.length() - 4, telephone.length());
+                        String showString = startStr + "****" + endStr;
+                        telString = "志愿者：" + showString;
+                    } catch (Exception e) {
+
                     }
-                };
-                LatLng ll = marker.getPosition();
-                InfoWindow infoWindow = new InfoWindow(BitmapDescriptorFactory.fromView(view), ll, -47, listener);
-                mBaiduMap.showInfoWindow(infoWindow);
 
-            } else {//志愿者
-                //创建InfoWindow展示的view
-                View view = LayoutInflater.from(ShowAEDActivity.this).inflate(R.layout.marker_service_info_layout, null);
-                String disString = "该志愿者距离您" + distance + "米";
-                String telString = "志愿者：134****7692";
-                try {
-                    String startStr = telephone.substring(0, 3);
-                    String endStr = telephone.substring(telephone.length() - 4, telephone.length());
-                    String showString = startStr + "****" + endStr;
-                    telString = "志愿者：" + showString;
-                } catch (Exception e) {
-
-                }
-
-                TextView markerTel = (TextView) view.findViewById(R.id.markerTel);
-                TextView markerDistance = (TextView) view.findViewById(R.id.markerDistance);
-                markerDistance.setText(disString);
-                markerTel.setText(telString);
-                //定义用于显示该InfoWindow的坐标点
+                    TextView markerTel = (TextView) view.findViewById(R.id.markerTel);
+                    TextView markerDistance = (TextView) view.findViewById(R.id.markerDistance);
+                    markerDistance.setText(disString);
+                    markerTel.setText(telString);
+                    //定义用于显示该InfoWindow的坐标点
 //            LatLng pt = new LatLng(latNumber, lonNumber);
-                InfoWindow.OnInfoWindowClickListener listener = null;
-                listener = new InfoWindow.OnInfoWindowClickListener() {
-                    public void onInfoWindowClick() {
-                        LatLng ll = marker.getPosition();
-                        marker.setPosition(ll);
-                        mBaiduMap.hideInfoWindow();
-                    }
-                };
-                LatLng ll = marker.getPosition();
-                InfoWindow infoWindow = new InfoWindow(BitmapDescriptorFactory.fromView(view), ll, -47, listener);
-                mBaiduMap.showInfoWindow(infoWindow);
+                    InfoWindow.OnInfoWindowClickListener listener = null;
+                    listener = new InfoWindow.OnInfoWindowClickListener() {
+                        public void onInfoWindowClick() {
+                            LatLng ll = marker.getPosition();
+                            marker.setPosition(ll);
+                            mBaiduMap.hideInfoWindow();
+                        }
+                    };
+                    LatLng ll = marker.getPosition();
+                    InfoWindow infoWindow = new InfoWindow(BitmapDescriptorFactory.fromView(view), ll, -47, listener);
+                    mBaiduMap.showInfoWindow(infoWindow);
+                }
             }
+
             return true;
 
         }
     };
 
+    /*
+     * 导航
+     * */
     private void navigation() {
         if (lon == 0 || lat == 0 || endLat == 0 || endLon == 0) {
             ToaskUtil.showToast(this, "位置获取失败!");
@@ -516,6 +592,8 @@ public class ShowAEDActivity extends BaseActivity implements OnGetRoutePlanResul
         intent.setClass(this, RoutePlanDemo.class);
         startActivity(intent);
     }
+
+    Marker curMarker;
 
     private void walkProject(LatLng point, LatLng point2) {
         mBaiduMap.clear();
@@ -567,6 +645,7 @@ public class ShowAEDActivity extends BaseActivity implements OnGetRoutePlanResul
 
     @Override
     public void onGetWalkingRouteResult(WalkingRouteResult result) {
+
         if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
             Toast.makeText(ShowAEDActivity.this, "抱歉，未找到结果", Toast.LENGTH_SHORT).show();
         }
@@ -577,10 +656,50 @@ public class ShowAEDActivity extends BaseActivity implements OnGetRoutePlanResul
         }
         if (result.error == SearchResult.ERRORNO.NO_ERROR) {
 //            mBaiduMap.clear();
-            WalkingRouteOverlay walkingRouteOverlay = new WalkingRouteOverlay(mBaiduMap);
+            WalkingRouteOverlay walkingRouteOverlay = new MyWalkingRouteOverlay(mBaiduMap, true);
             walkingRouteOverlay.setData(result.getRouteLines().get(0));
             walkingRouteOverlay.addToMap();
             walkingRouteOverlay.zoomToSpan();
+
+            walkingRouteOverlay.getStartMarker();
+
+        }
+    }
+
+    private void showVol(Marker marker) {
+        if (marker != null) {
+            Bundle bundle = marker.getExtraInfo();
+            if (bundle != null) {
+                int distance = bundle.getInt("distance");
+                String telephone = bundle.getString("telephone");
+                View view = LayoutInflater.from(ShowAEDActivity.this).inflate(R.layout.marker_service_info_layout, null);
+                String disString = "距离" + distance + "米";
+                String telString = "志愿者：134****7692";
+                try {
+                    String startStr = telephone.substring(0, 3);
+                    String endStr = telephone.substring(telephone.length() - 4, telephone.length());
+                    String showString = startStr + "****" + endStr;
+                    telString = "志愿者：" + showString;
+                } catch (Exception e) {
+
+                }
+
+                TextView markerTel = (TextView) view.findViewById(R.id.markerTel);
+                TextView markerDistance = (TextView) view.findViewById(R.id.markerDistance);
+                markerDistance.setText(distance+"米");
+                markerTel.setText("距离你");
+                //定义用于显示该InfoWindow的坐标点
+//            LatLng pt = new LatLng(latNumber, lonNumber);
+                InfoWindow.OnInfoWindowClickListener listener = null;
+                listener = new InfoWindow.OnInfoWindowClickListener() {
+                    public void onInfoWindowClick() {
+
+                    }
+                };
+                LatLng ll = marker.getPosition();
+                InfoWindow infoWindow = new InfoWindow(BitmapDescriptorFactory.fromView(view), ll, -47, listener);
+                mBaiduMap.showInfoWindow(infoWindow);
+            }
         }
     }
 

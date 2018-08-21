@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.meimeng.APP;
 import com.example.meimeng.R;
 import com.example.meimeng.base.BaseActivity;
@@ -126,7 +127,13 @@ public class ServerMainActivity extends BaseActivity {
         count.setText(userInfo.getHelpNum() + "");
         distance.setText(userInfo.getHelpDistance() + "");
         Log.e("kele",userInfo.getOnlineTime()+"");
-        Glide.with(this).load(userInfo.getImage()).into(iv_head);
+        RequestOptions requestOptions = new RequestOptions()
+                .placeholder(R.mipmap.ic_me_head) //加载中图片
+                .error(R.mipmap.ic_me_head) //加载失败图片
+                .fallback(R.mipmap.ic_me_head) //url为空图片
+                .centerCrop() ;// 填充方式
+        //Log.e("ggg",image+name);
+        Glide.with(ServerMainActivity.this).load(userInfo.getImage()).apply(requestOptions).into(iv_head);
         enter_main.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

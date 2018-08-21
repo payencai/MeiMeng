@@ -34,6 +34,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestBuilder;
+import com.bumptech.glide.request.RequestOptions;
 import com.donkingliang.imageselector.utils.ImageSelectorUtils;
 import com.example.meimeng.APP;
 import com.example.meimeng.R;
@@ -186,13 +187,15 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
                         if (!TextUtils.equals("null",name)&&!TextUtils.isEmpty(name)) {
                             mClientUsername.setText(name + ",你好");
                         } else {
-                            mClientUsername.setText("朵雪花,你好");
+                            mClientUsername.setText("用户,你好");
                         }
-                        if (!image.contains("null")) {
-                            Glide.with(getContext()).load(image).into(client_head);
-                        }else{
-                            client_head.setImageResource(R.mipmap.ic_me_head);
-                        }
+                        RequestOptions requestOptions = new RequestOptions()
+                                .placeholder(R.mipmap.ic_me_head) //加载中图片
+                                .error(R.mipmap.ic_me_head) //加载失败图片
+                                .fallback(R.mipmap.ic_me_head) //url为空图片
+                                .centerCrop() ;// 填充方式
+                        //Log.e("ggg",image+name);
+                        Glide.with(getContext()).load(image).apply(requestOptions).into(client_head);
                     }
                     if (code == 9999) {
 
@@ -557,9 +560,10 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
                 try {
                     JSONObject object = new JSONObject(result);
                     int resultCode = object.getInt("resultCode");
+                    String msg=object.getString("message");
                     if (resultCode == 0) {
                         JSONObject data = object.getJSONObject("data");
-                        Log.e("pwd", pwd);
+                        //Log.e("pwd", pwd);
                         ServerUserInfo userInfo = new Gson().fromJson(data.toString(), ServerUserInfo.class);
                         userInfo.setPassword(pwd);
                         ServerUserInfoSharedPre intance = ServerUserInfoSharedPre.getIntance(getActivity());
@@ -571,6 +575,7 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
                         startActivity(intent);
                         getActivity().finish();
                     } else {
+                        ToaskUtil.showToast(getContext(),msg);
                         Log.e("pwd", "pwd");
                     }
                 } catch (JSONException e) {

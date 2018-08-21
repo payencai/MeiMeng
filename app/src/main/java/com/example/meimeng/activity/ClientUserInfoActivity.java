@@ -31,6 +31,7 @@ import com.example.meimeng.constant.PlatformContans;
 import com.example.meimeng.http.HttpProxy;
 import com.example.meimeng.http.ICallBack;
 import com.example.meimeng.util.SpinerPopWindow;
+import com.example.meimeng.util.ToaskUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -138,6 +139,10 @@ public class ClientUserInfoActivity extends BaseActivity {
         mBtnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(et_phone.getEditableText().toString().length()!=11){
+                    ToaskUtil.showToast(ClientUserInfoActivity.this,"移动号码必须为11位");
+                    return;
+                }
                 String data = returnJsonString();
                 String token = userInfo.getToken();
                 updateUserInfo(data, token);

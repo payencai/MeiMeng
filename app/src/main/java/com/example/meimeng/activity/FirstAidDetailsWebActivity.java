@@ -84,13 +84,24 @@ public class FirstAidDetailsWebActivity extends BaseActivity implements View.OnC
     protected int getContentId() {
         return R.layout.activity_first_aid_details_web;
     }
+    private void imgReset() {
+        webView.loadUrl("javascript:(function(){"
+                + "var objs = document.getElementsByTagName('img'); "
+                + "for(var i=0;i<objs.length;i++)  " + "{"
+                + "var img = objs[i];   "
+                + "    img.style.width = '100%';   "
+                + "    img.style.height = 'auto';   "
+                + "}" + "})()");
+    }
+
 
     private void initSetting() {
         WebSettings ws = webView.getSettings();
         //允许javascript执行
         ws.setJavaScriptEnabled(true);
-        ws.setUseWideViewPort(true);
-        ws.setLoadWithOverviewMode(true);
+       // ws.setUseWideViewPort(true);
+       // ws.setLoadWithOverviewMode(true);
+        //ws.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
         //加载一个服务端网页
         webView.loadUrl(mUrl);
         //加载一个本地网页
@@ -113,7 +124,7 @@ public class FirstAidDetailsWebActivity extends BaseActivity implements View.OnC
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-
+                imgReset();
             }
         });
         webView.setWebChromeClient(new WebChromeClient() {

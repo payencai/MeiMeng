@@ -3,7 +3,11 @@ package com.example.meimeng.activity;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -14,6 +18,7 @@ import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -22,6 +27,8 @@ import android.util.LruCache;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -33,10 +40,12 @@ import com.baidu.location.BDLocation;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
+import com.baidu.mapapi.map.InfoWindow;
 import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
+import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.model.LatLng;
@@ -71,6 +80,7 @@ import com.example.meimeng.service.LocationService;
 import com.example.meimeng.util.CustomPopWindow;
 import com.example.meimeng.util.LoginSharedUilt;
 import com.example.meimeng.util.MLog;
+import com.example.meimeng.util.MyWalkingRouteOverlay;
 import com.example.meimeng.util.ToaskUtil;
 import com.hyphenate.EMCallBack;
 import com.hyphenate.EMGroupChangeListener;
@@ -243,7 +253,7 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
         // 初始化搜索模块，注册事件监听
         mSearch = RoutePlanSearch.newInstance();
         mSearch.setOnGetRoutePlanResultListener(this);
-
+        mBaiduMap.setOnMarkerClickListener(onMarkerClicklistener);
         initDataView();
         locationService.start();
         applyGroup();
@@ -252,6 +262,182 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
 
     }
 
+    private void showPhoneDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(RescueActivity.this);
+        builder.setTitle("温馨提示")
+                .setMessage("使用虚拟号码拨打，主叫号码必须是你的登录账号，若非登录账号拨打，请选择正常号码拨打")
+                .setPositiveButton("本机号码拨打", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                          checkPower(mCurrentHelpInfo.getUseUserTelephone());
+                    }
+                })
+                .setNegativeButton("虚拟号码拨打", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        getVirtualPhone(mCurrentHelpInfo.getUseUserTelephone());
+                    }
+                });
+        builder.show();
+    }
+    private void showDialog(final LatLng latLng) {
+        final Dialog dialog = new Dialog(this, R.style.dialog);
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_map, null);
+        //获得dialog的window窗口
+        Window window = dialog.getWindow();
+        //设置dialog在屏幕底部
+        window.setGravity(Gravity.BOTTOM);
+        //设置dialog弹出时的动画效果，从屏幕底部向上弹出
+        window.setWindowAnimations(R.style.mypopwindow_anim_style);
+        window.getDecorView().setPadding(0, 0, 0, 0);
+        //获得window窗口的属性
+        android.view.WindowManager.LayoutParams lp = window.getAttributes();
+        //设置窗口宽度为充满全屏
+        lp.width = WindowManager.LayoutParams.WRAP_CONTENT;
+        //设置窗口高度为包裹内容
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        //将设置好的属性set回去
+        window.setAttributes(lp);
+        //将自定义布局加载到dialog上
+        dialog.setContentView(dialogView);
+        dialog.findViewById(R.id.tv_baidu).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+                baidu(latLng.latitude,latLng.longitude);
+            }
+        });
+        dialog.findViewById(R.id.tv_google).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+                google(latLng.latitude,latLng.longitude);
+
+            }
+        });
+        dialog.findViewById(R.id.tv_gaode).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+                gaode(latLng.latitude,latLng.longitude);
+
+            }
+        });
+        dialog.findViewById(R.id.tv_cancel).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+
+            }
+        });
+        dialog.show();
+    }
+    String areaname="";
+    private void setInfo(final LatLng ll){
+        View view = LayoutInflater.from(RescueActivity.this).inflate(R.layout.marker_aed_info_layout, null);
+        TextView brankText = (TextView) view.findViewById(R.id.brank);
+        TextView expiryDateText = (TextView) view.findViewById(R.id.expiryDate);
+        brankText.setText("距离你");
+        expiryDateText.setText(distance+"米");
+        InfoWindow.OnInfoWindowClickListener listener = null;
+        listener = new InfoWindow.OnInfoWindowClickListener() {
+            public void onInfoWindowClick() {
+                Log.e("latlon",ll.latitudeE6+"-"+ll.longitudeE6);
+                showDialog(ll);
+            }
+        };
+        InfoWindow infoWindow = new InfoWindow(BitmapDescriptorFactory.fromView(view), ll, -47, listener);
+        mBaiduMap.showInfoWindow(infoWindow);
+    }
+    BaiduMap.OnMarkerClickListener onMarkerClicklistener = new BaiduMap.OnMarkerClickListener(){
+
+        @Override
+        public boolean onMarkerClick(final Marker marker) {
+
+           if(Math.abs(marker.getPosition().latitude-mCallerLat)<0.00001&&Math.abs(marker.getPosition().longitude-mCallerLon)<0.00001){
+
+               ToaskUtil.showToast(RescueActivity.this,"你点击了marker");
+           }
+
+            return false;
+        }
+    };
+    private void google(double mLatitude,double mLongitude){
+        if (isAvilible(this, "com.google.android.apps.maps")) {
+            Uri gmmIntentUri = Uri.parse("google.navigation:q="
+                    + mLatitude + "," + mLongitude
+                    + ", + Sydney +Australia");
+            Intent mapIntent = new Intent(Intent.ACTION_VIEW,
+                    gmmIntentUri);
+            mapIntent.setPackage("com.google.android.apps.maps");
+            startActivity(mapIntent);
+        } else {
+            Toast.makeText(this, "您尚未安装谷歌地图", Toast.LENGTH_LONG)
+                    .show();
+            Uri uri = Uri
+                    .parse("market://details?id=com.google.android.apps.maps");
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            startActivity(intent);
+        }
+    }
+    private void baidu(double mLatitude,double mLongitude){
+        if (isAvilible(this, "com.baidu.BaiduMap")) {// 传入指定应用包名
+
+            try {
+                Intent intent = Intent.getIntent("intent://map/direction?destination=latlng:"
+                        + mLatitude + ","
+                        + mLongitude + "|name:" + // 终点
+                        "&mode=driving&" + // 导航路线方式
+                        "region=广东" + //
+                        "&src=广州番禺#Intent;scheme=bdapp;package=com.baidu.BaiduMap;end");
+                   startActivity(intent); // 启动调用
+            } catch (URISyntaxException e) {
+                Log.e("intent", e.getMessage());
+            }
+        } else {// 未安装
+            Toast.makeText(this, "您尚未安装百度地图", Toast.LENGTH_LONG)
+                    .show();
+            Uri uri = Uri
+                    .parse("market://details?id=com.baidu.BaiduMap");
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            startActivity(intent);
+        }
+    }
+    private void gaode(double mLatitude,double mLongitude){
+        if (isAvilible(this, "com.autonavi.minimap")) {
+            try {
+                Intent intent = Intent.getIntent("androidamap://navi?sourceApplication=新疆和田&poiname="+"广州"+"&lat="
+                        + mLatitude
+                        + "&lon="
+                        + mLongitude + "&dev=0");
+                startActivity(intent);
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
+        } else {
+            Toast.makeText(this, "您尚未安装高德地图", Toast.LENGTH_LONG)
+                    .show();
+            Uri uri = Uri
+                    .parse("market://details?id=com.autonavi.minimap");
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            startActivity(intent);
+        }
+    }
+    public static boolean isAvilible(Context context, String packageName) {
+        // 获取packagemanager
+        final PackageManager packageManager = context.getPackageManager();
+        // 获取所有已安装程序的包信息
+        List<PackageInfo> packageInfos = packageManager.getInstalledPackages(0);
+        // 用于存储所有已安装程序的包名
+        List<String> packageNames = new ArrayList<String>();
+        // 从pinfo中将包名字逐一取出，压入pName list中
+        if (packageInfos != null) {
+            for (int i = 0; i < packageInfos.size(); i++) {
+                String packName = packageInfos.get(i).packageName;
+                packageNames.add(packName);
+            }
+        }
+        // 判断packageNames中是否有目标程序的包名，有TRUE，没有FALSE
+        return packageNames.contains(packageName);
+    }
     private void setMessageListener() {
         EMClient.getInstance().chatManager().addMessageListener(msgListener);
     }
@@ -305,13 +491,13 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
 
         }
     }
-
+    int distance;
     private void initDataView() {
 //        helperHead
         Glide.with(this).load(mCurrentHelpInfo.getImage()).into(helperHead);
         helperAdress.setText(mCurrentHelpInfo.getUserAddress());
         helperName.setText(mCurrentHelpInfo.getUseUserName());
-        int distance = (int) mCurrentHelpInfo.getDistance();
+        distance = (int) mCurrentHelpInfo.getDistance();
         helperDistance.setText("与您" + distance + "米范围内");
         helperTime.setText(mCurrentHelpInfo.getCreateTime());
         int helpNum = mCurrentHelpInfo.getHelpNum();
@@ -417,7 +603,8 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
                 }
                 break;
             case R.id.callTel:
-                getVirtualPhone(mCurrentHelpInfo.getUseUserTelephone());
+                showPhoneDialog();
+
                 break;
             case R.id.metronome:
                 startActivity(new Intent(this, CPROptionActivity.class));
@@ -437,7 +624,7 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
     }
     private void  getVirtualPhone(final String oldphone){
         Map<String,Object> param=new HashMap<>();
-        param.put("callingPhone",APP.getInstance().getUserInfo().getAccount());
+        param.put("callingPhone",APP.getInstance().getServerUserInfo().getTelephone());
         param.put("calledPhone",oldphone);
         HttpProxy.obtain().get(PlatformContans.Medicine.sGetVirtualNumber, param, new ICallBack() {
             @Override
@@ -597,7 +784,7 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
                     } catch (Exception e) {
                     }
 
-                    final int distance = (int) DistanceUtil.getDistance(startPoint, endPoint);//距离定位的距离
+                    distance = (int) DistanceUtil.getDistance(startPoint, endPoint);//距离定位的距离
                     mHandler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -874,6 +1061,7 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
         public void onReceiveLocation(BDLocation location) {
             String addr = location.getAddrStr();    //获取详细地址信息
             String country = location.getCountry();    //获取国家
+            areaname=addr;
             String province = location.getProvince();    //获取省份
             String city = location.getCity();    //获取城市
             String district = location.getDistrict();    //获取区县
@@ -985,11 +1173,11 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
             return;
         }
 
-        int distance = (int) DistanceUtil.getDistance(point, point2);//距离定位的距离
+         distance = (int) DistanceUtil.getDistance(point, point2);//距离定位的距离
         helperDistance.setText("与您" + distance + "米范围内");
         mBaiduMap.clear();
-        setMarker(point);
-        setMarker2(point2);
+        //setMarker(point);
+        //setMarker2(point2);
         walkProject(point);
 
 
@@ -1129,7 +1317,7 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
             }
         });
     }
-
+    boolean isEnd;
     @Override
     public void onGetWalkingRouteResult(WalkingRouteResult result) {
         if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
@@ -1142,10 +1330,13 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
         }
         if (result.error == SearchResult.ERRORNO.NO_ERROR) {
 //            mBaiduMap.clear();
-            WalkingRouteOverlay walkingRouteOverlay = new WalkingRouteOverlay(mBaiduMap);
+            MyWalkingRouteOverlay walkingRouteOverlay = new MyWalkingRouteOverlay(mBaiduMap,false);
             walkingRouteOverlay.setData(result.getRouteLines().get(0));
+           // walkingRouteOverlay.setEnd(true);
             walkingRouteOverlay.addToMap();
+            isEnd=walkingRouteOverlay.isEnd();
             walkingRouteOverlay.zoomToSpan();
+            setInfo(new LatLng(mCallerLat,mCallerLon));
         }
     }
 

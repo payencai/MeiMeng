@@ -74,6 +74,7 @@ public class SpinerPopWindow<T> extends PopupWindow {
                 holder=(ViewHolder) convertView.getTag();
             }
             holder.tvName.setText(getItem(position).toString());
+
             return convertView;
         }
     }

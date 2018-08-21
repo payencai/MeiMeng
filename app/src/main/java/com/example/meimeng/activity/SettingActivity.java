@@ -99,7 +99,11 @@ public class SettingActivity extends BaseActivity {
     private void logout() {
         UserInfoSharedPre.getIntance(this).clearUserInfo();
         ActivityManager.getInstance().finishAllActivity();
-        startActivity(new Intent(this, LoginActivity.class));
+        Intent intent =new Intent(this, LoginActivity.class);
+        Bundle bundle=new Bundle();
+        bundle.putString("phone",APP.getInstance().getUserInfo().getAccount());
+        intent.putExtras(bundle);
+        startActivity(intent);
     }
 
     private void initData() {

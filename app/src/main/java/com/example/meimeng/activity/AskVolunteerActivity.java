@@ -39,6 +39,7 @@ import com.example.meimeng.constant.PlatformContans;
 import com.example.meimeng.http.HttpProxy;
 import com.example.meimeng.http.ICallBack;
 import com.example.meimeng.util.TimeSelectPopWindow;
+import com.example.meimeng.util.ToaskUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -66,8 +67,8 @@ import okhttp3.Response;
 public class AskVolunteerActivity extends BaseActivity {
     TextView title;
     ImageView upload;
-    boolean isHomeEmpty=false;
-    boolean isWorkEmpty=false;
+    boolean isHomeEmpty = false;
+    boolean isWorkEmpty = false;
     private GridView ask_show_pic;
     private PictureAdapter mAdapter;
     private ArrayList<String> selected = new ArrayList<>();
@@ -98,44 +99,18 @@ public class AskVolunteerActivity extends BaseActivity {
     @BindView(R.id.vol_detail_time)
     TextView detailtime;
     @BindView(R.id.btn_vol_commit)
-    Button commit;
-    int count=0;
-    String value="";
+    Button btn_vol_commit;
+    int count = 0;
+    String value = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
-    private void isAskServerUser(){
 
-        String servertype=APP.getInstance().getUserInfo().getServerType();
-        //ServerUserInfo server=APP.getInstance().getUserInfo().getServerUser();
-       // Log.e("server",server.getIsCertificate()+"");
-        if(!TextUtils.isEmpty(servertype))
-        switch (servertype){
-            case "1":
-                value="你还没有申请支援者";
-                showAskDialog();
-                break;
-            case "2":
-                value="你的申请审核中,请耐心等候";
-                showAskDialog();
-                break;
-            case "3":
-                getServerUserinfo();
-                break;
-            case "4":
-                value="你的申请被驳回";
-                showAskDialog();
-                break;
-            default:
-                value="你的申请已通过";
-                showAskDialog();
-                break;
-        }
-
-    }
     Dialog dialog;
-    private void showAskDialog() {
+
+    private void showAskDialog(String value) {
         //isAskServerUser();
         //Log.e("val",val);
         dialog = new Dialog(this, R.style.dialog);
@@ -149,17 +124,17 @@ public class AskVolunteerActivity extends BaseActivity {
         //window.setWindowAnimations(R.style.mypopwindow_anim_style);
         window.getDecorView().setPadding(0, 0, 0, 0);
         //获得window窗口的属性
-        WindowManager.LayoutParams lp=window.getAttributes();
-        Display display=getWindowManager().getDefaultDisplay();
+        WindowManager.LayoutParams lp = window.getAttributes();
+        Display display = getWindowManager().getDefaultDisplay();
         //android.view.WindowManager.LayoutParams lp = window.getAttributes();
         //设置窗口宽度为充满全屏
-        lp.width = (int) (display.getWidth()*0.7);
+        lp.width = (int) (display.getWidth() * 0.7);
 
         //将设置好的属性set回去
         window.setAttributes(lp);
         //将自定义布局加载到dialog上
         dialog.setContentView(dialogView);
-        TextView textView=(TextView) dialog.findViewById(R.id.dialog_value);
+        TextView textView = (TextView) dialog.findViewById(R.id.dialog_value);
         textView.setText(value);
         dialog.findViewById(R.id.dialog_iknow).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -171,24 +146,78 @@ public class AskVolunteerActivity extends BaseActivity {
 
         dialog.show();
     }
-    private void  getServerUserinfo(){
+
+
+    private void showCertDialog() {
+        //isAskServerUser();
+        //Log.e("val",val);
+        dialog = new Dialog(this, R.style.dialog);
+        dialog.setCanceledOnTouchOutside(false);
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_tishi, null);
+        //获得dialog的window窗口
+        Window window = dialog.getWindow();
+        //设置dialog在屏幕底部
+        window.setGravity(Gravity.CENTER);
+        //设置dialog弹出时的动画效果，从屏幕底部向上弹出
+        //window.setWindowAnimations(R.style.mypopwindow_anim_style);
+        window.getDecorView().setPadding(0, 0, 0, 0);
+        //获得window窗口的属性
+        WindowManager.LayoutParams lp = window.getAttributes();
+        Display display = getWindowManager().getDefaultDisplay();
+        //android.view.WindowManager.LayoutParams lp = window.getAttributes();
+        //设置窗口宽度为充满全屏
+        lp.width = (int) (display.getWidth() * 0.7);
+
+        //将设置好的属性set回去
+        window.setAttributes(lp);
+        //将自定义布局加载到dialog上
+        dialog.setContentView(dialogView);
+        TextView textView = (TextView) dialog.findViewById(R.id.dialog_value);
+        textView.setText("请先去实名认证");
+        dialog.findViewById(R.id.dialog_iknow).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+                finish();
+            }
+        });
+
+        dialog.show();
+    }
+
+
+    private void getServerUserinfo() {
         HttpProxy.obtain().get(PlatformContans.Serveruser.sGetServerUser, APP.getInstance().getUserInfo().getToken(), new ICallBack() {
             @Override
             public void OnSuccess(String result) {
-                Log.e("result",result);
+                Log.e("result", result);
                 JSONObject jsonObject = null;
                 try {
                     jsonObject = new JSONObject(result);
                     int code = jsonObject.getInt("resultCode");
                     if (code == 0) {
                         JSONObject object = jsonObject.getJSONObject("data");
-                        int  isCertificate=object.getInt("isCertificate");
+                        int isCertificate = object.getInt("isUpgrade");
                         if (isCertificate == 1) {
-                            value="你已经是高级志愿者";
-                        }else{
-                            value="你已经是初级志愿者，可以去志愿者界面申请成为高级志愿者";
+                            value = "你已经是高级志愿者";
+                        } else {
+                            String type = APP.getInstance().getUserInfo().getServerType();
+                            if (TextUtils.equals("2", type)) {
+                                value = "你的申请还在审核中";
+                            }
+                            if (TextUtils.equals("4", type)) {
+                                value = "你的申请被驳回";
+                            }
+                            if (TextUtils.equals("3", type)) {
+                                if(TextUtils.equals(object.getString("isExamine"),"1")){
+                                    value = "你已经是初级志愿者，可以去志愿者界面申请成为高级志愿者";
+                                }
+                                else{
+                                    value = "你的申请还在审核中";
+                                }
+                            }
                         }
-                        showAskDialog();
+                        showAskDialog(value);
                     }
                     if (code == 9999) {
 
@@ -206,38 +235,40 @@ public class AskVolunteerActivity extends BaseActivity {
             }
         });
     }
-    private void getUserInfo(){
+
+    private void getUserInfo() {
         HttpProxy.obtain().get(PlatformContans.UseUser.sGetUseUser, APP.getInstance().getUserInfo().getToken(), new ICallBack() {
             @Override
             public void OnSuccess(String result) {
-                Log.e("result",result);
+                Log.e("result", result);
                 JSONObject jsonObject = null;
                 try {
                     jsonObject = new JSONObject(result);
                     int code = jsonObject.getInt("resultCode");
                     if (code == 0) {
                         JSONObject object = jsonObject.getJSONObject("data");
-                        JSONObject server=object.getJSONObject("serverUser");
-                        if (server!=null){
-                            String name=server.getString("name");
-                            String idNumber=server.getString("idNumber");
-                            String wordaddr=server.getString("workAddress");
-                            String homeaddr=server.getString("homeAddress");
-                            String sex=server.getString("sex");
-                            String worktime=server.getString("workTime");
-                            Log.e("idNumber",idNumber);
+                        JSONObject server = object.getJSONObject("serverUser");
+                        if (server != null) {
+                            String name = server.getString("name");
+                            String idNumber = server.getString("idNumber");
+                            String wordaddr = server.getString("workAddress");
+                            String homeaddr = server.getString("homeAddress");
+                            String sex = server.getString("sex");
+                            String worktime = server.getString("workTime");
+                            Log.e("idNumber", idNumber);
                             tv_name.setText(name);
                             number.setText(idNumber);
                             detailhome.setText(homeaddr);
                             detailwork.setText(wordaddr);
-                            if(TextUtils.isEmpty(worktime)){
+                            if (TextUtils.isEmpty(worktime)) {
                                 detailtime.setText("单休");
-                            }else
+                            } else
                                 detailtime.setText(worktime);
-                            if(sex.equals("男")){
+                            if (sex.equals("男")) {
                                 man.setChecked(true);
                                 nv.setChecked(false);
                             }
+                            getServerUserinfo();
 
                         }
 
@@ -250,6 +281,45 @@ public class AskVolunteerActivity extends BaseActivity {
                     e.printStackTrace();
                 }
 
+
+            }
+
+            @Override
+            public void onFailure(String error) {
+
+            }
+        });
+    }
+
+    private void getIsCert() {
+        HttpProxy.obtain().get(PlatformContans.UseUser.sGetUseUser, APP.getInstance().getUserInfo().getToken(), new ICallBack() {
+            @Override
+            public void OnSuccess(String result) {
+                Log.e("result", result);
+                try {
+                    JSONObject object = new JSONObject(result);
+                    JSONObject data = object.getJSONObject("data");
+                    number.setText(data.getString("idNumber"));
+                    tv_name.setText(data.getString("name"));
+                    detailhome.setText(data.getString("address"));
+                    homelat = data.getString("latitude");
+                    homelon = data.getString("longitude");
+                    String sex = data.getString("sex");
+                    if (!TextUtils.isEmpty(sex)) {
+                        if (TextUtils.equals("男", sex)) {
+                            man.setChecked(true);
+                            nv.setChecked(false);
+                        } else {
+                            nv.setChecked(true);
+                            man.setChecked(false);
+                        }
+                    }
+                    if (TextUtils.isEmpty(number.getEditableText().toString())) {
+                        showCertDialog();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
 
             }
 
@@ -263,26 +333,37 @@ public class AskVolunteerActivity extends BaseActivity {
     @Override
     protected void initView() {
         ButterKnife.bind(this);
-        title=findViewById(R.id.title);
-        upload=findViewById(R.id.ask_upload);
-        ask_show_pic=findViewById(R.id.ask_show_pic);
+        title = findViewById(R.id.title);
+        upload = findViewById(R.id.ask_upload);
+        ask_show_pic = findViewById(R.id.ask_show_pic);
         title.setText("志愿者招募");
-        Drawable drawable= getResources().getDrawable(R.drawable.sex_selector);
-        drawable.setBounds(0,0,30,30);//将drawable设置为宽100 高100固定大小
-        man.setCompoundDrawables(drawable,null,null,null);
-        Drawable drawable2= getResources().getDrawable(R.drawable.sex_selector);
-        drawable2.setBounds(0,0,30,30);//将drawable设置为宽100 高100固定大小
-        nv.setCompoundDrawables(drawable2,null,null,null);
+        Drawable drawable = getResources().getDrawable(R.drawable.sex_selector);
+        drawable.setBounds(0, 0, 30, 30);//将drawable设置为宽100 高100固定大小
+        man.setCompoundDrawables(drawable, null, null, null);
+        Drawable drawable2 = getResources().getDrawable(R.drawable.sex_selector);
+        drawable2.setBounds(0, 0, 30, 30);//将drawable设置为宽100 高100固定大小
+        nv.setCompoundDrawables(drawable2, null, null, null);
         nv.setChecked(true);
+        //Log.e("type",APP.getInstance().getUserInfo().getServerType());
 
-        if(!TextUtils.isEmpty(APP.getInstance().getUserInfo().getServerType()))
-            isAskServerUser();
-        if(!TextUtils.isEmpty(APP.getInstance().getUserInfo().getServerType()))
-        if(APP.getInstance().getUserInfo().getServerType().equals("3")||APP.getInstance().getUserInfo().getServerType().equals("2")){
-            getUserInfo();
+
+        if (!TextUtils.isEmpty(APP.getInstance().getUserInfo().getServerType())) {
+            if (APP.getInstance().getUserInfo().getServerType().equals("3")) {
+                getUserInfo();
+
+            }
+            if (APP.getInstance().getUserInfo().getServerType().equals("2")) {
+
+            }
+        } else {
+            //还没有申请志愿者
+            //如果没有实名认证，提示去实名
+            getIsCert();
+
         }
+
         ImageView back;
-        back=findViewById(R.id.back);
+        back = findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -292,11 +373,12 @@ public class AskVolunteerActivity extends BaseActivity {
         upload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ImageSelectorUtils.openPhoto(AskVolunteerActivity.this,2,false,3,selected);
+                ImageSelectorUtils.openPhoto(AskVolunteerActivity.this, 2, false, 3, selected);
             }
         });
         initPictureAdapter();
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -308,51 +390,50 @@ public class AskVolunteerActivity extends BaseActivity {
             selected.addAll(images);
             mAdapter.updata(images);
         }
-        if (data != null)
-        {
+        if (data != null) {
             if (requestCode == 4) {
                 AddressBean address = (AddressBean) data.getSerializableExtra("address");
-                if(address!=null){
+                if (address != null) {
                     String addressStr = address.getAddress();
                     double lon = address.getLon();
                     double lat = address.getLat();
-                    homelon=""+lon;
-                    homelat=""+lat;
+                    homelon = "" + lon;
+                    homelat = "" + lat;
                     Log.d("onActivityResult", "onActivityResult: 经度：" + lon + ",维度:" + lat);
                     if (!TextUtils.isEmpty(addressStr)) {
                         detailhome.setText(addressStr);
-                        detailhome.setTextColor(ContextCompat.getColor(this,R.color.text_9));
+                        detailhome.setTextColor(ContextCompat.getColor(this, R.color.text_9));
                     }
-                }
-                else{
-                     isHomeEmpty=true;
+                } else {
+                    isHomeEmpty = true;
                 }
 
             }
 
         }
-        if(data!=null){
+        if (data != null) {
             if (requestCode == 5) {
                 AddressBean address = (AddressBean) data.getSerializableExtra("address");
-                if (address!=null){
+                if (address != null) {
                     String addressStr = address.getAddress();
 
                     double lon = address.getLon();
                     double lat = address.getLat();
-                    worklon=""+lon;
-                    worklat=""+lat;
+                    worklon = "" + lon;
+                    worklat = "" + lat;
                     Log.d("onActivityResult", "onActivityResult: 经度：" + lon + ",维度:" + lat);
                     if (!TextUtils.isEmpty(addressStr)) {
                         detailwork.setText(addressStr);
-                        detailwork.setTextColor(ContextCompat.getColor(this,R.color.text_9));
+                        detailwork.setTextColor(ContextCompat.getColor(this, R.color.text_9));
                     }
-                }else{
-                    isWorkEmpty=true;
+                } else {
+                    isWorkEmpty = true;
                 }
 
             }
         }
     }
+
     @Override
     protected int getContentId() {
         return R.layout.show_ask_volunteer;
@@ -362,9 +443,11 @@ public class AskVolunteerActivity extends BaseActivity {
         mAdapter = new PictureAdapter(this, selected);
         ask_show_pic.setAdapter(mAdapter);
     }
-    String urls="";
+
+    String urls = "";
+
     private void upImage(String url, String filePath) {
-       // Log.e("tag",url+filePath);
+        // Log.e("tag",url+filePath);
         OkHttpClient mOkHttpClent = new OkHttpClient();
         File file = new File(filePath);
         MultipartBody.Builder builder = new MultipartBody.Builder()
@@ -395,16 +478,15 @@ public class AskVolunteerActivity extends BaseActivity {
                 try {
                     JSONObject object = new JSONObject(string);
                     int resultCode = object.getInt("resultCode");
-                    final String msg=object.getString("message");
-                    urls = urls+object.getString("data")+",";
+                    final String msg = object.getString("message");
+                    urls = urls + object.getString("data") + ",";
                     if (resultCode == 0) {
                         count++;
-                        if(count==selected.size()){
-                            Log.e("commit",count+"");
+                        if (count == selected.size()) {
+                            Log.e("commit", count + "");
                             commit();
                         }
-                    }
-                    else{
+                    } else {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -419,29 +501,30 @@ public class AskVolunteerActivity extends BaseActivity {
             }
         });
     }
-    @OnClick({R.id.et_volunteer_work,R.id.et_volunteer_home,R.id.et_volunteer_time,R.id.btn_vol_commit})
-    public void onClick(View view){
-        switch (view.getId()){
+
+    @OnClick({R.id.et_volunteer_work, R.id.et_volunteer_home, R.id.et_volunteer_time, R.id.btn_vol_commit})
+    public void onClick(View view) {
+        switch (view.getId()) {
             case R.id.et_volunteer_home:
-                SelectAddressActivity.startSelectAddressActivity(this, "address", 4,"");
+                SelectAddressActivity.startSelectAddressActivity(this, "address", 4, "");
                 //startActivityForResult(new Intent(AskVolunteerActivity.this,SelectAddressActivity.class),4);
                 break;
             case R.id.et_volunteer_work:
-                SelectAddressActivity.startSelectAddressActivity(this, "address", 5,"");
-               // startActivityForResult(new Intent(AskVolunteerActivity.this,SelectAddressActivity.class),5);
+                SelectAddressActivity.startSelectAddressActivity(this, "address", 5, "");
+                // startActivityForResult(new Intent(AskVolunteerActivity.this,SelectAddressActivity.class),5);
                 break;
             case R.id.et_volunteer_time:
-                final Window window=this.getWindow();
-                final TimeSelectPopWindow mPop=new TimeSelectPopWindow(this);
-                final WindowManager.LayoutParams params=window.getAttributes();
-                params.alpha= (float) 0.5;
+                final Window window = this.getWindow();
+                final TimeSelectPopWindow mPop = new TimeSelectPopWindow(this);
+                final WindowManager.LayoutParams params = window.getAttributes();
+                params.alpha = (float) 0.5;
                 window.setAttributes(params);
-                mPop.showAtLocation(AskVolunteerActivity.this.findViewById(R.id.vol_sc), Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL, 0, 0);
+                mPop.showAtLocation(AskVolunteerActivity.this.findViewById(R.id.vol_sc), Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
                 mPop.setOnDismissListener(new PopupWindow.OnDismissListener() {
                     @Override
                     public void onDismiss() {
-                        final WindowManager.LayoutParams params=window.getAttributes();
-                        params.alpha= (float) 1.0;
+                        final WindowManager.LayoutParams params = window.getAttributes();
+                        params.alpha = (float) 1.0;
                         window.setAttributes(params);
 
                     }
@@ -450,7 +533,7 @@ public class AskVolunteerActivity extends BaseActivity {
                 mPop.setOnItemClickListener(new TimeSelectPopWindow.OnItemClickListener() {
                     @Override
                     public void setOnItemClick(View v) {
-                        switch (v.getId()){
+                        switch (v.getId()) {
                             case R.id.pop_cancel:
                                 mPop.dismiss();
                                 detailtime.setText("");
@@ -473,24 +556,25 @@ public class AskVolunteerActivity extends BaseActivity {
                 });
                 break;
             case R.id.btn_vol_commit:
-                if(TextUtils.isEmpty(APP.getInstance().getUserInfo().getServerType())){
-                    if(!isInputEmpty()){
+                if (TextUtils.isEmpty(APP.getInstance().getUserInfo().getIdNumber())) {
+                    ToaskUtil.showToast(this, "你还没有实名认证，请先去实名认证");
+                    return;
+                }
+                if (TextUtils.isEmpty(APP.getInstance().getUserInfo().getServerType())) {
+                    if (!isInputEmpty()) {
                         commitAll();
+                    } else {
+                        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
                     }
-                    else{
-                        Toast.makeText(this,msg,Toast.LENGTH_SHORT).show();
-                    }
-                }else{
-                    if(APP.getInstance().getUserInfo().getServerType().equals("3")||APP.getInstance().getUserInfo().getServerType().equals("2")){
-                        Toast.makeText(this,"你已经是志愿者或者已经申请志愿者，请不要重复操作！",Toast.LENGTH_LONG).show();
-                        commit.setEnabled(false);
-                    }
-                    else{
-                        if(!isInputEmpty()){
+                } else {
+                    if (APP.getInstance().getUserInfo().getServerType().equals("3") || APP.getInstance().getUserInfo().getServerType().equals("2")) {
+                        Toast.makeText(this, "你已经是志愿者或者已经申请志愿者，请不要重复操作！", Toast.LENGTH_LONG).show();
+                        btn_vol_commit.setEnabled(false);
+                    } else {
+                        if (!isInputEmpty()) {
                             commitAll();
-                        }
-                        else{
-                            Toast.makeText(this,msg,Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
@@ -501,67 +585,70 @@ public class AskVolunteerActivity extends BaseActivity {
         }
 
     }
-    private void commitImage(){
-            if(selected.size()!=0) {
-                for (String filepath : selected) {
-                    Log.e("aaa","aaa");
-                    upImage(PlatformContans.Image.sUpdateImage, filepath);
-                }
+
+    private void commitImage() {
+        if (selected.size() != 0) {
+            for (String filepath : selected) {
+                Log.e("aaa", "aaa");
+                upImage(PlatformContans.Image.sUpdateImage, filepath);
             }
+        }
 
 
     }
-    private void commitAll(){
-        if(selected.size()==0)
-        {
+
+    private void commitAll() {
+        if (selected.size() == 0) {
             commit();
-        }
-        else{
+        } else {
             commitImage();
         }
 
     }
-    String msg="";
-    public boolean isInputEmpty(){
-        if(TextUtils.equals(detailhome.getText().toString(),"详细家庭地址")){
-            msg="家庭地址不能为空";
+
+    String msg = "";
+
+    public boolean isInputEmpty() {
+        if (TextUtils.equals(detailhome.getText().toString(), "详细家庭地址")) {
+            msg = "家庭地址不能为空";
             return true;
         }
-        if(TextUtils.equals(detailwork.getText().toString(),"详细工作地址")){
-            msg="工作地址不能为空";
+        if (TextUtils.equals(detailwork.getText().toString(), "详细工作地址")) {
+            msg = "工作地址不能为空";
             return true;
         }
         //if("")
-        if(TextUtils.isEmpty(tv_name.getText().toString())){
-            msg="姓名不能为空";
+        if (TextUtils.isEmpty(tv_name.getText().toString())) {
+            msg = "姓名不能为空";
             return true;
         }
-        if(TextUtils.isEmpty(number.getText().toString())){
-            msg="身份证号码不能为空";
+        if (TextUtils.isEmpty(number.getText().toString())) {
+            msg = "身份证号码不能为空";
             return true;
         }
 
         return false;
     }
-    public void commit(){
-         String token= APP.getInstance().getUserInfo().getToken();
-         String data= returnJsonString();
-          HttpProxy.obtain().post(PlatformContans.Serveruser.sAddServerUserByUseUser, token, data, new ICallBack() {
+
+    public void commit() {
+        String token = APP.getInstance().getUserInfo().getToken();
+        String data = returnJsonString();
+        HttpProxy.obtain().post(PlatformContans.Serveruser.sAddServerUserByUseUser, token, data, new ICallBack() {
             @Override
             public void OnSuccess(String result) {
-                Log.e("success",result);
-                JSONObject jsonObject= null;
+                Log.e("success", result);
+                JSONObject jsonObject = null;
                 try {
                     jsonObject = new JSONObject(result);
-                    int code=jsonObject.getInt("resultCode");
-                    if(code==0){
-                        Toast.makeText(AskVolunteerActivity.this,"申请成功",Toast.LENGTH_LONG).show();
-                        count=0;
+                    int code = jsonObject.getInt("resultCode");
+                    if (code == 0) {
+                        Toast.makeText(AskVolunteerActivity.this, "申请成功", Toast.LENGTH_LONG).show();
+                        count = 0;
                         finish();
                     }
-                    if(code==2001){
-                        Toast.makeText(AskVolunteerActivity.this,"您已申请成为志愿者或已经是志愿者，请勿重复操作",Toast.LENGTH_LONG).show();
-                        count=0;
+                    if (code == 2001) {
+                        Toast.makeText(AskVolunteerActivity.this, "您已申请成为志愿者或已经是志愿者，请勿重复操作", Toast.LENGTH_LONG).show();
+                        count = 0;
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -570,51 +657,52 @@ public class AskVolunteerActivity extends BaseActivity {
 
             @Override
             public void onFailure(String error) {
-                 Log.e("error",error);
+                Log.e("error", error);
             }
         });
     }
-    public String returnJsonString(){
 
-        Map<String,Object> params=new HashMap<>();
+    public String returnJsonString() {
+
+        Map<String, Object> params = new HashMap<>();
         Gson gson = new GsonBuilder().enableComplexMapKeySerialization().create();
-        String name =tv_name.getEditableText().toString();
-        String idNumber =number.getEditableText().toString();
-        String homeAddress =detailhome.getText().toString();
-        String workAddress =detailwork.getText().toString();
+        String name = tv_name.getEditableText().toString();
+        String idNumber = number.getEditableText().toString();
+        String homeAddress = detailhome.getText().toString();
+        String workAddress = detailwork.getText().toString();
 
-        String workTime =detailtime.getText().toString()+"";
-        String sex="女";
-        String certificateImages="";
+        String workTime = detailtime.getText().toString() + "";
+        String sex = "女";
+        String certificateImages = "";
         int isCertificate;
-        if(selected.size()==0){
-            isCertificate=0;
-        }else{
-            isCertificate=1;
-            certificateImages=urls.substring(0,urls.length()-1);
+        if (selected.size() == 0) {
+            isCertificate = 0;
+        } else {
+            isCertificate = 1;
+            certificateImages = urls.substring(0, urls.length() - 1);
         }
-        Log.e("url",urls);
-        String workLatitude =worklat;
-        String workLongitude=worklon;
-        String homeLatitude=homelat;
-        String homeLongitude=homelon;
+        Log.e("url", urls);
+        String workLatitude = worklat;
+        String workLongitude = worklon;
+        String homeLatitude = homelat;
+        String homeLongitude = homelon;
         //String medicineIds="33012750-787c-4880-adad-0c2a8e653ac3,2ff9460d-dbbe-42f5-b8f0-a66ce53cf046,11199602-9e63-40d9-808b-ad467d58e2b5";
-        if(man.isChecked()){
-            sex="男";
+        if (man.isChecked()) {
+            sex = "男";
         }
-        params.put("name",name);
-        params.put("idNumber",idNumber);
-        params.put("homeAddress",homeAddress);
-        params.put("workAddress",workAddress);
-        params.put("workTime",workTime);
-        params.put("sex",sex);
-        params.put("certificateImages",certificateImages);
-        params.put("isCertificate",isCertificate);
-        params.put("workLatitude",workLatitude);
-        params.put("workLongitude",workLongitude);
-        params.put("homeLatitude",homeLatitude);
-        params.put("homeLongitude",homeLongitude);
-        params.put("medicineIds","");
+        params.put("name", name);
+        params.put("idNumber", idNumber);
+        params.put("homeAddress", homeAddress);
+        params.put("workAddress", workAddress);
+        params.put("workTime", workTime);
+        params.put("sex", sex);
+        params.put("certificateImages", certificateImages);
+        params.put("isCertificate", isCertificate);
+        params.put("workLatitude", workLatitude);
+        params.put("workLongitude", workLongitude);
+        params.put("homeLatitude", homeLatitude);
+        params.put("homeLongitude", homeLongitude);
+        params.put("medicineIds", "");
         return gson.toJson(params);
     }
 }

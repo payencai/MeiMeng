@@ -48,7 +48,7 @@ public class QRCodeActivity extends BaseActivity {
         title.setText("我的二维码");
         String url="http://47.106.164.34/meiMeng_webui/qrcode_detail.html?toke="+token;
         qrcode=findViewById(R.id.qr_code);
-        Bitmap mBitmap = QRCodeUtil.createQRCodeBitmap(url, 480, 480);
+        Bitmap mBitmap = QRCodeUtil.createQRCodeBitmap(url, 550, 550);
         qrcode.setImageBitmap(mBitmap);
         qrcode.setOnLongClickListener(new View.OnLongClickListener() {
             @Override

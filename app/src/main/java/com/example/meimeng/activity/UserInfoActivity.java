@@ -22,6 +22,7 @@ import com.example.meimeng.constant.PlatformContans;
 import com.example.meimeng.http.HttpProxy;
 import com.example.meimeng.http.ICallBack;
 import com.example.meimeng.util.SpinerPopWindow;
+import com.example.meimeng.util.ToaskUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -34,7 +35,7 @@ import java.util.List;
 import java.util.Map;
 
 public class UserInfoActivity extends BaseActivity {
-    EditText etName;
+
     EditText etPhone;
     EditText etFixPhone;
     TextView etAddress;
@@ -49,6 +50,7 @@ public class UserInfoActivity extends BaseActivity {
     TextView tuichu;
     TextView title;
     TextView save;
+    TextView tv_back;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,7 +66,7 @@ public class UserInfoActivity extends BaseActivity {
     protected void initView() {
         bloodLayout=findViewById(R.id.ll_blood_layout);
         title=findViewById(R.id.title);
-        etName=findViewById(R.id.et_user_name);
+
         etPhone=findViewById(R.id.et_user_phone);
         etFixPhone=findViewById(R.id.et_user_fixphone);
         etAddress=findViewById(R.id.et_user_address);
@@ -72,6 +74,9 @@ public class UserInfoActivity extends BaseActivity {
         back.setVisibility(View.GONE);
         etAge=findViewById(R.id.et_user_age);
         etBlood=findViewById(R.id.tv_blood);
+        tv_back=findViewById(R.id.comeBackText);
+        tv_back.setVisibility(View.VISIBLE);
+        tv_back.setText("退出");
         etSicken=findViewById(R.id.et_user_sicken);
         etOtherSicken=findViewById(R.id.et_user_othersicken);
         contact1=findViewById(R.id.et_user_lianxi1);
@@ -82,6 +87,14 @@ public class UserInfoActivity extends BaseActivity {
         tuichu.setVisibility(View.VISIBLE);
         tuichu.setText("退出");
         title.setText("个人资料");
+        etPhone.setText(APP.getInstance().getUserInfo().getTelephone());
+        tv_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+                //startActivity(new Intent(UserInfoActivity.this,LoginActivity.class));
+            }
+        });
         tuichu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -122,13 +135,10 @@ public class UserInfoActivity extends BaseActivity {
             public void onClick(View view) {
                 String address = etAddress.getText().toString();
                 String linkman1 = contact1.getText().toString();
-                String name = etName.getEditableText().toString();
+
                 String telephone = etPhone.getEditableText().toString();
                 String age=etAge.getEditableText().toString();
-                if(TextUtils.isEmpty(name)){
-                    Toast.makeText(UserInfoActivity.this,"*为必填！",Toast.LENGTH_LONG).show();
-                    return;
-                }
+
                 if(TextUtils.isEmpty(address)){
                     Toast.makeText(UserInfoActivity.this,"*为必填！",Toast.LENGTH_LONG).show();
                     return;
@@ -143,6 +153,10 @@ public class UserInfoActivity extends BaseActivity {
                 }
                 if(TextUtils.isEmpty(age)){
                     Toast.makeText(UserInfoActivity.this,"*为必填！",Toast.LENGTH_LONG).show();
+                    return;
+                }
+                if(telephone.length()!=11){
+                    ToaskUtil.showToast(UserInfoActivity.this,"移动号码必须为11位");
                     return;
                 }
                 String data = returnJsonString();
@@ -190,7 +204,7 @@ public class UserInfoActivity extends BaseActivity {
     private String returnJsonString(){
         Map<String, Object> params = new HashMap<>();
         Gson gson = new GsonBuilder().enableComplexMapKeySerialization().create();
-        String name = etName.getEditableText().toString();
+
         String telephone = etPhone.getEditableText().toString();
         String fixedLineTelephone = etFixPhone.getEditableText().toString();
         String address = etAddress.getText().toString();
@@ -219,7 +233,6 @@ public class UserInfoActivity extends BaseActivity {
         params.put("linkman1", linkman1);
         params.put("linkman2", linkman2);
         params.put("linkman3", linkman3);
-        params.put("nickname", name);
         params.put("otherSicken", otherSicken);
         params.put("sickenHistory", sickenHistory);
         params.put("telephone", telephone);

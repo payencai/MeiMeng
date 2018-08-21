@@ -10,6 +10,7 @@ import com.example.meimeng.common.rv.base.Cell;
 import com.example.meimeng.constant.PlatformContans;
 import com.example.meimeng.http.HttpProxy;
 import com.example.meimeng.http.ICallBack;
+import com.example.meimeng.util.ToaskUtil;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
@@ -56,7 +57,7 @@ public class FirstAidRankFragment extends AbsBaseFragment<FirstAidRankBean> {
         if(APP.sUserType==0){
             token=APP.getInstance().getUserInfo().getToken();
         }else{
-            token=APP.getInstance().getServerUserInfo().getToken();
+           // token=APP.getInstance().getServerUserInfo().getToken();
         }
         params.put("page",page);
         HttpProxy.obtain().get(PlatformContans.AedController.sGetFacility, params,token, new ICallBack() {
@@ -66,19 +67,21 @@ public class FirstAidRankFragment extends AbsBaseFragment<FirstAidRankBean> {
                 try {
                     JSONObject jsonObject=new JSONObject(result);
                     int code=jsonObject.getInt("resultCode");
-                    Log.e("tag",result);
+                    String msg=jsonObject.getString("message");
+
                     if(code==0){
                         JSONObject data = jsonObject.getJSONObject("data");
                         JSONArray beanList = data.getJSONArray("beanList");
                         List<TrainBean> list = new ArrayList<>();
                         int length = beanList.length();
                         Gson gson = new Gson();
+                        Log.e("tag22",result);
                         for (int i = 0; i < length; i++) {
                             JSONObject item = beanList.getJSONObject(i);
                             //TrainBean bean = gson.fromJson(item.toString(), TrainBean.class);
                             TrainBean bean=new TrainBean();
                             bean.setAddress(item.getString("address"));
-                            bean.setContent(item.getString("content"));
+                           // bean.setContent(item.getString("content"));
                             bean.setPrice(item.getString("price"));
                             bean.setTel(item.getString("tel"));
                             bean.setUsername(item.getString("username"));
@@ -95,6 +98,9 @@ public class FirstAidRankFragment extends AbsBaseFragment<FirstAidRankBean> {
                             mBaseAdapter.addAll(list);
                         }
                         mSwipeRefreshLayout.setRefreshing(isRefresh);
+                    }
+                    else{
+                        ToaskUtil.showToast(getContext(),msg);
                     }
 
                 } catch (JSONException e) {

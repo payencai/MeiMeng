@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Build;
@@ -35,6 +36,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestBuilder;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.bitmap.CircleCrop;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.meimeng.APP;
 import com.example.meimeng.R;
 import com.example.meimeng.base.BaseActivity;
@@ -219,14 +224,19 @@ public class ServerCenterActivity extends BaseActivity {
                         image = object.getString("image");
                         if (!TextUtils.equals("null",name)&&!TextUtils.isEmpty(name)) {
                             mServerUsername.setText(name + ",你好");
+                            Log.e("ggg",image+name);
                         } else {
                             mServerUsername.setText("朵雪花,你好");
                         }
-                        if (!image.contains("null")) {
-                            Glide.with(ServerCenterActivity.this).load(image).into(server_head);
-                        }else{
-                            server_head.setImageResource(R.mipmap.ic_me_head);
-                        }
+                        RequestOptions requestOptions = new RequestOptions()
+                                .placeholder(R.mipmap.ic_me_head) //加载中图片
+                                .error(R.mipmap.ic_me_head) //加载失败图片
+                                .fallback(R.mipmap.ic_me_head) //url为空图片
+                                .centerCrop() ;// 填充方式
+                        //Log.e("ggg",image+name);
+                        Glide.with(ServerCenterActivity.this).load(image).apply(requestOptions).into(server_head);
+
+
 //                        if (!TextUtils.isEmpty(image)) {
 //                            if (server_head != null) {
 //                                Glide.with(ServerCenterActivity.this).load(image).into(server_head);
@@ -274,7 +284,11 @@ public class ServerCenterActivity extends BaseActivity {
             case R.id.iv_server_settings:
                 ServerUserInfoSharedPre.getIntance(this).clearUserInfo();
                 ActivityManager.getInstance().finishAllActivity();
-                startActivity(new Intent(this, LoginActivity.class));
+                Intent intent =new Intent(this, LoginActivity.class);
+                Bundle b=new Bundle();
+                b.putString("phone",APP.getInstance().getServerUserInfo().getAccount());
+                intent.putExtras(b);
+                startActivity(intent);
                 break;
             case R.id.server_cv_head:
                 showDialog();

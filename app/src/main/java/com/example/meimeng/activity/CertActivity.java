@@ -72,20 +72,8 @@ public class CertActivity extends BaseActivity {
         });
 
         summit = findViewById(R.id.btn_renzhen);
-        if(!TextUtils.isEmpty(id)){
-            summit.setVisibility(View.GONE);
-            et_name.setText(APP.getInstance().getUserInfo().getName());
-            et_number.setText(APP.getInstance().getUserInfo().getIdNumber());
-            et_number.setEnabled(false);
-            et_name.setEnabled(false);
-            String sex=APP.getInstance().getUserInfo().getSex();
-            if (TextUtils.equals(sex,"男")) {
-                rb_man.setChecked(true);
-                rb_nv.setChecked(false);
-                rb_nv.setEnabled(false);
-            }
-        }
 
+        getUserInfo();
         summit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -135,6 +123,52 @@ public class CertActivity extends BaseActivity {
         });
     }
 
+    private void getUserInfo(){
+        HttpProxy.obtain().get(PlatformContans.UseUser.sGetUseUser, APP.getInstance().getUserInfo().getToken(), new ICallBack() {
+            @Override
+            public void OnSuccess(String result) {
+                Log.e("result",result);
+                JSONObject jsonObject = null;
+                try {
+                    jsonObject = new JSONObject(result);
+                    int code = jsonObject.getInt("resultCode");
+                    if (code == 0) {
+                        JSONObject object = jsonObject.getJSONObject("data");
+                         String id=object.getString("idNumber");
+                         String name=object.getString("name");
+                        if(!TextUtils.isEmpty(id)){
+                            summit.setVisibility(View.GONE);
+                            et_name.setText(name);
+                            et_number.setText(id);
+                            et_number.setEnabled(false);
+                            et_name.setEnabled(false);
+                            String sex=object.getString("sex");
+                            if (TextUtils.equals(sex,"男")) {
+                                rb_man.setChecked(true);
+                                rb_nv.setChecked(false);
+                                rb_nv.setEnabled(false);
+                            }
+                        }
+
+
+
+                    }
+                    if (code == 9999) {
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+            }
+
+            @Override
+            public void onFailure(String error) {
+
+            }
+        });
+    }
     @Override
     protected int getContentId() {
         return R.layout.show_certification_content;

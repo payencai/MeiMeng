@@ -10,8 +10,10 @@ import android.widget.LinearLayout;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.utils.DistanceUtil;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.meimeng.R;
 import com.example.meimeng.activity.RescueActivity;
+import com.example.meimeng.activity.ServerCenterActivity;
 import com.example.meimeng.common.rv.base.RVBaseCell;
 import com.example.meimeng.common.rv.base.RVBaseViewHolder;
 import com.example.meimeng.util.LoginSharedUilt;
@@ -106,7 +108,13 @@ public class CurrentHelpInfo extends RVBaseCell implements Serializable {
         holder.setText(R.id.rv_time, createTime.substring(0, 10));
         CircleImageView imageView = (CircleImageView) holder.getImageView(R.id.rv_image);
         final Context context = holder.getItemView().getContext();
-        Glide.with(context).load(image).into(imageView);
+        RequestOptions requestOptions = new RequestOptions()
+                .placeholder(R.mipmap.ic_me_head) //加载中图片
+                .error(R.mipmap.ic_me_head) //加载失败图片
+                .fallback(R.mipmap.ic_me_head) //url为空图片
+                .centerCrop() ;// 填充方式
+        //Log.e("ggg",image+name);
+        Glide.with(holder.itemView.getContext()).load(image).apply(requestOptions).into(imageView);
 //        holder.getView(R.id.item).setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {

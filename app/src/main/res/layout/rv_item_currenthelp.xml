@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/item"
     android:layout_width="match_parent"
@@ -14,17 +14,21 @@
         android:background="@color/color_white_100"
         app:cardCornerRadius="@dimen/margin_5dp">
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content"
+            >
 
             <LinearLayout
+                android:id="@+id/left"
+                android:paddingTop="@dimen/margin_5dp"
+                android:gravity="center_horizontal"
+                android:layout_marginLeft="@dimen/margin_15dp"
                 android:layout_width="60dp"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="15dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
                 android:layout_marginTop="@dimen/margin_5dp"
-                android:gravity="center"
+                android:layout_centerVertical="true"
                 android:orientation="vertical">
 
                 <de.hdodenhof.circleimageview.CircleImageView
@@ -46,9 +50,12 @@
             </LinearLayout>
 
             <LinearLayout
+                android:layout_marginTop="@dimen/margin_5dp"
+                android:gravity="left"
+                android:layout_toRightOf="@id/left"
                 android:layout_width="180dp"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="20dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
                 android:orientation="vertical">
 
                 <TextView
@@ -79,12 +86,13 @@
             </LinearLayout>
 
             <LinearLayout
-
+                android:layout_centerVertical="true"
+                android:id="@+id/right"
+                android:layout_alignParentRight="true"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/margin_10dp"
-                android:layout_marginRight="10dp"
-                android:gravity="center"
+                android:layout_marginRight="20dp"
                 android:orientation="vertical">
 
                 <LinearLayout
@@ -116,6 +124,6 @@
                     android:text="已有3人前往"
                     android:textSize="@dimen/text_size_10sp" />
             </LinearLayout>
-        </LinearLayout>
+        </RelativeLayout>
     </android.support.v7.widget.CardView>
-</LinearLayout>
+</RelativeLayout>

@@ -60,6 +60,7 @@ import com.baidu.mapapi.search.route.RoutePlanSearch;
 import com.baidu.mapapi.search.route.TransitRouteResult;
 import com.baidu.mapapi.search.route.WalkingRoutePlanOption;
 import com.baidu.mapapi.search.route.WalkingRouteResult;
+import com.baidu.mapapi.utils.CoordinateConverter;
 import com.baidu.mapapi.utils.DistanceUtil;
 import com.bumptech.glide.Glide;
 import com.example.meimeng.APP;
@@ -332,6 +333,11 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
     }
     String areaname="";
     private void setInfo(final LatLng ll){
+        CoordinateConverter converter = new CoordinateConverter();
+        converter.from(CoordinateConverter.CoordType.COMMON);
+// sourceLatLng待转换坐标
+        converter.coord(ll);
+        final LatLng point = converter.convert();
         View view = LayoutInflater.from(RescueActivity.this).inflate(R.layout.marker_aed_info_layout, null);
         TextView brankText = (TextView) view.findViewById(R.id.brank);
         TextView expiryDateText = (TextView) view.findViewById(R.id.expiryDate);
@@ -344,7 +350,7 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
                 showDialog(ll);
             }
         };
-        InfoWindow infoWindow = new InfoWindow(BitmapDescriptorFactory.fromView(view), ll, -47, listener);
+        InfoWindow infoWindow = new InfoWindow(BitmapDescriptorFactory.fromView(view), point, -47, listener);
         mBaiduMap.showInfoWindow(infoWindow);
     }
     BaiduMap.OnMarkerClickListener onMarkerClicklistener = new BaiduMap.OnMarkerClickListener(){
@@ -379,12 +385,18 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
         }
     }
     private void baidu(double mLatitude,double mLongitude){
+         LatLng poit=new LatLng(mLatitude,mLongitude);
+        CoordinateConverter converter = new CoordinateConverter();
+        converter.from(CoordinateConverter.CoordType.COMMON);
+// sourceLatLng待转换坐标
+        converter.coord(poit);
+        poit = converter.convert();
         if (isAvilible(this, "com.baidu.BaiduMap")) {// 传入指定应用包名
 
             try {
                 Intent intent = Intent.getIntent("intent://map/direction?destination=latlng:"
-                        + mLatitude + ","
-                        + mLongitude + "|name:" + // 终点
+                        + poit.latitude + ","
+                        + poit.longitude + "|name:" + // 终点
                         "&mode=driving&" + // 导航路线方式
                         "region=广东" + //
                         "&src=广州番禺#Intent;scheme=bdapp;package=com.baidu.BaiduMap;end");
@@ -877,7 +889,7 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
     private void handlerFinishHelpView(View view, final CustomPopWindow customPopWindow, String closeName, String closeTelephone) {
         //有救援人:13480197692\n点击完成救助
         TextView showContent = (TextView) view.findViewById(R.id.showContent);
-        String content = "有救援人:" + closeName + " \n点击完成救助";
+        String content = "救援人:" + closeName + " \n点击完成了救助";
         showContent.setText(content);
         view.findViewById(R.id.know).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1164,8 +1176,13 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
             double lat2 = Double.parseDouble(latitude);
             double lon2 = Double.parseDouble(longitude);
             point2 = new LatLng(lat2, lon2);
+
         } catch (Exception e) {
         }
+
+
+
+
         if (point2 == null) {
             ToaskUtil.showToast(this, "位置获取异常");
             end = 2;
@@ -1178,6 +1195,13 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
         mBaiduMap.clear();
         //setMarker(point);
         //setMarker2(point2);
+        CoordinateConverter converter = new CoordinateConverter();
+        converter.from(CoordinateConverter.CoordType.COMMON);
+// sourceLatLng待转换坐标
+        converter.coord(point);
+        point = converter.convert();
+
+
         walkProject(point);
 
 
@@ -1190,7 +1214,11 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
 
     private void walkProject(LatLng point) {
         LatLng endPt = new LatLng(mCallerLat, mCallerLon);
-
+        CoordinateConverter converter = new CoordinateConverter();
+        converter.from(CoordinateConverter.CoordType.COMMON);
+// sourceLatLng待转换坐标
+        converter.coord(endPt);
+        endPt = converter.convert();
         PlanNode stNode = PlanNode.withLocation(point);
         PlanNode enNode = PlanNode.withLocation(endPt);
         if (endPt == null || stNode == null) {

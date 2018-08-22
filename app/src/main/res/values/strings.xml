@@ -56,7 +56,7 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="end_help_msg">您进行了完成救援的操作\n是否已完成救援</string>
-    <string name="end_help_msg2">有救援人:13480197692\n点击完成救助</string>
+    <string name="end_help_msg2">救援人:13480197692\n点击完成救助</string>
 
 
 </resources>

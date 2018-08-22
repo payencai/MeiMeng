@@ -103,7 +103,7 @@ public class CurrentHelpInfo extends RVBaseCell implements Serializable {
         if (helpNum > 0) {
             holder.setText(R.id.help_number, "已有" + helpNum + "人前往");
         } else {
-            holder.setText(R.id.help_number, "");
+            holder.setText(R.id.help_number, "暂无人前往救援");
         }
         holder.setText(R.id.rv_time, createTime.substring(0, 10));
         CircleImageView imageView = (CircleImageView) holder.getImageView(R.id.rv_image);

@@ -41,6 +41,7 @@ import com.baidu.mapapi.search.route.RoutePlanSearch;
 import com.baidu.mapapi.search.route.TransitRouteResult;
 import com.baidu.mapapi.search.route.WalkingRoutePlanOption;
 import com.baidu.mapapi.search.route.WalkingRouteResult;
+import com.baidu.mapapi.utils.CoordinateConverter;
 import com.baidu.mapapi.utils.DistanceUtil;
 import com.example.meimeng.APP;
 import com.example.meimeng.R;
@@ -197,7 +198,7 @@ public class ShowAEDActivity extends BaseActivity implements OnGetRoutePlanResul
         beginNavigation.setOnClickListener(this);
         beginNavigation2.setOnClickListener(this);
 
-        setMarker();
+        //setMarker();
         setUserMapCenter();
         getAEDController();
         selectState(0);
@@ -339,6 +340,13 @@ public class ShowAEDActivity extends BaseActivity implements OnGetRoutePlanResul
 
             }
             point = new LatLng(latNumber, lonNumber);
+            int distance = (int) DistanceUtil.getDistance(pointcur, point);//距离定位的距离
+            CoordinateConverter converter = new CoordinateConverter();
+            converter.from(CoordinateConverter.CoordType.COMMON);
+// sourceLatLng待转换坐标
+            converter.coord(point);
+
+            point = converter.convert();
             MarkerOptions position = new MarkerOptions().position(point);
             OverlayOptions option;
             if (isPass == 4) {
@@ -348,7 +356,7 @@ public class ShowAEDActivity extends BaseActivity implements OnGetRoutePlanResul
             }
 //            options.add(option);23.044991:113.396773
             //                    23.044986904956467:113.39676957663124
-            int distance = (int) DistanceUtil.getDistance(pointcur, point);//距离定位的距离
+
             if (endLat != latNumber || endLon != lonNumber) {
                 Marker marker = (Marker) mBaiduMap.addOverlay(option);
                 String address = key.getAddress();//广州新东方学校大学城教学区广州市番禺区大学城中六路1号广州大学城信息枢纽楼814房
@@ -450,8 +458,19 @@ public class ShowAEDActivity extends BaseActivity implements OnGetRoutePlanResul
      */
     private void showFirstAed(AEDInfo aedInfo, final Marker marker) {
         LatLng start = new LatLng(lat, lon);
+
+        CoordinateConverter converter = new CoordinateConverter();
+        converter.from(CoordinateConverter.CoordType.COMMON);
+// sourceLatLng待转换坐标
+        converter.coord(start);
+        start = converter.convert();
         LatLng end = new LatLng(Double.parseDouble(aedInfo.getKey().getLatitude()), Double.parseDouble(aedInfo.getKey().getLongitude()));
         // walkProject(start, end);
+        CoordinateConverter converter2 = new CoordinateConverter();
+        converter2.from(CoordinateConverter.CoordType.COMMON);
+// sourceLatLng待转换坐标
+        converter.coord(end);
+        end = converter.convert();
         endLat = Double.parseDouble(aedInfo.getKey().getLatitude());
         endLon = Double.parseDouble(aedInfo.getKey().getLongitude());
         PlanNode stNode = PlanNode.withLocation(start);
@@ -481,6 +500,11 @@ public class ShowAEDActivity extends BaseActivity implements OnGetRoutePlanResul
         };
 
         LatLng ll = marker.getPosition();
+        CoordinateConverter converter3 = new CoordinateConverter();
+        converter3.from(CoordinateConverter.CoordType.COMMON);
+// sourceLatLng待转换坐标
+        converter3.coord(ll);
+        ll = converter3.convert();
         InfoWindow infoWindow = new InfoWindow(BitmapDescriptorFactory.fromView(view), ll, -47, listener);
         mBaiduMap.showInfoWindow(infoWindow);
         showVol(marker);
@@ -507,7 +531,15 @@ public class ShowAEDActivity extends BaseActivity implements OnGetRoutePlanResul
                     LatLng end = new LatLng(latNumber, lonNumber);
                     endLat = latNumber;
                     endLon = lonNumber;
-
+                    CoordinateConverter converter = new CoordinateConverter();
+                    CoordinateConverter converter2 = new CoordinateConverter();
+                    converter.from(CoordinateConverter.CoordType.COMMON);
+// sourceLatLng待转换坐标
+                    converter2.from(CoordinateConverter.CoordType.COMMON);
+                    converter.coord(start);
+                    converter2.coord(end);
+                    start = converter.convert();
+                    end=converter2.convert();
                     walkProject(start, end);
                     String address = bundle.getString("address");
                     String expiryDate = bundle.getString("expiryDate");
@@ -597,7 +629,7 @@ public class ShowAEDActivity extends BaseActivity implements OnGetRoutePlanResul
 
     private void walkProject(LatLng point, LatLng point2) {
         mBaiduMap.clear();
-        setMarker();
+        //setMarker();
         PlanNode stNode = PlanNode.withLocation(point);
         PlanNode enNode = PlanNode.withLocation(point2);
         mSearch.walkingSearch((new WalkingRoutePlanOption())

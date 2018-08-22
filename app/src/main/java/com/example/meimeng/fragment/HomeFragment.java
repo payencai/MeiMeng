@@ -49,6 +49,7 @@ import com.baidu.mapapi.search.geocode.GeoCoder;
 import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
 import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
 import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
+import com.baidu.mapapi.utils.CoordinateConverter;
 import com.baidu.mapapi.utils.DistanceUtil;
 import com.baidu.mapapi.walknavi.WalkNavigateHelper;
 import com.baidu.mapapi.walknavi.adapter.IWEngineInitListener;
@@ -207,7 +208,7 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         searchTypeSelect.setOnClickListener(this);
 
         locationService.start();
-        licationCircle();
+        // licationCircle();
 
     }
 
@@ -632,6 +633,12 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
     private void setMarker() {
         //定义Maker坐标点
         LatLng point = new LatLng(lat, lon);
+
+        CoordinateConverter converter = new CoordinateConverter();
+        converter.from(CoordinateConverter.CoordType.COMMON);
+// sourceLatLng待转换坐标
+        converter.coord(point);
+        point = converter.convert();
         //构建Marker图标
         BitmapDescriptor bitmap = BitmapDescriptorFactory
                 .fromResource(R.mipmap.ic_location);
@@ -639,6 +646,7 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         OverlayOptions option = new MarkerOptions()
                 .position(point)
                 .icon(bitmap);
+        Log.e("lat", lat + "," + lon);
         //在地图上添加Marker，并显示
         mBaiduMap.addOverlay(option);
     }
@@ -699,6 +707,7 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         int isCertificate = serverUser.getIsCertificate();
         String workLatitude = serverUser.getWorkLatitude();
         String workLongitude = serverUser.getWorkLongitude();
+        Log.e("lat", workLatitude + "-" + workLongitude);
         double latNumber = 0;
         double lonNumber = 0;
         LatLng point;
@@ -708,7 +717,14 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         } catch (Exception e) {
 
         }
+
         point = new LatLng(latNumber, lonNumber);
+        CoordinateConverter converter = new CoordinateConverter();
+        converter.from(CoordinateConverter.CoordType.COMMON);
+// sourceLatLng待转换坐标
+        converter.coord(point);
+        point = converter.convert();
+
         MarkerOptions position = new MarkerOptions().position(point);
         OverlayOptions option;
         View view = LayoutInflater.from(getContext()).inflate(R.layout.avator_view, null);
@@ -797,6 +813,11 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
 
             }
             point = new LatLng(latNumber, lonNumber);
+            CoordinateConverter converter = new CoordinateConverter();
+            converter.from(CoordinateConverter.CoordType.COMMON);
+// sourceLatLng待转换坐标
+            converter.coord(point);
+            point = converter.convert();
             MarkerOptions position = new MarkerOptions().position(point);
             OverlayOptions option;
             if (isPass == 4) {
@@ -829,6 +850,11 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
      */
     private void setUserMapCenter() {
         LatLng cenpt = new LatLng(lat, lon);
+        CoordinateConverter converter = new CoordinateConverter();
+        converter.from(CoordinateConverter.CoordType.COMMON);
+// sourceLatLng待转换坐标
+        converter.coord(cenpt);
+        cenpt = converter.convert();
         //定义地图状态
         MapStatus mMapStatus = new MapStatus.Builder()
                 .target(cenpt)
@@ -991,6 +1017,7 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
 
 
             } else {//志愿者
+                Log.e("tag", marker.getPosition().latitude + "----" + marker.getPosition().longitude);
                 //创建InfoWindow展示的view
                 View view = LayoutInflater.from(getContext()).inflate(R.layout.marker_service_info_layout, null);
                 String disString = "该志愿者距离您" + distance + "米";
@@ -1047,9 +1074,9 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
             int LocType = location.getLocType();    //返回码
             lat = location.getLatitude();
             lon = location.getLongitude();
-            APP.lon=location.getLongitude();
-            APP.lat=location.getLatitude();
-            Log.d("onReceiveLocation", "onReceiveLocation: 定位");
+            APP.lon = location.getLongitude();
+            APP.lat = location.getLatitude();
+            Log.e("onReceiveLocation", lat + "-" + lon);
             location(city, addr);
             locationService.setLocationOption(locationService.getSingleLocationClientOption());
             // TODO Auto-generated method stub

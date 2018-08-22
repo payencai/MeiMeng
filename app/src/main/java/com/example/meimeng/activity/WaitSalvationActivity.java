@@ -758,7 +758,7 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
     private void handlerCloseRescueView(View view, final CustomPopWindow customPopWindow, String closeName, String closeTelephone) {
         //有救援人:13480197692\n点击完成救助
         TextView showContent = (TextView) view.findViewById(R.id.showContent);
-        String content = "有救援人:" + closeName + "\n点击完成救助";
+        String content = "救援人:" + closeName + "\n点击完成救助";
         showContent.setText(content);
         view.findViewById(R.id.know).setOnClickListener(new View.OnClickListener() {
             @Override

@@ -65,6 +65,7 @@ import com.baidu.mapapi.search.route.TransitRouteResult;
 import com.baidu.mapapi.search.route.WalkingRouteLine;
 import com.baidu.mapapi.search.route.WalkingRoutePlanOption;
 import com.baidu.mapapi.search.route.WalkingRouteResult;
+import com.baidu.mapapi.utils.CoordinateConverter;
 import com.baidu.mapapi.walknavi.WalkNavigateHelper;
 import com.baidu.mapapi.walknavi.adapter.IWEngineInitListener;
 import com.baidu.mapapi.walknavi.adapter.IWRoutePlanListener;
@@ -79,6 +80,7 @@ import com.example.meimeng.overlayutil.MassTransitRouteOverlay;
 import com.example.meimeng.overlayutil.OverlayManager;
 import com.example.meimeng.overlayutil.TransitRouteOverlay;
 import com.example.meimeng.overlayutil.WalkingRouteOverlay;
+import com.example.meimeng.util.GpsUtil;
 import com.example.meimeng.util.LoginSharedUilt;
 import com.example.meimeng.util.ToaskUtil;
 
@@ -104,7 +106,7 @@ public class RoutePlanDemo extends Activity implements BaiduMap.OnMapClickListen
     RouteLine route = null;
     MassTransitRouteLine massroute = null;
     OverlayManager routeOverlay = null;
-    boolean useDefaultIcon = false;
+    boolean useDefaultIcon = true;
     private TextView popupText = null; // 泡泡view
 
     TextView myDrive;
@@ -195,22 +197,43 @@ public class RoutePlanDemo extends Activity implements BaiduMap.OnMapClickListen
         mSearch.setOnGetRoutePlanResultListener(this);
         initPt();
     }
-
+    private void initMapStatus(){
+        MapStatus.Builder builder = new MapStatus.Builder();
+        builder.target(new LatLng(mLatNumber, mLonNumber)).zoom(19);
+        mBaidumap.setMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build()));
+    }
     private void initPt() {
         LatLng endPt = new LatLng(mLatNumber, mLonNumber);
         LoginSharedUilt intance = LoginSharedUilt.getIntance(this);
-        lat = intance.getLat();
-        lon = intance.getLon();
+//        initMapStatus();
+//        CoordinateConverter converter  = new CoordinateConverter();
+//        converter.from(CoordinateConverter.CoordType.GPS);
+
+        lat = startLat;
+        lon = startLon;
         LatLng startPt = new LatLng(lat, lon);
+        CoordinateConverter converter = new CoordinateConverter();
+        converter.from(CoordinateConverter.CoordType.COMMON);
+// sourceLatLng待转换坐标
+        converter.coord(startPt);
+        startPt = converter.convert();
+        CoordinateConverter converter2 = new CoordinateConverter();
+        converter2.from(CoordinateConverter.CoordType.COMMON);
+// sourceLatLng待转换坐标
+        converter.coord(endPt);
+        endPt = converter.convert();
+        //converter.coord(startPt);
+       // startPt = converter.convert();
         if (lat != 0 && lon != 0) {
             reverseGeoCode(endPt);
             setMarker(startPt);
-            setUserMapCenter(startPt);
+            setUserMapCenter(endPt);
         }
 
+        Log.e("lat",lon+"-"+lat);
+        PlanNode stNode = PlanNode.withLocation(startPt);
+        PlanNode enNode = PlanNode.withLocation(endPt);
 
-        PlanNode stNode = PlanNode.withLocation(new LatLng(lat, lon));
-        PlanNode enNode = PlanNode.withLocation(new LatLng(mLatNumber, mLonNumber));
         mSearch.drivingSearch((new DrivingRoutePlanOption())
                 .from(stNode).to(enNode));
         nowSearchType = 1;
@@ -341,9 +364,19 @@ public class RoutePlanDemo extends Activity implements BaiduMap.OnMapClickListen
 
 //        PlanNode stNode = PlanNode.withCityNameAndPlaceName(mCurrentCity, startNodeStr);
 //        PlanNode enNode = PlanNode.withCityNameAndPlaceName(mEndCity, endNodeStr);
-
-        PlanNode stNode = PlanNode.withLocation(new LatLng(lat, lon));
-        PlanNode enNode = PlanNode.withLocation(new LatLng(mLatNumber, mLonNumber));
+        CoordinateConverter converter = new CoordinateConverter();
+        converter.from(CoordinateConverter.CoordType.COMMON);
+// sourceLatLng待转换坐标
+        LatLng startPt= new LatLng(lat, lon);
+        LatLng endPt= new LatLng(mLatNumber, mLonNumber);
+        converter.coord(startPt);
+        startPt = converter.convert();
+        CoordinateConverter converter2 = new CoordinateConverter();
+        converter2.from(CoordinateConverter.CoordType.COMMON);
+        converter.coord(endPt);
+        endPt = converter.convert();
+        PlanNode stNode = PlanNode.withLocation(startPt);
+        PlanNode enNode = PlanNode.withLocation(endPt);
 
         // 实际使用中请对起点终点城市进行正确的设定
 
@@ -1021,9 +1054,9 @@ public class RoutePlanDemo extends Activity implements BaiduMap.OnMapClickListen
 
         @Override
         public BitmapDescriptor getStartMarker() {
-            if (useDefaultIcon) {
-                return BitmapDescriptorFactory.fromResource(R.drawable.icon_st);
-            }
+//            if (useDefaultIcon) {
+//                return BitmapDescriptorFactory.fromResource(R.drawable.icon_st);
+//            }
             return null;
         }
 

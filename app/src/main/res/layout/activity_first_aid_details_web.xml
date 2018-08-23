@@ -10,9 +10,7 @@
 
     <include layout="@layout/toobar_head_layout" />
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -30,13 +28,17 @@
                 android:text="急救"
                 android:textSize="@dimen/text_size_17sp"
                 android:textStyle="bold" />
-
+            <com.example.meimeng.util.X5WebView
+                android:id="@+id/x5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"></com.example.meimeng.util.X5WebView>
             <FrameLayout
+
                 android:id="@+id/webViewFrameLayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"></FrameLayout>
         </LinearLayout>
-    </ScrollView>
+
 
 
 </LinearLayout>

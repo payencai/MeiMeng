@@ -3,6 +3,7 @@ package com.example.meimeng;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.app.Service;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Vibrator;
@@ -16,9 +17,11 @@ import com.example.meimeng.http.processor.OkHttpProcessor;
 import com.example.meimeng.mywebsocket.ForegroundCallbacks;
 import com.example.meimeng.mywebsocket.WsManager;
 import com.example.meimeng.service.LocationService;
+import com.example.meimeng.service.X5NetService;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMOptions;
 import com.hyphenate.easeui.EaseUI;
+import com.tencent.smtt.sdk.QbSdk;
 
 import java.util.Iterator;
 import java.util.List;
@@ -63,6 +66,28 @@ public class APP extends Application {
     public void setServerUserInfo(ServerUserInfo serverUserInfo) {
         mServerUserInfo = serverUserInfo;
     }
+    private void initX5WebView() {
+        //搜集本地tbs内核信息并上报服务器，服务器返回结果决定使用哪个内核。
+        QbSdk.PreInitCallback cb = new QbSdk.PreInitCallback() {
+            @Override
+            public void onViewInitFinished(boolean arg0) {
+                //x5內核初始化完成的回调，为true表示x5内核加载成功，否则表示x5内核加载失败，会自动切换到系统内核。
+                Log.d("app", " onViewInitFinished is " + arg0);
+            }
+
+            @Override
+            public void onCoreInitFinished() {
+            }
+        };
+        //x5内核初始化接口
+        QbSdk.initX5Environment(getApplicationContext(), cb);
+    }
+    private void preInitX5Core() {
+        //预加载x5内核
+        Intent intent = new Intent(this, X5NetService.class);
+        startService(intent);
+    }
+
 
     @Override
 
@@ -73,7 +98,8 @@ public class APP extends Application {
         // SHA256 3f2a849d046f5948eeae6e243163b051afc940a500bf6db7b07b20c8e489cbd6
         // SHA256 3f2a849d046f5948eeae6e243163b051afc940a500bf6db7b07b20c8e489cbd6
         //初始化百度地图
-
+        initX5WebView();
+        preInitX5Core();
         locationService = new LocationService(this);
         mVibrator = (Vibrator) getApplicationContext().getSystemService(Service.VIBRATOR_SERVICE);
         //初始化定位sdk，建议在Application中创建

@@ -357,6 +357,12 @@
         </activity>
         <activity android:name=".activity.ProxyActivity">
         </activity>
+
+        <service
+            android:name=".service.X5NetService"
+            android:enabled="true"
+            android:exported="true">
+        </service>
     </application>
 
 </manifest>

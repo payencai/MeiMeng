@@ -2,11 +2,13 @@ package com.example.meimeng.activity;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.http.SslError;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -18,6 +20,7 @@ import android.widget.Toast;
 import com.example.meimeng.R;
 import com.example.meimeng.base.BaseActivity;
 import com.example.meimeng.custom.KyLoadingBuilder;
+import com.example.meimeng.util.LogUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -52,7 +55,7 @@ public class FirstAidDetailsWebActivity extends BaseActivity implements View.OnC
     private String mUrl = "http://www.baidu.com";
     private WebView webView;
     private KyLoadingBuilder mLoadView;
-
+    private String url="http://www.1sos.cn/meiMeng_webui/medicine_detail.html?id=";
 
     @Override
     protected void initView() {
@@ -71,12 +74,14 @@ public class FirstAidDetailsWebActivity extends BaseActivity implements View.OnC
         aidTitle.setText(mTitle);
 
         if (!TextUtils.isEmpty(mArticle)) {
-            mUrl = mArticle;
+            mUrl = url+mId;
         }
-
+        Log.e("aaa",mArticle);
+        Log.e("bbb",mUrl);
         webView = new WebView(getApplicationContext());
         webViewFrameLayout.addView(webView);
         initSetting();
+
     }
 
 
@@ -96,20 +101,27 @@ public class FirstAidDetailsWebActivity extends BaseActivity implements View.OnC
 
 
     private void initSetting() {
-        WebSettings ws = webView.getSettings();
+        WebSettings webSetting = webView.getSettings();
         //允许javascript执行
-        ws.setJavaScriptEnabled(true);
-       // ws.setUseWideViewPort(true);
-       // ws.setLoadWithOverviewMode(true);
-        //ws.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
-        //加载一个服务端网页
-        webView.loadUrl(mUrl);
-        //加载一个本地网页
-//        webView.loadUrl("file:///android_asset/jm/index.html");
-
+        webSetting.setJavaScriptEnabled(true);
+        webSetting.setBuiltInZoomControls(true);
+        webSetting.setJavaScriptCanOpenWindowsAutomatically(true);
+        webSetting.setDomStorageEnabled(true);
+        webSetting.setAllowFileAccess(true);
+        webSetting.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
+        webSetting.setSupportZoom(true);
+        webSetting.setUseWideViewPort(true);
+        webSetting.setSupportMultipleWindows(true);
+        webSetting.setAppCacheEnabled(true);
+        webSetting.setGeolocationEnabled(true);
+        webSetting.setAppCacheMaxSize(Long.MAX_VALUE);
+        webSetting.setPluginState(WebSettings.PluginState.ON_DEMAND);
+        webSetting.setRenderPriority(WebSettings.RenderPriority.HIGH);
+        webSetting.setSupportMultipleWindows(false);
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                Log.e("url",url);
                 view.loadUrl(url);
                 return true;
             }
@@ -135,6 +147,7 @@ public class FirstAidDetailsWebActivity extends BaseActivity implements View.OnC
             }
 
         });
+        webView.loadUrl(mUrl);
     }
 
     @Override

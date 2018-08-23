@@ -24,6 +24,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.baidu.location.BDAbstractLocationListener;
+import com.baidu.location.BDLocation;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.meimeng.APP;
@@ -40,6 +42,7 @@ import com.example.meimeng.fragment.HelpInfoFragment;
 import com.example.meimeng.http.HttpProxy;
 import com.example.meimeng.http.ICallBack;
 import com.example.meimeng.manager.ActivityManager;
+import com.example.meimeng.service.LocationService;
 import com.example.meimeng.service.LoginInfoService;
 import com.example.meimeng.util.CommomDialog;
 import com.example.meimeng.util.LoginSharedUilt;
@@ -115,7 +118,6 @@ public class ServerMainActivity extends BaseActivity {
     @Override
     protected void initView() {
         ButterKnife.bind(this);
-
         loginHx();
         isDirectLogin=getIntent().getBooleanExtra("flag",true);
         ServerUserInfo userInfo=null;
@@ -126,6 +128,7 @@ public class ServerMainActivity extends BaseActivity {
         time.setText(userInfo.getOnlineTime() + "");
         count.setText(userInfo.getHelpNum() + "");
         distance.setText(userInfo.getHelpDistance() + "");
+        locationService.start();
         Log.e("kele",userInfo.getOnlineTime()+"");
         RequestOptions requestOptions = new RequestOptions()
                 .placeholder(R.mipmap.ic_me_head) //加载中图片
@@ -178,8 +181,10 @@ public class ServerMainActivity extends BaseActivity {
                     @Override
                     public void onClick(View v) {
                         if (isLoginHx) {
+
                             Context context = holder.getItemView().getContext();
-                            CurrentHelpInfo currentHelpInfo = mData.get(position);
+                            CurrentHelpInfo currentHelpInfo = mData.get(holder.getAdapterPosition());
+
                             if(currentHelpInfo!=null)
                             requestLeaveHelp(context, currentHelpInfo);
                         } else {
@@ -315,9 +320,32 @@ public class ServerMainActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        locationService.unregisterListener(myListener); //注销掉监听
+        locationService.stop(); //停止定位服务
         unbindService(conn);
     }
 
+    /*****
+     *
+     * 定位结果回调，重写onReceiveLocation方法，可以直接拷贝如下代码到自己工程中修改
+     *
+     */
+    double mCurLat= Double.parseDouble(APP.getInstance().getServerUserInfo().getWorkLatitude());
+    double mCurLon= Double.parseDouble(APP.getInstance().getServerUserInfo().getWorkLongitude());
+    private BDAbstractLocationListener myListener = new BDAbstractLocationListener() {
+        @Override
+        public void onReceiveLocation(BDLocation location) {
+
+             mCurLat = location.getLatitude();
+             mCurLon = location.getLongitude();
+            LoginSharedUilt intance = LoginSharedUilt.getIntance(ServerMainActivity.this);
+            intance.saveLat(mCurLat);
+            intance.saveLon(mCurLon);
+
+            // TODO Auto-generated method stub
+        }
+    };
+    private LocationService locationService;
     String image = "";
 
     @Override
@@ -333,13 +361,17 @@ public class ServerMainActivity extends BaseActivity {
 
     @Override
     protected int getContentId() {
+        locationService = APP.getInstance().locationService;
+        //获取locationservice实例，建议应用中只初始化1个location实例，
+        // 然后使用，可以参考其他示例的activity，都是通过此种方式获取locationservice实例的
+        locationService.registerListener(myListener);
         return R.layout.show_server_main;
     }
 
     public void getCurrentHelp() {
         Map<String, Object> params = new HashMap<>();
-        params.put("latitude", APP.getInstance().getServerUserInfo().getHomeLatitude());
-        params.put("longitude", APP.getInstance().getServerUserInfo().getHomeLongitude());
+        params.put("latitude", mCurLat);
+        params.put("longitude", mCurLon);
         String token = APP.getInstance().getServerUserInfo().getToken();
         HttpProxy.obtain().get(PlatformContans.ForHelp.sGetCurrentHelp, params, token, new ICallBack() {
             @Override
@@ -397,6 +429,7 @@ public class ServerMainActivity extends BaseActivity {
     }
 
     private void requestLeaveHelp(final Context context, final CurrentHelpInfo currentHelpInfo) {
+        Log.e("help",currentHelpInfo.toString());
         ServerUserInfo serverUserInfo = APP.getInstance().getServerUserInfo();
         String token = serverUserInfo.getToken();
         if (TextUtils.isEmpty(token)) {
@@ -432,6 +465,7 @@ public class ServerMainActivity extends BaseActivity {
                     if (resultCode == 0) {
                         Intent intent = new Intent(context, RescueActivity.class);
                         intent.putExtra("currentHelpInfo", currentHelpInfo);
+                        intent.putExtra("num",num);
                         context.startActivity(intent);
                     } else {
                         if (!TextUtils.isEmpty(message)) {
@@ -449,7 +483,7 @@ public class ServerMainActivity extends BaseActivity {
             }
         });
     }
-
+    int num;
     private void loginHx() {
         Log.d("asyncCreateGroup", "loginHx: 登录hx");
         String userName = null;

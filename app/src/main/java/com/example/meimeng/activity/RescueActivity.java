@@ -514,7 +514,10 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
         helperDistance.setText("与您" + distance + "米范围内");
         helperTime.setText(mCurrentHelpInfo.getCreateTime());
         int helpNum = mCurrentHelpInfo.getHelpNum();
-        workerNumber.setText("已有" + helpNum + "人前往");
+        if(helpNum>0)
+            workerNumber.setText("已有" + helpNum + "人前往");
+        else
+            workerNumber.setText("已有0人前往");
     }
 
     @Override

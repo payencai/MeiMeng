@@ -145,12 +145,17 @@ public class LocationService {
     }
 
     public void start() {
-        synchronized (objLock) {
+
+        if(client.isStarted()){
+            client.restart();
+        }
             if (client != null && !client.isStarted()) {
+                Log.e("start","true");
                 client.start();
 //                client.requestLocation();
             }
-        }
+
+
     }
 
     public void stop() {

@@ -158,7 +158,7 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         //在使用SDK各组件之前初始化context信息，传入ApplicationContext
         //注意该方法要再setContentView方法之前实现
-        locationService = ((APP) getActivity().getApplication()).locationService;
+        locationService = APP.getInstance().locationService;
         //获取locationservice实例，建议应用中只初始化1个location实例，
         // 然后使用，可以参考其他示例的activity，都是通过此种方式获取locationservice实例的
         locationService.registerListener(myListener);
@@ -206,8 +206,11 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         firstAidSite.setOnClickListener(this);
         positioning.setOnClickListener(this);
         searchTypeSelect.setOnClickListener(this);
-
-        locationService.start();
+        //locationService.setLocationOption(locationService.getSingleLocationClientOption());
+        if(locationService!=null) {
+            locationService.start();
+            Log.e("start", "success");
+        }
         // licationCircle();
 
     }
@@ -1078,7 +1081,7 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
             APP.lat = location.getLatitude();
             Log.e("onReceiveLocation", lat + "-" + lon);
             location(city, addr);
-            locationService.setLocationOption(locationService.getSingleLocationClientOption());
+           // locationService.setLocationOption(locationService.getSingleLocationClientOption());
             // TODO Auto-generated method stub
 
 

@@ -116,7 +116,7 @@ public class APP extends Application {
 //        HMSPushHelper.getInstance().initHMSAgent(instance);
 
         //极光推送
-        JPushInterface.setDebugMode(false);
+        JPushInterface.setDebugMode(true);
         JPushInterface.init(this);
     }
 

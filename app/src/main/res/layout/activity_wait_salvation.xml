@@ -65,12 +65,12 @@
             android:textSize="14sp" />
     </LinearLayout>
 
-    <com.baidu.mapapi.map.MapView
+    <com.baidu.mapapi.map.TextureMapView
         android:id="@+id/bmapView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/showRescueState"
-        android:clickable="true"></com.baidu.mapapi.map.MapView>
+        android:clickable="true"></com.baidu.mapapi.map.TextureMapView>
 
 
     <RelativeLayout

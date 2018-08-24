@@ -12,7 +12,7 @@ import retrofit2.http.GET;
  */
 
 public class PlatformContans {
-   // public static String rootUrl="http://192.168.3.5:9999/memen/";
+    //public static String rootUrl="http://192.168.3.5:9999/memen/";
     public static String root = "http://47.106.164.34/";//正式地址
     public static String rootUrl = root + "memen/";//
 //    public static String root = "http://192.168.1.18:8080/";//诗安测试地址

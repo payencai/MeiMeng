@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -60,12 +61,17 @@ import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cn.jpush.android.api.JPushInterface;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ServerMainActivity extends BaseActivity {
@@ -118,6 +124,11 @@ public class ServerMainActivity extends BaseActivity {
     @Override
     protected void initView() {
         ButterKnife.bind(this);
+        Set<String> tags= new HashSet<>();
+        String tag=APP.getInstance().getServerUserInfo().getPushAlias();
+        tags.add(tag);
+        JPushInterface.setTags(this,2,tags);
+        JPushInterface.setAlias(this,1,tag);
         loginHx();
         isDirectLogin=getIntent().getBooleanExtra("flag",true);
         ServerUserInfo userInfo=null;

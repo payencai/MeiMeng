@@ -35,7 +35,9 @@ import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.OverlayOptions;
+import com.baidu.mapapi.map.TextureMapView;
 import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.utils.CoordinateConverter;
 import com.baidu.mapapi.utils.DistanceUtil;
 import com.example.meimeng.APP;
 import com.example.meimeng.R;
@@ -92,7 +94,7 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
     private ImageView hideContent;
     private RelativeLayout parent;
 
-    private MapView mMapView = null;
+    private TextureMapView mMapView = null;
     private BaiduMap mBaiduMap;
 
     private double lon;
@@ -191,7 +193,7 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
         waitTime = (TextView) findViewById(R.id.waitTime);
 
         //获取地图控件引用
-        mMapView = (MapView) findViewById(R.id.bmapView);
+        mMapView = (TextureMapView) findViewById(R.id.bmapView);
         //开启定位图层
         mBaiduMap = mMapView.getMap();
         fm = getSupportFragmentManager();
@@ -202,6 +204,12 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
 
         if (lon != 0 && lat != 0) {
             LatLng point = new LatLng(lat, lon);
+            CoordinateConverter converter = new CoordinateConverter();
+            converter.from(CoordinateConverter.CoordType.COMMON);
+// sourceLatLng待转换坐标
+            converter.coord(point);
+
+            point = converter.convert();
             setMarker(point);
             setUserMapCenter();
         }
@@ -251,6 +259,12 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
      */
     private void setUserMapCenter() {
         LatLng cenpt = new LatLng(lat, lon);
+        CoordinateConverter converter = new CoordinateConverter();
+        converter.from(CoordinateConverter.CoordType.COMMON);
+// sourceLatLng待转换坐标
+        converter.coord(cenpt);
+
+        cenpt = converter.convert();
         //定义地图状态
         MapStatus mMapStatus = new MapStatus.Builder()
                 .target(cenpt)
@@ -622,6 +636,12 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
                     Map<String, Point> locationMap = activity.mLocationMap;
                     activity.mBaiduMap.clear();
                     LatLng point = new LatLng(activity.lat, activity.lon);
+                    CoordinateConverter converter = new CoordinateConverter();
+                    converter.from(CoordinateConverter.CoordType.COMMON);
+// sourceLatLng待转换坐标
+                    converter.coord(point);
+
+                    point = converter.convert();
                     activity.setMarker(point);
                     //0名用户正在赶来，
                     activity.helpNumber.setText(locationMap.size() + "名用户正在赶来，");

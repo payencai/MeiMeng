@@ -1,11 +1,13 @@
 package com.example.meimeng.myjiguang;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
@@ -14,8 +16,12 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.RemoteViews;
 
+import com.example.meimeng.APP;
 import com.example.meimeng.R;
+import com.example.meimeng.activity.LoginActivity;
 import com.example.meimeng.activity.MainActivity;
+import com.example.meimeng.activity.ServerMainActivity;
+import com.example.meimeng.activity.SettingActivity;
 import com.example.meimeng.activity.TestActivity;
 
 import org.json.JSONException;
@@ -40,71 +46,61 @@ public class MyReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        //Logger.d(TAG, "接收到信息");
 
-        if(Build.VERSION.SDK_INT >=26) {
+        Bundle bundle = intent.getExtras();
+        Log.d(TAG, "onReceive - " + intent.getAction());
 
-            CustomPushNotificationBuilder builder = new
-                    CustomPushNotificationBuilder(context,
-                    R.layout.customer_notitfication_layout,
-                    R.id.icon,
-                    R.id.title,
-                    R.id.text);
-            // 指定定制的 Notification Layout
-            builder.statusBarDrawable = R.mipmap.logo;
-            // 指定最顶层状态栏小图标
-            builder.layoutIconDrawable = R.drawable.jpush_notification_icon;
-            // 指定下拉状态栏时显示的通知图标
-            JPushInterface.setPushNotificationBuilder(2, builder);
-        }
-
-        try {
-            Bundle bundle = intent.getExtras();
-//            Logger.d(TAG, "[MyReceiver] onReceive - " + intent.getAction() + ", extras: " + printBundle(bundle));
-
-            if (JPushInterface.ACTION_REGISTRATION_ID.equals(intent.getAction())) {
-                String regId = bundle.getString(JPushInterface.EXTRA_REGISTRATION_ID);
-                Logger.d(TAG, "JPush用户注册成功");
-                Logger.d(TAG, "[MyReceiver] 接收Registration Id : " + regId);
-                //send the Registration Id to your server...
-
-            } else if (JPushInterface.ACTION_MESSAGE_RECEIVED.equals(intent.getAction())) {
-                String message = bundle.getString(JPushInterface.EXTRA_MESSAGE);
-                Logger.d(TAG, "[MyReceiver] 接收到推送下来的自定义消息: " + message);
-//                show(context);
-//                showNotification(context, 2, "美盟", message);
-//                processCustomMessage(context, bundle);
-
-            } else if (JPushInterface.ACTION_NOTIFICATION_RECEIVED.equals(intent.getAction())) {
-                Logger.d(TAG, "[MyReceiver] 接收到推送下来的通知");
-//                show(context);
-                receivingNotification(context, bundle);
-
-            } else if (JPushInterface.ACTION_NOTIFICATION_OPENED.equals(intent.getAction())) {
-                Logger.d(TAG, "[MyReceiver] 用户点击打开了通知");
-
-//                //打开自定义的Activity
-//                Intent i = new Intent(context, JiGuangTestActivity.class);
-//                i.putExtras(bundle);
-//                //i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                context.startActivity(i);
-
-            } else if (JPushInterface.ACTION_RICHPUSH_CALLBACK.equals(intent.getAction())) {
-                Logger.d(TAG, "[MyReceiver] 用户收到到RICH PUSH CALLBACK: " + bundle.getString(JPushInterface.EXTRA_EXTRA));
-                //在这里根据 JPushInterface.EXTRA_EXTRA 的内容处理代码，比如打开新的Activity， 打开一个网页等..
-
-            } else if (JPushInterface.ACTION_CONNECTION_CHANGE.equals(intent.getAction())) {
-                boolean connected = intent.getBooleanExtra(JPushInterface.EXTRA_CONNECTION_CHANGE, false);
-                Logger.w(TAG, "[MyReceiver]" + intent.getAction() + " connected state change to " + connected);
-            } else {
-                Logger.d(TAG, "[MyReceiver] Unhandled intent - " + intent.getAction());
-            }
-        } catch (Exception e) {
-
+        if (JPushInterface.ACTION_REGISTRATION_ID.equals(intent.getAction())) {
+            String regId = bundle.getString(JPushInterface.EXTRA_REGISTRATION_ID);
+            Log.d(TAG, "[MyReceiver] 接收Registration Id : " + regId);
+        }else if (JPushInterface.ACTION_MESSAGE_RECEIVED.equals(intent.getAction())) {
+            Notification notification = getNotify(context,bundle.getString(JPushInterface.EXTRA_MESSAGE));
+            notification.flags = Notification.FLAG_ONLY_ALERT_ONCE;
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.notify(1,notification);
+            Log.d(TAG, "收到了自定义消息。消息内容是：" + bundle.getString(JPushInterface.EXTRA_MESSAGE));
+            // 自定义消息不会展示在通知栏，完全要开发者写代码去处理
+        } else if (JPushInterface.ACTION_NOTIFICATION_RECEIVED.equals(intent.getAction())) {
+            Log.d(TAG, "收到了通知");
+            // 在这里可以做些统计，或者做些其他工作
+        } else if (JPushInterface.ACTION_NOTIFICATION_OPENED.equals(intent.getAction())) {
+            Log.d(TAG, "用户点击打开了通知");
+            // 在这里可以自己写代码去定义用户点击后的行为
+//            Intent i = new Intent(context, TestActivity.class);  //自定义打开的界面
+//            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//            context.startActivity(i);
+        } else {
+            Log.d(TAG, "Unhandled intent - " + intent.getAction());
         }
 
     }
-
+    private Notification getNotify(Context context,String content){
+        if (Build.VERSION.SDK_INT >= 26) {
+            NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            NotificationChannel channel = new NotificationChannel("channel_id", "channel_name", NotificationManager.IMPORTANCE_HIGH);
+            if (manager != null) {
+                manager.createNotificationChannel(channel);
+            }
+            Notification.Builder builder = new Notification.Builder(context, "channel_id");
+            builder.setSmallIcon(R.mipmap.logo)
+                    .setWhen(System.currentTimeMillis())
+                    //.setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher))
+                    .setContentTitle("美盟全民救援")
+                    .setContentText(content)
+                    .setAutoCancel(true);
+            return builder.build();
+        } else {
+            Notification.Builder builder = new Notification.Builder(context);
+            builder.setSmallIcon(R.mipmap.logo)
+                    .setWhen(System.currentTimeMillis())
+                    //.setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher))
+                    .setContentTitle("美盟全民救援")
+                    .setContentText(content)
+                    .setAutoCancel(true);
+            return builder.build();
+        }
+    }
     private void receivingNotification(Context context, Bundle bundle) {
         String title = bundle.getString(JPushInterface.EXTRA_NOTIFICATION_TITLE);
         Logger.d(TAG, " title : " + title);

@@ -48,6 +48,7 @@ import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.OverlayOptions;
+import com.baidu.mapapi.map.TextureMapView;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.search.core.SearchResult;
 import com.baidu.mapapi.search.route.BikingRouteResult;
@@ -148,7 +149,7 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
     TextView mUnreadMsgNumber;
 
 
-    private MapView mMapView = null;
+    private TextureMapView mMapView = null;
     private BaiduMap mBaiduMap;
     private CurrentHelpInfo mCurrentHelpInfo;
 
@@ -248,7 +249,7 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
         title.setText("正在救援");
         saveText.setText("完成救援");
 
-        mMapView = (MapView) findViewById(R.id.bmapView);
+        mMapView = (TextureMapView) findViewById(R.id.bmapView);
         //开启定位图层
         mBaiduMap = mMapView.getMap();
         // 初始化搜索模块，注册事件监听
@@ -1200,8 +1201,6 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
 // sourceLatLng待转换坐标
         converter.coord(point);
         point = converter.convert();
-
-
         walkProject(point);
 
 
@@ -1487,7 +1486,7 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
                     }
                     break;
                 case DELAY_REQUEST_CODE:
-                    activity.locationService.start();
+                    //activity.locationService.start();
                     break;
                 case LOGIN_HX:
                     requstLoginCount++;

@@ -102,7 +102,7 @@ public class CurrentHelpInfo extends RVBaseCell implements Serializable {
         holder.setText(R.id.rv_distance, "距离：与你" + distance + "米范围内");
         if (helpNum > 0) {
             holder.setText(R.id.help_number, "已有" + helpNum + "人前往");
-        } else if(helpNum==0){
+        } else if(helpNum<=0){
             holder.setText(R.id.help_number, "暂无人前往救援");
         }
         holder.setText(R.id.rv_time, createTime.substring(0, 10));

@@ -28,6 +28,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Iterator;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import cn.jpush.android.api.BasicPushNotificationBuilder;
 import cn.jpush.android.api.CustomPushNotificationBuilder;
@@ -43,6 +45,7 @@ import cn.jpush.android.api.JPushInterface;
 public class MyReceiver extends BroadcastReceiver {
     //    private static final String TAG = "JIGUANG-Example";
     private static final String TAG = "MyReceiver";
+    private boolean isFirst = true;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -54,12 +57,26 @@ public class MyReceiver extends BroadcastReceiver {
         if (JPushInterface.ACTION_REGISTRATION_ID.equals(intent.getAction())) {
             String regId = bundle.getString(JPushInterface.EXTRA_REGISTRATION_ID);
             Log.d(TAG, "[MyReceiver] 接收Registration Id : " + regId);
-        }else if (JPushInterface.ACTION_MESSAGE_RECEIVED.equals(intent.getAction())) {
-            Notification notification = getNotify(context,bundle.getString(JPushInterface.EXTRA_MESSAGE));
+        } else if (JPushInterface.ACTION_MESSAGE_RECEIVED.equals(intent.getAction())) {
+            Notification notification = getNotify(context, bundle.getString(JPushInterface.EXTRA_MESSAGE));
             notification.flags = Notification.FLAG_ONLY_ALERT_ONCE;
             NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.notify(1,notification);
+            if (isFirst) {
+                if (APP.sUserType == 1) {
+                    notificationManager.notify(1, notification);
+                    //isFirst = false;
+                }
+            }
+
             Log.d(TAG, "收到了自定义消息。消息内容是：" + bundle.getString(JPushInterface.EXTRA_MESSAGE));
+//            Timer timer = new Timer();
+//            timer.schedule(new TimerTask() {
+//                @Override
+//                public void run() {
+//                    isFirst = true;
+//                }
+//            }, 5000); //指定启动定时器5s之后运行定时器任务run方法，并且只运行一次
+
             // 自定义消息不会展示在通知栏，完全要开发者写代码去处理
         } else if (JPushInterface.ACTION_NOTIFICATION_RECEIVED.equals(intent.getAction())) {
             Log.d(TAG, "收到了通知");
@@ -75,7 +92,8 @@ public class MyReceiver extends BroadcastReceiver {
         }
 
     }
-    private Notification getNotify(Context context,String content){
+
+    private Notification getNotify(Context context, String content) {
         if (Build.VERSION.SDK_INT >= 26) {
             NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             NotificationChannel channel = new NotificationChannel("channel_id", "channel_name", NotificationManager.IMPORTANCE_HIGH);
@@ -101,6 +119,7 @@ public class MyReceiver extends BroadcastReceiver {
             return builder.build();
         }
     }
+
     private void receivingNotification(Context context, Bundle bundle) {
         String title = bundle.getString(JPushInterface.EXTRA_NOTIFICATION_TITLE);
         Logger.d(TAG, " title : " + title);
@@ -132,7 +151,6 @@ public class MyReceiver extends BroadcastReceiver {
             LocalBroadcastManager.getInstance(context).sendBroadcast(msgIntent);
         }
     }
-
 
 
 }

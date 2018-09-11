@@ -4,6 +4,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.meimeng.R;
@@ -18,11 +19,25 @@ import java.io.Serializable;
  */
 public class TrainBean extends RVBaseCell implements Serializable {
     private String address;
-    private String content;
+    private String company;
     private int distance;
     private int id;
     private int isCancel;
     private String latitude;
+
+    public String getCompany() {
+        return company;
+    }
+
+    public void setCompany(String company) {
+        this.company = company;
+    }
+
+    private String longitude;
+    private String price;
+    private int submitTime;
+    private String tel;
+    private String username;
 
     public String getAddress() {
         return address;
@@ -33,11 +48,11 @@ public class TrainBean extends RVBaseCell implements Serializable {
     }
 
     public String getContent() {
-        return content;
+        return company;
     }
 
     public void setContent(String content) {
-        this.content = content;
+        this.company = content;
     }
 
     public int getDistance() {
@@ -112,11 +127,6 @@ public class TrainBean extends RVBaseCell implements Serializable {
         this.username = username;
     }
 
-    private String longitude;
-    private String price;
-    private int submitTime;
-    private String tel;
-    private String username;
 
     public TrainBean() {
         super(null);
@@ -127,7 +137,7 @@ public class TrainBean extends RVBaseCell implements Serializable {
         return 0;
     }
 
-    private boolean isNum(String str){
+    private boolean isNum(String str) {
         try {
             Integer.parseInt(str);
             return true;
@@ -135,6 +145,7 @@ public class TrainBean extends RVBaseCell implements Serializable {
             return false;
         }
     }
+
     @Override
     public RVBaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.rv_item_device_bean, parent, false);
@@ -144,18 +155,30 @@ public class TrainBean extends RVBaseCell implements Serializable {
     @Override
     public void onBindViewHolder(RVBaseViewHolder holder, int position) {
         holder.setIsRecyclable(false);
-        if(!TextUtils.isEmpty(content)){
-            TextView con=holder.getTextView(R.id.content);
+        if (!TextUtils.isEmpty(company)) {
+            TextView con = holder.getTextView(R.id.content);
             con.setVisibility(View.VISIBLE);
-            holder.setText(R.id.content,content);
+            holder.setText(R.id.content, company);
         }
-        holder.setText(R.id.company, username.trim()+"  "+tel);
+        RelativeLayout addr = (RelativeLayout) holder.getView(R.id.addr_layout);
+        holder.setText(R.id.company, username.trim() + "  " + tel);
+        if (TextUtils.isEmpty(tel)||TextUtils.equals("null",tel))
+            holder.setText(R.id.company, username.trim());
+        if (TextUtils.isEmpty(username)||TextUtils.equals("null",username))
+            holder.setText(R.id.company, tel);
+        if (TextUtils.equals("null",username) && TextUtils.equals("null",tel)) {
+            holder.getView(R.id.company).setVisibility(View.GONE);
+        }
+        if (!TextUtils.isEmpty(address) && !TextUtils.equals("null", address))
+            holder.setText(R.id.address, address.replace(" ", ""));
+        else {
+            addr.setVisibility(View.GONE);
+        }
+        if (isNum(price))
+            holder.setText(R.id.money, "￥" + price + "元");
+        else {
+            holder.getView(R.id.money).setVisibility(View.GONE);
 
-        holder.setText(R.id.address, address.replace(" ",""));
-        if(isNum(price))
-        holder.setText(R.id.money, "￥"+price+0+"元");
-        else{
-            holder.setText(R.id.money, "￥0"+"元");
         }
     }
 }

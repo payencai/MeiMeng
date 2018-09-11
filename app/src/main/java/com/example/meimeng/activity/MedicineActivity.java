@@ -94,8 +94,15 @@ public class MedicineActivity extends AbsBaseActivity<MedicineBean> {
     private void getMedicineByServer(final List<String> listid) {
         Map<String, Object> params = new HashMap<>();
         params.put("page", page);
+        String token="";
+        if(APP.sUserType==0)
+        {
+            token=APP.getInstance().getUserInfo().getToken();
+        }else{
+            token=APP.getInstance().getServerUserInfo().getToken();
+        }
         //Log.e("page", page + "");
-        HttpProxy.obtain().get(PlatformContans.Medicine.sGetMedicineByManage, params, APP.getInstance().getUserInfo().getToken(), new ICallBack() {
+        HttpProxy.obtain().get(PlatformContans.Medicine.sGetMedicineByManage, params, token, new ICallBack() {
             @Override
             public void OnSuccess(String result) {
                 mBaseAdapter.hideLoadMore();
@@ -161,8 +168,15 @@ public class MedicineActivity extends AbsBaseActivity<MedicineBean> {
 
     private void queryMedicineLib() {
         Map<String, Object> params = new HashMap<>();
+        String token="";
         params.put("type", 2);
-        HttpProxy.obtain().get(PlatformContans.Medicine.sGetMedicineByUserId, params, APP.getInstance().getUserInfo().getToken(), new ICallBack() {
+        if(APP.sUserType==0)
+        {
+            token=APP.getInstance().getUserInfo().getToken();
+        }else{
+            token=APP.getInstance().getServerUserInfo().getToken();
+        }
+        HttpProxy.obtain().get(PlatformContans.Medicine.sGetMedicineByUserId, params, token, new ICallBack() {
             @Override
             public void OnSuccess(String result) {
                 // Log.e("getbyuserid", result);
@@ -212,7 +226,14 @@ public class MedicineActivity extends AbsBaseActivity<MedicineBean> {
         params.put("type", 2);
         Gson gson = new GsonBuilder().enableComplexMapKeySerialization().create();
         /// String data = gson.toJson(params);
-        HttpProxy.obtain().get(PlatformContans.Medicine.sAddMedicineRelation, params, APP.getInstance().getUserInfo().getToken(), new ICallBack() {
+        String token="";
+        if(APP.sUserType==0)
+        {
+            token=APP.getInstance().getUserInfo().getToken();
+        }else{
+            token=APP.getInstance().getServerUserInfo().getToken();
+        }
+        HttpProxy.obtain().get(PlatformContans.Medicine.sAddMedicineRelation, params, token, new ICallBack() {
             @Override
             public void OnSuccess(String result) {
                 try {

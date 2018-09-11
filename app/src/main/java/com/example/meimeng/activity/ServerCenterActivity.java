@@ -91,6 +91,8 @@ public class ServerCenterActivity extends BaseActivity {
     TextView mServerUsername;
     @BindView(R.id.userinfo_server_layout)
     LinearLayout mServerUserinfo;
+    @BindView(R.id.yaopin_server_layout)
+    LinearLayout mServerMedicine;
     @BindView(R.id.shengji_server_layout)
     LinearLayout mServerShengji;
     @BindView(R.id.addaed_server_layout)
@@ -223,10 +225,10 @@ public class ServerCenterActivity extends BaseActivity {
                         name = object.getString("nickname");
                         image = object.getString("image");
                         if (!TextUtils.equals("null",name)&&!TextUtils.isEmpty(name)) {
-                            mServerUsername.setText(name + ",你好");
+                            mServerUsername.setText(name + " 你好");
                             Log.e("ggg",image+name);
                         } else {
-                            mServerUsername.setText("朵雪花,你好");
+                            mServerUsername.setText("用户"+APP.getInstance().getServerUserInfo().getAccount().substring(7,11)+" 你好");
                         }
                         RequestOptions requestOptions = new RequestOptions()
                                 .placeholder(R.mipmap.ic_me_head) //加载中图片
@@ -259,11 +261,12 @@ public class ServerCenterActivity extends BaseActivity {
     }
 
     private void serverInitView() {
+
         getServerUser();
     }
 
     @OnClick({R.id.shengji_server_layout, R.id.addaed_server_layout, R.id.reback_server_layout, R.id.iv_server_settings,
-            R.id.userinfo_server_layout, R.id.record_server_layout, R.id.server_cv_head, R.id.comeBack})
+            R.id.userinfo_server_layout, R.id.record_server_layout, R.id.server_cv_head, R.id.comeBack,R.id.yaopin_server_layout})
     void onClick(View view) {
         switch (view.getId()) {
             case R.id.shengji_server_layout:
@@ -300,6 +303,9 @@ public class ServerCenterActivity extends BaseActivity {
                 data.putExtras(bundle);
                 setResult(1, data);
                 finish();
+                break;
+            case R.id.yaopin_server_layout:
+                startActivity(new Intent(ServerCenterActivity.this,MedicineActivity.class));
                 break;
         }
     }

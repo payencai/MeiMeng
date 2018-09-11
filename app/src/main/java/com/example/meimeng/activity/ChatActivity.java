@@ -11,6 +11,7 @@ import android.util.Log;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.baidu.mapapi.utils.CoordinateConverter;
 import com.example.meimeng.APP;
 import com.example.meimeng.R;
 import com.example.meimeng.base.BaseActivity;
@@ -180,6 +181,14 @@ public class ChatActivity extends BaseActivity {
                 double latitude = data.getDoubleExtra("latitude", 0);
                 double longitude = data.getDoubleExtra("longitude", 0);
                 String locationAddress = data.getStringExtra("address");
+                LatLng point = new LatLng(latitude, longitude);
+                CoordinateConverter converter = new CoordinateConverter();
+                converter.from(CoordinateConverter.CoordType.COMMON);
+// sourceLatLng待转换坐标
+                converter.coord(point);
+                point = converter.convert();
+                latitude=point.latitude;
+                longitude=point.longitude;
 //                ToaskUtil.showToast(this, locationAddress + "经度:" + longitude + ",维度:" + latitude);
                 if (locationAddress != null && !locationAddress.equals("")) {
                     if (mChatFragment != null) {

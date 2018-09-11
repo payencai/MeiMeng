@@ -9,7 +9,6 @@
    >
 
     <TextView
-        android:visibility="gone"
         android:layout_marginRight="@dimen/margin_20dp"
         android:layout_marginLeft="@dimen/margin_15dp"
         android:textColor="@color/text_333"
@@ -18,7 +17,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:gravity="left"
-        android:text="美国新增协会复旦复发美国新增协会复旦复发到美国新增协会复旦复发到到"
+        android:text="新增协会复旦复发到到"
         android:textSize="16sp"
         app:layout_constraintTop_toBottomOf="@id/company"/>
     <RelativeLayout
@@ -37,7 +36,7 @@
             android:gravity="left"
             android:maxLines="2"
             android:layout_marginRight="@dimen/margin_20dp"
-            android:text="某某某某某某科技有限公司某某某科技有限公司科技有限公司 132545646565"
+            android:text="某某某某科技有限公司科技有限公司 132545646565"
             />
 
 
@@ -46,6 +45,7 @@
 
 
     <RelativeLayout
+        android:id="@+id/addr_layout"
         android:layout_marginTop="@dimen/margin_5dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">

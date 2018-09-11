@@ -768,6 +768,7 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
                 .sizeByPercentage(this, 0.8f, 0f)
                 .setOutsideTouchable(true)
                 .enableBackgroundDark(true)
+                .enableOutsideTouchableDissmiss(false)
                 .setAnimationStyle(R.style.CustomPopWindowStyle)
                 .setBgDarkAlpha(0.5f)
                 .create();

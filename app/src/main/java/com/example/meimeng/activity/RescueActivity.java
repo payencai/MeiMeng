@@ -883,6 +883,7 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
                 .sizeByPercentage(this, 0.8f, 0f)
                 .setOutsideTouchable(false)
                 .enableBackgroundDark(true)
+                .enableOutsideTouchableDissmiss(false)
                 .setAnimationStyle(R.style.CustomPopWindowStyle)
                 .setBgDarkAlpha(0.5f)
                 .create();
@@ -911,7 +912,8 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
         CustomPopWindow customPopWindow = new CustomPopWindow.PopupWindowBuilder(this)
                 .setView(otherView)
                 .sizeByPercentage(this, 0.8f, 0)
-                .setOutsideTouchable(true)
+                .setOutsideTouchable(false)
+                .enableOutsideTouchableDissmiss(false)
                 .enableBackgroundDark(true)
                 .setAnimationStyle(R.style.CustomPopWindowStyle)
                 .setBgDarkAlpha(0.5f)

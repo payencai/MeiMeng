@@ -84,6 +84,7 @@ public class FirstAidRankFragment extends AbsBaseFragment<FirstAidRankBean> {
                            // bean.setContent(item.getString("content"));
                             bean.setPrice(item.getString("price"));
                             bean.setTel(item.getString("tel"));
+                            bean.setCompany(item.getString("company"));
                             bean.setUsername(item.getString("username"));
                             bean.setId(item.getInt("id"));
                             bean.setIsCancel(item.getInt("isCancel"));

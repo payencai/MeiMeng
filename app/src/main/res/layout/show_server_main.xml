@@ -311,7 +311,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/margin_10dp"
                             android:layout_weight="1"
-                            android:text="小时"
+                            android:text="天"
                             android:textColor="#999999"
                             android:textSize="@dimen/text_size_10sp" />
                     </LinearLayout>

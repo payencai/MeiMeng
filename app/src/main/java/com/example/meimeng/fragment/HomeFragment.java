@@ -707,6 +707,14 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
 
     private void addSingleMarker(ServerUser serverUser, int type) {
         LatLng pointcur = new LatLng(lat, lon);
+
+        CoordinateConverter converter2 = new CoordinateConverter();
+        converter2.from(CoordinateConverter.CoordType.COMMON);
+// sourceLatLng待转换坐标
+        converter2.coord(pointcur);
+        pointcur = converter2.convert();
+
+
         int isCertificate = serverUser.getIsCertificate();
         String workLatitude = serverUser.getWorkLatitude();
         String workLongitude = serverUser.getWorkLongitude();
@@ -793,6 +801,11 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         //构建Marker图标
         //当前自己的位置
         LatLng pointcur = new LatLng(lat, lon);
+        CoordinateConverter converter2 = new CoordinateConverter();
+        converter2.from(CoordinateConverter.CoordType.COMMON);
+// sourceLatLng待转换坐标
+        converter2.coord(pointcur);
+        pointcur = converter2.convert();
         BitmapDescriptor bitmap1 = BitmapDescriptorFactory
                 .fromResource(R.mipmap.ic_exist_aed3);
         //构建Marker图标
@@ -989,69 +1002,71 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         @Override
         public boolean onMarkerClick(final Marker marker) {
             Bundle bundle = marker.getExtraInfo();
+            if(bundle!=null){
+                int type = bundle.getInt("type");
+                int distance = bundle.getInt("distance");
+                String telephone = bundle.getString("telephone");
+                double lonNumber = bundle.getDouble("lonNumber");
+                double latNumber = bundle.getDouble("latNumber");
+                if (type == 0) {//AED
+                    String address = bundle.getString("address");
+                    String expiryDate = bundle.getString("expiryDate");
+                    String brank = bundle.getString("brank");
+                    View view = LayoutInflater.from(getContext()).inflate(R.layout.marker_aed_info_layout, null);
+                    TextView brankText = (TextView) view.findViewById(R.id.brank);
+                    TextView expiryDateText = (TextView) view.findViewById(R.id.expiryDate);
+                    brankText.setText(brank);
+                    expiryDateText.setText("电池有效期限:" + expiryDate);
 
-            int type = bundle.getInt("type");
-            int distance = bundle.getInt("distance");
-            String telephone = bundle.getString("telephone");
-            double lonNumber = bundle.getDouble("lonNumber");
-            double latNumber = bundle.getDouble("latNumber");
-            if (type == 0) {//AED
-                String address = bundle.getString("address");
-                String expiryDate = bundle.getString("expiryDate");
-                String brank = bundle.getString("brank");
-                View view = LayoutInflater.from(getContext()).inflate(R.layout.marker_aed_info_layout, null);
-                TextView brankText = (TextView) view.findViewById(R.id.brank);
-                TextView expiryDateText = (TextView) view.findViewById(R.id.expiryDate);
-                brankText.setText(brank);
-                expiryDateText.setText("电池有效期限:" + expiryDate);
+                    InfoWindow.OnInfoWindowClickListener listener = null;
+                    listener = new InfoWindow.OnInfoWindowClickListener() {
+                        public void onInfoWindowClick() {
+                            LatLng ll = marker.getPosition();
+                            marker.setPosition(ll);
+                            mBaiduMap.hideInfoWindow();
+                        }
+                    };
+                    LatLng ll = marker.getPosition();
+                    InfoWindow infoWindow = new InfoWindow(BitmapDescriptorFactory.fromView(view), ll, -47, listener);
+                    mBaiduMap.showInfoWindow(infoWindow);
+                    showPwAEDInfo(view, distance, address, telephone, lonNumber, latNumber);
 
-                InfoWindow.OnInfoWindowClickListener listener = null;
-                listener = new InfoWindow.OnInfoWindowClickListener() {
-                    public void onInfoWindowClick() {
-                        LatLng ll = marker.getPosition();
-                        marker.setPosition(ll);
-                        mBaiduMap.hideInfoWindow();
+
+                } else {//志愿者
+                    Log.e("tag", marker.getPosition().latitude + "----" + marker.getPosition().longitude);
+                    //创建InfoWindow展示的view
+                    View view = LayoutInflater.from(getContext()).inflate(R.layout.marker_service_info_layout, null);
+                    String disString = "该志愿者距离您" + distance + "米";
+                    String telString = "志愿者：134****7692";
+                    try {
+                        String startStr = telephone.substring(0, 3);
+                        String endStr = telephone.substring(telephone.length() - 4, telephone.length());
+                        String showString = startStr + "****" + endStr;
+                        telString = "志愿者：" + showString;
+                    } catch (Exception e) {
+
                     }
-                };
-                LatLng ll = marker.getPosition();
-                InfoWindow infoWindow = new InfoWindow(BitmapDescriptorFactory.fromView(view), ll, -47, listener);
-                mBaiduMap.showInfoWindow(infoWindow);
-                showPwAEDInfo(view, distance, address, telephone, lonNumber, latNumber);
 
-
-            } else {//志愿者
-                Log.e("tag", marker.getPosition().latitude + "----" + marker.getPosition().longitude);
-                //创建InfoWindow展示的view
-                View view = LayoutInflater.from(getContext()).inflate(R.layout.marker_service_info_layout, null);
-                String disString = "该志愿者距离您" + distance + "米";
-                String telString = "志愿者：134****7692";
-                try {
-                    String startStr = telephone.substring(0, 3);
-                    String endStr = telephone.substring(telephone.length() - 4, telephone.length());
-                    String showString = startStr + "****" + endStr;
-                    telString = "志愿者：" + showString;
-                } catch (Exception e) {
-
-                }
-
-                TextView markerTel = (TextView) view.findViewById(R.id.markerTel);
-                TextView markerDistance = (TextView) view.findViewById(R.id.markerDistance);
-                markerDistance.setText(disString);
-                markerTel.setText(telString);
-                //定义用于显示该InfoWindow的坐标点
+                    TextView markerTel = (TextView) view.findViewById(R.id.markerTel);
+                    TextView markerDistance = (TextView) view.findViewById(R.id.markerDistance);
+                    markerDistance.setText(disString);
+                    markerTel.setText(telString);
+                    //定义用于显示该InfoWindow的坐标点
 //            LatLng pt = new LatLng(latNumber, lonNumber);
-                InfoWindow.OnInfoWindowClickListener listener = null;
-                listener = new InfoWindow.OnInfoWindowClickListener() {
-                    public void onInfoWindowClick() {
-                        LatLng ll = marker.getPosition();
-                        marker.setPosition(ll);
-                        mBaiduMap.hideInfoWindow();
-                    }
-                };
-                LatLng ll = marker.getPosition();
-                InfoWindow infoWindow = new InfoWindow(BitmapDescriptorFactory.fromView(view), ll, -47, listener);
-                mBaiduMap.showInfoWindow(infoWindow);
+                    InfoWindow.OnInfoWindowClickListener listener = null;
+                    listener = new InfoWindow.OnInfoWindowClickListener() {
+                        public void onInfoWindowClick() {
+                            LatLng ll = marker.getPosition();
+                            marker.setPosition(ll);
+                            mBaiduMap.hideInfoWindow();
+                        }
+                    };
+                    LatLng ll = marker.getPosition();
+                    InfoWindow infoWindow = new InfoWindow(BitmapDescriptorFactory.fromView(view), ll, -47, listener);
+                    mBaiduMap.showInfoWindow(infoWindow);
+                }
             }
+
             return true;
 
         }

@@ -127,8 +127,8 @@ public class ServerMainActivity extends BaseActivity {
         Set<String> tags= new HashSet<>();
         String tag=APP.getInstance().getServerUserInfo().getPushAlias();
         tags.add(tag);
-        JPushInterface.setTags(this,2,tags);
-        JPushInterface.setAlias(this,1,tag);
+        //JPushInterface.setTags(this,2,tags);
+        //JPushInterface.setAlias(this,1,tag);
         loginHx();
         isDirectLogin=getIntent().getBooleanExtra("flag",true);
         ServerUserInfo userInfo=null;

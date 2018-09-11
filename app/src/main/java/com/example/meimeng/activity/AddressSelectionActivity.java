@@ -45,6 +45,7 @@ import com.baidu.mapapi.search.sug.OnGetSuggestionResultListener;
 import com.baidu.mapapi.search.sug.SuggestionResult;
 import com.baidu.mapapi.search.sug.SuggestionSearch;
 import com.baidu.mapapi.search.sug.SuggestionSearchOption;
+import com.baidu.mapapi.utils.CoordinateConverter;
 import com.example.meimeng.APP;
 import com.example.meimeng.R;
 import com.example.meimeng.base.BaseActivity;
@@ -126,6 +127,14 @@ public class AddressSelectionActivity extends BaseActivity implements View.OnCli
                 AddressBean addressBean = (AddressBean) data.getSerializableExtra("addressBean");
                 lat = addressBean.getLat();
                 lon = addressBean.getLon();
+                LatLng point = new LatLng(lat, lon);
+                CoordinateConverter converter = new CoordinateConverter();
+                converter.from(CoordinateConverter.CoordType.COMMON);
+// sourceLatLng待转换坐标
+                converter.coord(point);
+                point = converter.convert();
+                lat=point.latitude;
+                lon=point.longitude;
                 setCircle();
                 LatLng latLng = new LatLng(lat, lon);
                 reverseGeoCode(latLng);
@@ -281,6 +290,11 @@ public class AddressSelectionActivity extends BaseActivity implements View.OnCli
     private void setMarker() {
         //定义Maker坐标点
         LatLng point = new LatLng(lat, lon);
+        CoordinateConverter converter = new CoordinateConverter();
+        converter.from(CoordinateConverter.CoordType.COMMON);
+// sourceLatLng待转换坐标
+        converter.coord(point);
+        point = converter.convert();
         //构建Marker图标
         BitmapDescriptor bitmap = BitmapDescriptorFactory
                 .fromResource(R.mipmap.ic_high_volunteer);
@@ -297,6 +311,11 @@ public class AddressSelectionActivity extends BaseActivity implements View.OnCli
      */
     private void setUserMapCenter() {
         LatLng cenpt = new LatLng(lat, lon);
+        CoordinateConverter converter = new CoordinateConverter();
+        converter.from(CoordinateConverter.CoordType.COMMON);
+// sourceLatLng待转换坐标
+        converter.coord(cenpt);
+        cenpt = converter.convert();
         //定义地图状态
         MapStatus mMapStatus = new MapStatus.Builder()
                 .target(cenpt)
@@ -340,6 +359,11 @@ public class AddressSelectionActivity extends BaseActivity implements View.OnCli
             double latitude = location.getLatitude();//纬度
             double longitude = location.getLongitude();//经度
             LatLng latLng = new LatLng(latitude, longitude);
+            CoordinateConverter converter = new CoordinateConverter();
+            converter.from(CoordinateConverter.CoordType.COMMON);
+// sourceLatLng待转换坐标
+            converter.coord(latLng);
+            latLng = converter.convert();
             reverseGeoCode(latLng);
         }
 

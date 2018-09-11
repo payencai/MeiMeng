@@ -185,9 +185,9 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
                         String name = object.getString("nickname");
                         String image = object.getString("image");
                         if (!TextUtils.equals("null",name)&&!TextUtils.isEmpty(name)) {
-                            mClientUsername.setText(name + ",你好");
+                            mClientUsername.setText(name + " 您好");
                         } else {
-                            mClientUsername.setText("用户,你好");
+                            mClientUsername.setText("您好");
                         }
                         RequestOptions requestOptions = new RequestOptions()
                                 .placeholder(R.mipmap.ic_me_head) //加载中图片

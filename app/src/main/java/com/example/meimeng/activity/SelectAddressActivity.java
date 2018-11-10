@@ -23,6 +23,7 @@ public class SelectAddressActivity extends BaseActivity implements View.OnClickL
     TextView title;
     EditText et_input_address;
     LinearLayout select_address;
+    TextView tv_name;
     private String mTag;
     private String consignSite;
     private int responseCode;
@@ -49,6 +50,7 @@ public class SelectAddressActivity extends BaseActivity implements View.OnClickL
             finish();
             return;
         }
+        tv_name=findViewById(R.id.tv_name);
         select_address = findViewById(R.id.select_address_layout);
         save = findViewById(R.id.saveText);
         title = findViewById(R.id.title);
@@ -88,6 +90,7 @@ public class SelectAddressActivity extends BaseActivity implements View.OnClickL
                     return;
                 }
                 Intent intent = new Intent();
+                mAddress.setAddress(et_input_address.getEditableText().toString());
                 intent.putExtra(mTag, mAddress);
                 setResult(responseCode, intent);
                 finish();
@@ -104,6 +107,7 @@ public class SelectAddressActivity extends BaseActivity implements View.OnClickL
                 et_input_address.setEnabled(true);
 //                String address = data.getStringExtra("address");
                 mAddress = (AddressBean) data.getSerializableExtra("address");
+                tv_name.setText(mAddress.getName());
                 String addressString = mAddress.getAddress();
                 if (!TextUtils.isEmpty(addressString)) {
                     et_input_address.setText(addressString);

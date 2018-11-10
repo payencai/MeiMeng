@@ -41,8 +41,12 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
+
+import cn.jpush.android.api.JPushInterface;
 
 public class LoginActivity extends BaseActivity implements View.OnClickListener {
 
@@ -131,6 +135,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         Bundle bundle=getIntent().getExtras();
         if(bundle!=null){
             userNumberEdit.setText(bundle.getString("phone"));
+            verificationEdit.setText(bundle.getString("pwd"));
         }
     }
     @Override
@@ -403,6 +408,10 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                         JSONObject data = object.getJSONObject("data");
                         UserInfo userInfo = new Gson().fromJson(data.toString(), UserInfo.class);
                         userInfo.setPassword(psw);
+                        JPushInterface.setAlias(getApplicationContext(),0,userInfo.getPushAlias());
+                        Set<String> set=new HashSet<>();
+                        set.add(userInfo.getPushAlias());
+                        JPushInterface.setTags(getApplicationContext(),0,set);
                         UserInfoSharedPre intance = UserInfoSharedPre.getIntance(LoginActivity.this);
                         intance.saveUserInfo(userInfo, true);
                         String address=data.getString("address");

@@ -290,6 +290,7 @@ public class ServerCenterActivity extends BaseActivity {
                 Intent intent =new Intent(this, LoginActivity.class);
                 Bundle b=new Bundle();
                 b.putString("phone",APP.getInstance().getServerUserInfo().getAccount());
+                b.putString("pwd",APP.getInstance().getServerUserInfo().getPassword());
                 intent.putExtras(b);
                 startActivity(intent);
                 break;

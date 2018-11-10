@@ -13,9 +13,10 @@ import retrofit2.http.GET;
 
 public class PlatformContans {
     //public static String rootUrl="http://192.168.3.5:9999/memen/";
+    //public static String root = "http://192.168.3.6:8090/";//诗安测试地址
     public static String root = "http://47.106.164.34/";//正式地址
     public static String rootUrl = root + "memen/";//
-//    public static String root = "http://192.168.1.18:8080/";//诗安测试地址
+
 //    public static String rootUrl = root + "memen/";//
 
     public static class UseUser {
@@ -40,6 +41,7 @@ public class PlatformContans {
         public static final String sServerUserUpgrade = sHead + "serverUserUpgrade";//升级高级急救人员
         public static final String sAddServerUserByUseUser = sHead + "addServerUserByUseUser";
         public static final String sGetServerUser = sHead + "getServerUser";
+        public static final String sPostAddress=sHead+"updateLoginAddress";
     }
 
     public static class AidKnowController {

@@ -160,11 +160,14 @@ public class WaitSalvationActivity extends BaseActivity implements View.OnClickL
         mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                mMediaPlayer.start();
-                mMediaPlayer.setLooping(true);
+                if (mMediaPlayer != null) {
+                    mMediaPlayer.start();
+                    mMediaPlayer.setLooping(true);
+                }
             }
         });
-        mMediaPlayer.start();
+        if (mMediaPlayer != null)
+            mMediaPlayer.start();
         mWaitTimeNumber = intance.getHelpTime();
         mGroupId = intance.getGroupId();
         if (TextUtils.isEmpty(mGroupId)) {

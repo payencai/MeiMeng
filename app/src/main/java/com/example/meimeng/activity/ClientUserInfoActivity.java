@@ -193,7 +193,7 @@ public class ClientUserInfoActivity extends BaseActivity {
                     et_lianxi1.setText("");
                     return;
                 }
-                String showString = name + ": " + tel;
+                String showString = name + "：" + tel;
                 et_lianxi1.setText(showString);
             } else if (requestCode == 2) {
                 String name = data.getStringExtra("name");
@@ -202,7 +202,7 @@ public class ClientUserInfoActivity extends BaseActivity {
                     et_lianxi2.setText("");
                     return;
                 }
-                String showString = name + ": " + tel;
+                String showString = name + "：" + tel;
                 et_lianxi2.setText(showString);
 
             } else if (requestCode == 3) {
@@ -212,7 +212,7 @@ public class ClientUserInfoActivity extends BaseActivity {
                     et_lianxi3.setText("");
                     return;
                 }
-                String showString = name + ": " + tel;
+                String showString = name + "：" + tel;
                 et_lianxi3.setText(showString);
             }
         }
@@ -322,7 +322,13 @@ public class ClientUserInfoActivity extends BaseActivity {
                     int resultCode = object.getInt("resultCode");
                     if (resultCode == 0) {
                         JSONObject data = object.getJSONObject("data");
-                        et_name.setText(data.getString("nickname") + "");
+                        String name=data.getString("nickname");
+                        if(!TextUtils.equals("null",name)&&TextUtils.isEmpty(name)){
+                            et_name.setText("用户"+APP.getInstance().getUserInfo().getAccount().substring(7,11));
+                        }else{
+                            et_name.setText(name);
+                        }
+
                         et_fixphone.setText(data.getString("fixedLineTelephone"));
                         bloodtype = data.getString("bloodType");
                         tvValue.setText(bloodtype + "");

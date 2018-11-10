@@ -141,7 +141,7 @@
                 android:layout_height="match_parent"
                 android:background="@null"
                 android:hint="请输入密码"
-                android:inputType="text"
+                android:inputType="textPassword"
                 android:maxLength="11"
                 android:paddingLeft="@dimen/margin_12dp"
                 android:textColor="@color/color_white_100"

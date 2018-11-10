@@ -73,7 +73,7 @@ public class ChatActivity extends BaseActivity {
         ServerUserInfo userInfo = APP.getInstance().getServerUserInfo();
         String nickname = userInfo.getNickname();
         String image = userInfo.getImage();
-        Log.d("initFragment", "initFragment: " + image);
+        Log.e("initFragment", "initFragment: " + userInfo.getImageKey());
         String imageKey = userInfo.getImageKey();
         mChatFragment = new EaseChatFragment();
         mChatFragment.setLication(mLication);

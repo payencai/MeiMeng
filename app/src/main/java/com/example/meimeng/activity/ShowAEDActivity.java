@@ -142,8 +142,8 @@ public class ShowAEDActivity extends BaseActivity implements OnGetRoutePlanResul
             calUAV.setVisibility(View.VISIBLE);
             aedLayout.setVisibility(View.GONE);
             uavLayout.setVisibility(View.VISIBLE);
-
-
+            beginNavigation2.setVisibility(View.GONE);
+            uavDistance.setVisibility(View.GONE);
         }
 
     }
@@ -188,7 +188,7 @@ public class ShowAEDActivity extends BaseActivity implements OnGetRoutePlanResul
         uavText = (TextView) findViewById(R.id.uavText);
         view1 = findViewById(R.id.view1);
         view2 = findViewById(R.id.view2);
-
+        mMapView.showZoomControls(false);
         //开启定位图层
         mBaiduMap = mMapView.getMap();
         mBaiduMap.setOnMarkerClickListener(onMarkerClicklistener);
@@ -404,7 +404,7 @@ public class ShowAEDActivity extends BaseActivity implements OnGetRoutePlanResul
         HttpProxy.obtain().get(PlatformContans.AedController.sGetDrone, params, token, new ICallBack() {
             @Override
             public void OnSuccess(String result) {
-                MLog.log("sGetDrone", result);
+                Log.e("data",result);
                 if (mOpenLoadView != null) {
                     mOpenLoadView.dismiss();
                 }
@@ -412,12 +412,13 @@ public class ShowAEDActivity extends BaseActivity implements OnGetRoutePlanResul
                 try {
                     JSONObject object = new JSONObject(result);
                     int resultCode = object.getInt("resultCode");
-                    ToaskUtil.showToast(ShowAEDActivity.this, "无人机呼叫成功,请在5-10分钟内到达最近的AED站点");
                     if (resultCode == 0) {
+
                         JSONObject data = object.getJSONObject("data");
                         Gson gson = new Gson();
                         UavAedBaen baen = gson.fromJson(data.toString(), UavAedBaen.class);
-                        if (baen != null) {
+                        if (Integer.parseInt(baen.getNum()) >0) {
+                            ToaskUtil.showToast(ShowAEDActivity.this, "无人机呼叫成功,请在5-10分钟内到达最近的AED站点");
                             uavAddress.setText(baen.getParking());
                             uavPhoneNumber.setText("电话号码 : " + baen.getTel());
                             int distanceNum = 0;
@@ -429,12 +430,18 @@ public class ShowAEDActivity extends BaseActivity implements OnGetRoutePlanResul
                                 distanceNum = (int) DistanceUtil.getDistance(pointcur, point);//距离定位的距离
                                 endLat = lat2;
                                 endLon = lon2;
-                                walkProject(pointcur, point);
+                                //walkProject(pointcur, point);
                             } catch (Exception e) {
 
                             }
                             uavDistance.setText("无人机距离" + distanceNum + "米");
+                            uavDistance.setVisibility(View.VISIBLE);
                         }
+                        else{
+                            ToaskUtil.showToast(ShowAEDActivity.this, "没有找到无人机");
+                        }
+                    }else{
+                        ToaskUtil.showToast(ShowAEDActivity.this, object.getString("message"));
                     }
 
                 } catch (JSONException e) {

@@ -36,6 +36,7 @@ import com.example.meimeng.bean.AddressBean;
 import com.example.meimeng.bean.LoginAccount.ServerUserInfo;
 import com.example.meimeng.bean.ServerUser;
 import com.example.meimeng.constant.PlatformContans;
+import com.example.meimeng.custom.KyLoadingBuilder;
 import com.example.meimeng.http.HttpProxy;
 import com.example.meimeng.http.ICallBack;
 import com.example.meimeng.util.TimeSelectPopWindow;
@@ -76,6 +77,7 @@ public class AskVolunteerActivity extends BaseActivity {
     private String homelat;
     private String worklat;
     private String worklon;
+    KyLoadingBuilder mKyLoadingBuilder;
     @BindView(R.id.et_volunteer_name)
     EditText tv_name;
     @BindView(R.id.et_volunteer_number)
@@ -102,6 +104,7 @@ public class AskVolunteerActivity extends BaseActivity {
     Button btn_vol_commit;
     int count = 0;
     String value = "";
+    boolean isFinish = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,7 +143,8 @@ public class AskVolunteerActivity extends BaseActivity {
             @Override
             public void onClick(View view) {
                 dialog.dismiss();
-                finish();
+                if (isFinish)
+                    finish();
             }
         });
 
@@ -186,89 +190,110 @@ public class AskVolunteerActivity extends BaseActivity {
     }
 
 
-    private void getServerUserinfo() {
-        HttpProxy.obtain().get(PlatformContans.Serveruser.sGetServerUser, APP.getInstance().getUserInfo().getToken(), new ICallBack() {
-            @Override
-            public void OnSuccess(String result) {
-                Log.e("result", result);
-                JSONObject jsonObject = null;
-                try {
-                    jsonObject = new JSONObject(result);
-                    int code = jsonObject.getInt("resultCode");
-                    if (code == 0) {
-                        JSONObject object = jsonObject.getJSONObject("data");
-                        int isCertificate = object.getInt("isUpgrade");
-                        if (isCertificate == 1) {
-                            value = "你已经是高级志愿者";
-                        } else {
-                            String type = APP.getInstance().getUserInfo().getServerType();
-                            if (TextUtils.equals("2", type)) {
-                                value = "你的申请还在审核中";
-                            }
-                            if (TextUtils.equals("4", type)) {
-                                value = "你的申请被驳回";
-                            }
-                            if (TextUtils.equals("3", type)) {
-                                if(TextUtils.equals(object.getString("isExamine"),"1")){
-                                    value = "你已经是初级志愿者，可以去志愿者界面申请成为高级志愿者";
-                                }
-                                else{
-                                    value = "你的申请还在审核中";
-                                }
-                            }
-                        }
-                        showAskDialog(value);
-                    }
-                    if (code == 9999) {
-
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-
-            }
-
-            @Override
-            public void onFailure(String error) {
-
-            }
-        });
-    }
+//    private void getServerUserinfo() {
+//        HttpProxy.obtain().get(PlatformContans.Serveruser.sGetServerUser, APP.getInstance().getUserInfo().getToken(), new ICallBack() {
+//            @Override
+//            public void OnSuccess(String result) {
+//                Log.e("result", result);
+//                JSONObject jsonObject = null;
+//                try {
+//                    jsonObject = new JSONObject(result);
+//                    int code = jsonObject.getInt("resultCode");
+//                    if (code == 0) {
+//                        JSONObject object = jsonObject.getJSONObject("data");
+//                        int isCertificate = object.getInt("isCertificate");
+//                        int isExamine = object.getInt("isExamine");
+//                        String type = APP.getInstance().getUserInfo().getServerType();
+//                        if (isExamine == 3) {
+//                            value = "你的申请被驳回";
+//                            isFinish = false;
+//                        } else {
+//                            if (isExamine == 1) {
+//                                if (isCertificate == 1) {
+//                                    value = "你已经是高级志愿者";
+//                                }
+//                                else{
+//                                    value = "你已经是初级志愿者，可以去志愿者界面申请成为高级志愿者";
+//                                }
+//                            } else if (isExamine == 2) {
+//                                    value = "你的申请还在审核中";
+//                            }
+//                        }
+//                        showAskDialog(value);
+//                    }
+//                    if (code == 9999) {
+//
+//                    }
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//
+//
+//            }
+//
+//            @Override
+//            public void onFailure(String error) {
+//
+//            }
+//        });
+//    }
 
     private void getUserInfo() {
         HttpProxy.obtain().get(PlatformContans.UseUser.sGetUseUser, APP.getInstance().getUserInfo().getToken(), new ICallBack() {
             @Override
             public void OnSuccess(String result) {
-                Log.e("result", result);
+                Log.e("data", result);
                 JSONObject jsonObject = null;
                 try {
                     jsonObject = new JSONObject(result);
                     int code = jsonObject.getInt("resultCode");
                     if (code == 0) {
                         JSONObject object = jsonObject.getJSONObject("data");
+                        String name = object.getString("name");
+                        String idNumber = object.getString("idNumber");
+                        String sex = object.getString("sex");
+                        tv_name.setText(name);
+                        number.setText(idNumber);
                         JSONObject server = object.getJSONObject("serverUser");
+                        if (sex.equals("男")) {
+                            man.setChecked(true);
+                            nv.setChecked(false);
+                        }
+                        if (TextUtils.isEmpty(idNumber)) {
+                            showAskDialog("请先去实名认证！");
+                        }
+                        Log.e("idNumber", idNumber);
                         if (server != null) {
-                            String name = server.getString("name");
-                            String idNumber = server.getString("idNumber");
                             String wordaddr = server.getString("workAddress");
                             String homeaddr = server.getString("homeAddress");
-                            String sex = server.getString("sex");
                             String worktime = server.getString("workTime");
-                            Log.e("idNumber", idNumber);
-                            tv_name.setText(name);
-                            number.setText(idNumber);
+                            int isExamine = server.getInt("isExamine");
+                            int isCertificate = server.getInt("isCertificate");
                             detailhome.setText(homeaddr);
                             detailwork.setText(wordaddr);
+                            homelat=server.getString("homeLatitude");
+                            homelon=server.getString("homeLongitude");
+                            worklat=server.getString("workLatitude");
+                            worklon=server.getString("workLongitude");
                             if (TextUtils.isEmpty(worktime)) {
                                 detailtime.setText("单休");
                             } else
                                 detailtime.setText(worktime);
-                            if (sex.equals("男")) {
-                                man.setChecked(true);
-                                nv.setChecked(false);
+                            if (isExamine == 3) {
+                                value = "你的申请被驳回";
+                                isFinish = false;
+                            } else {
+                                if (isExamine == 1) {
+                                    if (isCertificate == 1) {
+                                        value = "你已经是高级志愿者";
+                                    } else {
+                                        value = "你已经是初级志愿者，可以去志愿者界面申请成为高级志愿者";
+                                    }
+                                } else if (isExamine == 2) {
+                                    value = "你的申请还在审核中";
+                                }
                             }
-                            getServerUserinfo();
+                            showAskDialog(value);
 
                         }
 
@@ -281,45 +306,6 @@ public class AskVolunteerActivity extends BaseActivity {
                     e.printStackTrace();
                 }
 
-
-            }
-
-            @Override
-            public void onFailure(String error) {
-
-            }
-        });
-    }
-
-    private void getIsCert() {
-        HttpProxy.obtain().get(PlatformContans.UseUser.sGetUseUser, APP.getInstance().getUserInfo().getToken(), new ICallBack() {
-            @Override
-            public void OnSuccess(String result) {
-                Log.e("result", result);
-                try {
-                    JSONObject object = new JSONObject(result);
-                    JSONObject data = object.getJSONObject("data");
-                    number.setText(data.getString("idNumber"));
-                    tv_name.setText(data.getString("name"));
-                    detailhome.setText(data.getString("address"));
-                    homelat = data.getString("latitude");
-                    homelon = data.getString("longitude");
-                    String sex = data.getString("sex");
-                    if (!TextUtils.isEmpty(sex)) {
-                        if (TextUtils.equals("男", sex)) {
-                            man.setChecked(true);
-                            nv.setChecked(false);
-                        } else {
-                            nv.setChecked(true);
-                            man.setChecked(false);
-                        }
-                    }
-                    if (TextUtils.isEmpty(number.getEditableText().toString())) {
-                        showCertDialog();
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
 
             }
 
@@ -344,23 +330,6 @@ public class AskVolunteerActivity extends BaseActivity {
         drawable2.setBounds(0, 0, 30, 30);//将drawable设置为宽100 高100固定大小
         nv.setCompoundDrawables(drawable2, null, null, null);
         nv.setChecked(true);
-        //Log.e("type",APP.getInstance().getUserInfo().getServerType());
-
-
-        if (!TextUtils.isEmpty(APP.getInstance().getUserInfo().getServerType())) {
-            if (APP.getInstance().getUserInfo().getServerType().equals("3")) {
-                getUserInfo();
-
-            }
-            if (APP.getInstance().getUserInfo().getServerType().equals("2")) {
-
-            }
-        } else {
-            //还没有申请志愿者
-            //如果没有实名认证，提示去实名
-            getIsCert();
-
-        }
 
         ImageView back;
         back = findViewById(R.id.back);
@@ -376,7 +345,9 @@ public class AskVolunteerActivity extends BaseActivity {
                 ImageSelectorUtils.openPhoto(AskVolunteerActivity.this, 2, false, 3, selected);
             }
         });
+        getUserInfo();
         initPictureAdapter();
+
     }
 
     @Override
@@ -441,6 +412,12 @@ public class AskVolunteerActivity extends BaseActivity {
 
     private void initPictureAdapter() {
         mAdapter = new PictureAdapter(this, selected);
+        mAdapter.setOnItemDelListener(new PictureAdapter.OnItemDelListener() {
+            @Override
+            public void onClick(int position, View view) {
+
+            }
+        });
         ask_show_pic.setAdapter(mAdapter);
     }
 
@@ -556,27 +533,22 @@ public class AskVolunteerActivity extends BaseActivity {
                 });
                 break;
             case R.id.btn_vol_commit:
-                if (TextUtils.isEmpty(APP.getInstance().getUserInfo().getIdNumber())) {
-                    ToaskUtil.showToast(this, "你还没有实名认证，请先去实名认证");
-                    return;
-                }
+
                 if (TextUtils.isEmpty(APP.getInstance().getUserInfo().getServerType())) {
                     if (!isInputEmpty()) {
+                        mKyLoadingBuilder = openLoadView("提交中");
                         commitAll();
                     } else {
                         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    if (APP.getInstance().getUserInfo().getServerType().equals("3") || APP.getInstance().getUserInfo().getServerType().equals("2")) {
-                        Toast.makeText(this, "你已经是志愿者或者已经申请志愿者，请不要重复操作！", Toast.LENGTH_LONG).show();
-                        btn_vol_commit.setEnabled(false);
+//
+                    if (!isInputEmpty()) {
+                        commitAll();
                     } else {
-                        if (!isInputEmpty()) {
-                            commitAll();
-                        } else {
-                            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-                        }
+                        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
                     }
+//                    }
                 }
 
 
@@ -633,15 +605,18 @@ public class AskVolunteerActivity extends BaseActivity {
     public void commit() {
         String token = APP.getInstance().getUserInfo().getToken();
         String data = returnJsonString();
+        Log.e("data", data + "---" + token);
         HttpProxy.obtain().post(PlatformContans.Serveruser.sAddServerUserByUseUser, token, data, new ICallBack() {
             @Override
             public void OnSuccess(String result) {
+                closeLoadView(mKyLoadingBuilder);
                 Log.e("success", result);
                 JSONObject jsonObject = null;
                 try {
                     jsonObject = new JSONObject(result);
                     int code = jsonObject.getInt("resultCode");
                     if (code == 0) {
+
                         Toast.makeText(AskVolunteerActivity.this, "申请成功", Toast.LENGTH_LONG).show();
                         count = 0;
                         finish();
@@ -676,7 +651,7 @@ public class AskVolunteerActivity extends BaseActivity {
         String certificateImages = "";
         int isCertificate;
         if (selected.size() == 0) {
-            isCertificate = 0;
+            isCertificate = 2;
         } else {
             isCertificate = 1;
             certificateImages = urls.substring(0, urls.length() - 1);

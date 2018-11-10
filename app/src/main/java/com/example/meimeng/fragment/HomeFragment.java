@@ -9,6 +9,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.LruCache;
@@ -101,6 +102,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -164,6 +167,7 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         locationService.registerListener(myListener);
         initCache();
         initView(view);
+        timer.schedule(task, 0, 3*60*1000);
         return view;
     }
 
@@ -596,6 +600,33 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
 
     }
 
+
+    private Handler handler  = new Handler(){
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if(msg.what == 1){
+                locationService.start();
+            }
+        }
+    };
+
+
+    private Timer timer = new Timer(true);
+
+    //任务
+    private TimerTask task = new TimerTask() {
+        public void run() {
+            Message msg = new Message();
+            msg.what = 1;
+            handler.sendMessage(msg);
+        }
+    };
+
+//启动定时器
+
+
+
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
@@ -716,8 +747,8 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
 
 
         int isCertificate = serverUser.getIsCertificate();
-        String workLatitude = serverUser.getWorkLatitude();
-        String workLongitude = serverUser.getWorkLongitude();
+        String workLatitude = serverUser.getLoginLatitude();
+        String workLongitude = serverUser.getLoginLongitude();
         Log.e("lat", workLatitude + "-" + workLongitude);
         double latNumber = 0;
         double lonNumber = 0;
@@ -1094,6 +1125,8 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
             lon = location.getLongitude();
             APP.lon = location.getLongitude();
             APP.lat = location.getLatitude();
+            APP.locateLat=location.getLatitude();
+            APP.locateLon=location.getLongitude();
             Log.e("onReceiveLocation", lat + "-" + lon);
             location(city, addr);
            // locationService.setLocationOption(locationService.getSingleLocationClientOption());

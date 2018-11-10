@@ -52,6 +52,7 @@ import com.example.meimeng.util.ServerUserInfoSharedPre;
 import com.example.meimeng.util.ToaskUtil;
 import com.example.meimeng.util.UserInfoSharedPre;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.hyphenate.EMCallBack;
 import com.hyphenate.chat.EMClient;
 
@@ -352,6 +353,7 @@ public class ServerMainActivity extends BaseActivity {
             LoginSharedUilt intance = LoginSharedUilt.getIntance(ServerMainActivity.this);
             intance.saveLat(mCurLat);
             intance.saveLon(mCurLon);
+            sendAddress();
 
             // TODO Auto-generated method stub
         }
@@ -378,7 +380,26 @@ public class ServerMainActivity extends BaseActivity {
         locationService.registerListener(myListener);
         return R.layout.show_server_main;
     }
+    public void sendAddress(){
+        Map<String, Object> params = new HashMap<>();
+        String token = APP.getInstance().getServerUserInfo().getToken();
+        params.put("loginLatitude", mCurLat+"");
+        params.put("loginLongitude", mCurLon+"");
+        params.put("serverUserId", APP.getInstance().getServerUserInfo().getId());
+        Gson gson = new GsonBuilder().enableComplexMapKeySerialization().create();
+        String data = gson.toJson(params);
+        HttpProxy.obtain().post(PlatformContans.Serveruser.sPostAddress, token, data,new ICallBack() {
+            @Override
+            public void OnSuccess(String result) {
+                Log.e("send",result);
+            }
 
+            @Override
+            public void onFailure(String error) {
+
+            }
+        });
+    }
     public void getCurrentHelp() {
         Map<String, Object> params = new HashMap<>();
         params.put("latitude", mCurLat);

@@ -103,7 +103,25 @@ public class ServerUser {
     private String workLongitude;
     private String workTime;
     private List<String> cImages;
+    private String loginLatitude;
 
+    public String getLoginLatitude() {
+        return loginLatitude;
+    }
+
+    public void setLoginLatitude(String loginLatitude) {
+        this.loginLatitude = loginLatitude;
+    }
+
+    public String getLoginLongitude() {
+        return loginLongitude;
+    }
+
+    public void setLoginLongitude(String loginLongitude) {
+        this.loginLongitude = loginLongitude;
+    }
+
+    private String loginLongitude;
     public String getAccount() {
         return account;
     }

@@ -19,8 +19,26 @@ public class DrugInfo extends RVBaseCell {
     private String address;
     private String telephone;
     private String medicine;
-    private int distance;
 
+    public String getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
+    }
+
+    private double distance;
+    private String longitude;
+    private String latitude;
     public DrugInfo(Object o, String name, String address, String telephone, String medicine, int distance) {
         super(o);
         this.name = name;
@@ -62,11 +80,11 @@ public class DrugInfo extends RVBaseCell {
         this.medicine = medicine;
     }
 
-    public int getDistance() {
+    public double getDistance() {
         return distance;
     }
 
-    public void setDistance(int distance) {
+    public void setDistance(double distance) {
         this.distance = distance;
     }
 
@@ -90,7 +108,8 @@ public class DrugInfo extends RVBaseCell {
         holder.setText(R.id.userTel,name.substring(0,1)+"**");
         holder.setText(R.id.drugInfo,"药品信息： "+medicine);
         holder.setText(R.id.address,address);
-        holder.setText(R.id.distance,"距离你"+distance+"米");
+        int d= (int) (distance);
+        holder.setText(R.id.distance,"距离你"+d+"米");
     }
 
 

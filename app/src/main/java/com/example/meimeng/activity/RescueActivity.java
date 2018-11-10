@@ -147,8 +147,8 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
     LinearLayout parent;
     @BindView(R.id.my_unread_msg_number)
     TextView mUnreadMsgNumber;
-
-
+    @BindView(R.id.messageText)
+    TextView msg;
     private TextureMapView mMapView = null;
     private BaiduMap mBaiduMap;
     private CurrentHelpInfo mCurrentHelpInfo;
@@ -203,14 +203,11 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
     protected void initView() {
         //获取地图控件引用
         ButterKnife.bind(this);
-
         LoginSharedUilt intance = LoginSharedUilt.getIntance(this);
         double lat = intance.getLat();
         double lon = intance.getLon();
-
         mCurLat = lat;
         mCurLon = lon;
-
         taskCollection = new HashSet<>();
         //获取系统给每一个应用所分配的内存大小
         long maxMemory = Runtime.getRuntime().maxMemory();
@@ -223,14 +220,18 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
                 return value.getByteCount();
             }
         };
-
         Intent intent = getIntent();
         mCurrentHelpInfo = (CurrentHelpInfo) intent.getSerializableExtra("currentHelpInfo");
         if (mCurrentHelpInfo == null) {
             finish();
             return;
         }
-
+        if (mCurrentHelpInfo.getGroupId().equals("N")) {
+            callTel.setTextColor(getResources().getColor(R.color.text_9));
+            msg.setTextColor(getResources().getColor(R.color.text_9));
+            callTel.setEnabled(false);
+            msg.setEnabled(false);
+        }
         String latitude = mCurrentHelpInfo.getLatitude();
         String longitude = mCurrentHelpInfo.getLongitude();
         try {
@@ -264,13 +265,13 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
 
     }
 
-    private void showPhoneDialog(){
+    private void showPhoneDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(RescueActivity.this);
         builder.setTitle("温馨提示")
                 .setMessage("使用虚拟号码拨打，主叫号码必须是你的登录账号，若非登录账号拨打，请选择正常号码拨打")
                 .setPositiveButton("本机号码拨打", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                          checkPower(mCurrentHelpInfo.getUseUserTelephone());
+                        checkPower(mCurrentHelpInfo.getUseUserTelephone());
                     }
                 })
                 .setNegativeButton("虚拟号码拨打", new DialogInterface.OnClickListener() {
@@ -280,6 +281,7 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
                 });
         builder.show();
     }
+
     private void showDialog(final LatLng latLng) {
         final Dialog dialog = new Dialog(this, R.style.dialog);
         View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_map, null);
@@ -304,14 +306,14 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
             @Override
             public void onClick(View view) {
                 dialog.dismiss();
-                baidu(latLng.latitude,latLng.longitude);
+                baidu(latLng.latitude, latLng.longitude);
             }
         });
         dialog.findViewById(R.id.tv_google).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 dialog.dismiss();
-                google(latLng.latitude,latLng.longitude);
+                google(latLng.latitude, latLng.longitude);
 
             }
         });
@@ -319,7 +321,7 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
             @Override
             public void onClick(View view) {
                 dialog.dismiss();
-                gaode(latLng.latitude,latLng.longitude);
+                gaode(latLng.latitude, latLng.longitude);
 
             }
         });
@@ -332,8 +334,10 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
         });
         dialog.show();
     }
-    String areaname="";
-    private void setInfo(final LatLng ll){
+
+    String areaname = "";
+
+    private void setInfo(final LatLng ll) {
         CoordinateConverter converter = new CoordinateConverter();
         converter.from(CoordinateConverter.CoordType.COMMON);
 // sourceLatLng待转换坐标
@@ -343,31 +347,33 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
         TextView brankText = (TextView) view.findViewById(R.id.brank);
         TextView expiryDateText = (TextView) view.findViewById(R.id.expiryDate);
         brankText.setText("距离你");
-        expiryDateText.setText(distance+"米");
+        expiryDateText.setText(distance + "米");
         InfoWindow.OnInfoWindowClickListener listener = null;
         listener = new InfoWindow.OnInfoWindowClickListener() {
             public void onInfoWindowClick() {
-                Log.e("latlon",ll.latitudeE6+"-"+ll.longitudeE6);
+                Log.e("latlon", ll.latitudeE6 + "-" + ll.longitudeE6);
                 showDialog(ll);
             }
         };
         InfoWindow infoWindow = new InfoWindow(BitmapDescriptorFactory.fromView(view), point, -47, listener);
         mBaiduMap.showInfoWindow(infoWindow);
     }
-    BaiduMap.OnMarkerClickListener onMarkerClicklistener = new BaiduMap.OnMarkerClickListener(){
+
+    BaiduMap.OnMarkerClickListener onMarkerClicklistener = new BaiduMap.OnMarkerClickListener() {
 
         @Override
         public boolean onMarkerClick(final Marker marker) {
 
-           if(Math.abs(marker.getPosition().latitude-mCallerLat)<0.00001&&Math.abs(marker.getPosition().longitude-mCallerLon)<0.00001){
+            if (Math.abs(marker.getPosition().latitude - mCallerLat) < 0.00001 && Math.abs(marker.getPosition().longitude - mCallerLon) < 0.00001) {
 
-               ToaskUtil.showToast(RescueActivity.this,"你点击了marker");
-           }
+                ToaskUtil.showToast(RescueActivity.this, "你点击了marker");
+            }
 
             return false;
         }
     };
-    private void google(double mLatitude,double mLongitude){
+
+    private void google(double mLatitude, double mLongitude) {
         if (isAvilible(this, "com.google.android.apps.maps")) {
             Uri gmmIntentUri = Uri.parse("google.navigation:q="
                     + mLatitude + "," + mLongitude
@@ -385,8 +391,9 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
             startActivity(intent);
         }
     }
-    private void baidu(double mLatitude,double mLongitude){
-         LatLng poit=new LatLng(mLatitude,mLongitude);
+
+    private void baidu(double mLatitude, double mLongitude) {
+        LatLng poit = new LatLng(mLatitude, mLongitude);
         CoordinateConverter converter = new CoordinateConverter();
         converter.from(CoordinateConverter.CoordType.COMMON);
 // sourceLatLng待转换坐标
@@ -401,7 +408,7 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
                         "&mode=driving&" + // 导航路线方式
                         "region=广东" + //
                         "&src=广州番禺#Intent;scheme=bdapp;package=com.baidu.BaiduMap;end");
-                   startActivity(intent); // 启动调用
+                startActivity(intent); // 启动调用
             } catch (URISyntaxException e) {
                 Log.e("intent", e.getMessage());
             }
@@ -414,10 +421,11 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
             startActivity(intent);
         }
     }
-    private void gaode(double mLatitude,double mLongitude){
+
+    private void gaode(double mLatitude, double mLongitude) {
         if (isAvilible(this, "com.autonavi.minimap")) {
             try {
-                Intent intent = Intent.getIntent("androidamap://navi?sourceApplication=新疆和田&poiname="+"广州"+"&lat="
+                Intent intent = Intent.getIntent("androidamap://navi?sourceApplication=新疆和田&poiname=" + "广州" + "&lat="
                         + mLatitude
                         + "&lon="
                         + mLongitude + "&dev=0");
@@ -434,6 +442,7 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
             startActivity(intent);
         }
     }
+
     public static boolean isAvilible(Context context, String packageName) {
         // 获取packagemanager
         final PackageManager packageManager = context.getPackageManager();
@@ -451,6 +460,7 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
         // 判断packageNames中是否有目标程序的包名，有TRUE，没有FALSE
         return packageNames.contains(packageName);
     }
+
     private void setMessageListener() {
         EMClient.getInstance().chatManager().addMessageListener(msgListener);
     }
@@ -504,7 +514,9 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
 
         }
     }
+
     int distance;
+
     private void initDataView() {
 //        helperHead
         Glide.with(this).load(mCurrentHelpInfo.getImage()).into(helperHead);
@@ -514,7 +526,7 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
         helperDistance.setText("与您" + distance + "米范围内");
         helperTime.setText(mCurrentHelpInfo.getCreateTime());
         int helpNum = mCurrentHelpInfo.getHelpNum();
-        if(helpNum>0)
+        if (helpNum > 0)
             workerNumber.setText("已有" + helpNum + "人前往");
         else
             workerNumber.setText("已有0人前往");
@@ -638,20 +650,21 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
                 break;
         }
     }
-    private void  getVirtualPhone(final String oldphone){
-        Map<String,Object> param=new HashMap<>();
-        param.put("callingPhone",APP.getInstance().getServerUserInfo().getTelephone());
-        param.put("calledPhone",oldphone);
+
+    private void getVirtualPhone(final String oldphone) {
+        Map<String, Object> param = new HashMap<>();
+        param.put("callingPhone", APP.getInstance().getServerUserInfo().getTelephone());
+        param.put("calledPhone", oldphone);
         HttpProxy.obtain().get(PlatformContans.Medicine.sGetVirtualNumber, param, new ICallBack() {
             @Override
             public void OnSuccess(String result) {
                 JSONObject jsonObject = null;
                 try {
                     jsonObject = new JSONObject(result);
-                     phone=jsonObject.getString("data");
+                    phone = jsonObject.getString("data");
                     checkPower(phone);
                     //requestPermission();
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -662,6 +675,7 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
             }
         });
     }
+
     private void checkPower(String phone) {
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.CALL_PHONE)
@@ -682,7 +696,9 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
         intent.setData(data);
         startActivity(intent);
     }
-    String phone="";
+
+    String phone = "";
+
     @Override
     public void onBackPressed() {
         if (isFristShowEnd) {
@@ -756,6 +772,7 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
                 if (object.has("end")) {
                     int end = object.getInt("end");
                     final String closeName = object.getString("closeName");
+                    final int closeUserType = object.getInt("closeUserType");
                     final String closeTelephone = object.getString("closeTelephone");
                     if (end == 1) {
                         mHandler.post(new Runnable() {
@@ -769,7 +786,7 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
                                 }
                                 if (isFristShowEnd) {
                                     isFristShowEnd = false;
-                                    showhelpEnd(parent, closeName, closeTelephone);
+                                    showhelpEnd(parent, closeName, closeTelephone, closeUserType);
                                 }
                             }
                         });
@@ -876,7 +893,7 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
         customPopWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
     }
 
-    private void showhelpEnd(View view, String closeName, String closeTelephone) {
+    private void showhelpEnd(View view, String closeName, String closeTelephone, int type) {
         View otherView = LayoutInflater.from(this).inflate(R.layout.pw_hint_helpend_layout, null);
         CustomPopWindow customPopWindow = new CustomPopWindow.PopupWindowBuilder(this)
                 .setView(otherView)
@@ -887,14 +904,19 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
                 .setAnimationStyle(R.style.CustomPopWindowStyle)
                 .setBgDarkAlpha(0.5f)
                 .create();
-        handlerFinishHelpView(otherView, customPopWindow, closeName, closeTelephone);
+        handlerFinishHelpView(otherView, customPopWindow, closeName, closeTelephone, type);
         customPopWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
     }
 
-    private void handlerFinishHelpView(View view, final CustomPopWindow customPopWindow, String closeName, String closeTelephone) {
+    private void handlerFinishHelpView(View view, final CustomPopWindow customPopWindow, String closeName, String closeTelephone, int type) {
         //有救援人:13480197692\n点击完成救助
         TextView showContent = (TextView) view.findViewById(R.id.showContent);
-        String content = "救援人:" + closeName + " \n点击完成了救助";
+        String content = "救援人点击完成了救助";
+        if (type == 1) {
+            content = "求救者:" + closeName + " \n点击完成了救助";
+        } else {
+            content = "救援人:" + closeName + " \n点击完成了救助";
+        }
         showContent.setText(content);
         view.findViewById(R.id.know).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1079,7 +1101,7 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
         public void onReceiveLocation(BDLocation location) {
             String addr = location.getAddrStr();    //获取详细地址信息
             String country = location.getCountry();    //获取国家
-            areaname=addr;
+            areaname = addr;
             String province = location.getProvince();    //获取省份
             String city = location.getCity();    //获取城市
             String district = location.getDistrict();    //获取区县
@@ -1187,8 +1209,6 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
         }
 
 
-
-
         if (point2 == null) {
             ToaskUtil.showToast(this, "位置获取异常");
             end = 2;
@@ -1196,7 +1216,7 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
             return;
         }
 
-         distance = (int) DistanceUtil.getDistance(point, point2);//距离定位的距离
+        distance = (int) DistanceUtil.getDistance(point, point2);//距离定位的距离
         helperDistance.setText("与您" + distance + "米范围内");
         mBaiduMap.clear();
         //setMarker(point);
@@ -1349,7 +1369,9 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
             }
         });
     }
+
     boolean isEnd;
+
     @Override
     public void onGetWalkingRouteResult(WalkingRouteResult result) {
         if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
@@ -1362,13 +1384,13 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
         }
         if (result.error == SearchResult.ERRORNO.NO_ERROR) {
 //            mBaiduMap.clear();
-            MyWalkingRouteOverlay walkingRouteOverlay = new MyWalkingRouteOverlay(mBaiduMap,false);
+            MyWalkingRouteOverlay walkingRouteOverlay = new MyWalkingRouteOverlay(mBaiduMap, false);
             walkingRouteOverlay.setData(result.getRouteLines().get(0));
-           // walkingRouteOverlay.setEnd(true);
+            // walkingRouteOverlay.setEnd(true);
             walkingRouteOverlay.addToMap();
-            isEnd=walkingRouteOverlay.isEnd();
+            isEnd = walkingRouteOverlay.isEnd();
             walkingRouteOverlay.zoomToSpan();
-            setInfo(new LatLng(mCallerLat,mCallerLon));
+            setInfo(new LatLng(mCallerLat, mCallerLon));
         }
     }
 

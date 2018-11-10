@@ -50,10 +50,11 @@
             </LinearLayout>
 
             <LinearLayout
+                android:layout_toLeftOf="@id/right"
                 android:layout_marginTop="@dimen/margin_5dp"
                 android:gravity="left"
                 android:layout_toRightOf="@id/left"
-                android:layout_width="180dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:orientation="vertical">
@@ -67,6 +68,7 @@
                     android:text="姓名：李小龙" />
 
                 <TextView
+                    android:layout_marginRight="5dp"
                     android:id="@+id/rv_address"
                     style="@style/font_14sp_333"
                     android:layout_width="wrap_content"
@@ -86,16 +88,18 @@
             </LinearLayout>
 
             <LinearLayout
+                android:gravity="center"
                 android:layout_centerVertical="true"
                 android:id="@+id/right"
                 android:layout_alignParentRight="true"
-                android:layout_width="wrap_content"
+                android:layout_width="70dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/margin_10dp"
-                android:layout_marginRight="20dp"
+                android:layout_marginRight="10dp"
                 android:orientation="vertical">
 
                 <LinearLayout
+
                     android:id="@+id/nowhelp"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
@@ -121,7 +125,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_10dp"
-                    android:text="已有3人前往"
+                    android:text="暂无人前往救援"
                     android:textSize="@dimen/text_size_10sp" />
             </LinearLayout>
         </RelativeLayout>

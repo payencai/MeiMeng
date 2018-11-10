@@ -155,7 +155,7 @@ public class TrainBean extends RVBaseCell implements Serializable {
     @Override
     public void onBindViewHolder(RVBaseViewHolder holder, int position) {
         holder.setIsRecyclable(false);
-        if (!TextUtils.isEmpty(company)) {
+        if (!TextUtils.isEmpty(company)&&!TextUtils.equals("null",company)) {
             TextView con = holder.getTextView(R.id.content);
             con.setVisibility(View.VISIBLE);
             holder.setText(R.id.content, company);

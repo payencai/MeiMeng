@@ -27,6 +27,7 @@ import com.example.meimeng.base.BaseActivity;
 import com.example.meimeng.bean.AddressBean;
 import com.example.meimeng.constant.PlatformContans;
 import com.example.meimeng.custom.CustomDatePicker;
+import com.example.meimeng.custom.KyLoadingBuilder;
 import com.example.meimeng.custom.Notepad;
 import com.example.meimeng.http.HttpProxy;
 import com.example.meimeng.http.ICallBack;
@@ -71,6 +72,7 @@ public class AddAEDActivity extends BaseActivity implements View.OnClickListener
     //    private ArrayList<Image> mSelectImages = new ArrayList<>();
     private GridView imgShowGridView;
     private PictureAdapter mAdapter;
+    KyLoadingBuilder upload;
     private static final int RQUEST_ADDRESS_CODE = 2;
     private EditText phone;
     private Notepad note;
@@ -118,6 +120,15 @@ public class AddAEDActivity extends BaseActivity implements View.OnClickListener
    }
     private void initPictureAdapter() {
         mAdapter = new PictureAdapter(this, selected);
+        mAdapter.setOnItemDelListener(new PictureAdapter.OnItemDelListener() {
+            @Override
+            public void onClick(int position, View view) {
+                //imgShowGridView.removeViewAt(position);
+
+                selected.remove(position);
+                mAdapter.notifyDataSetChanged();
+            }
+        });
         imgShowGridView.setAdapter(mAdapter);
 //        imgShowGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 //            @Override
@@ -138,7 +149,7 @@ public class AddAEDActivity extends BaseActivity implements View.OnClickListener
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.CHINA);
         Date date = new Date();
         String now = sdf.format(date);
-        deadline.setText(now);
+        deadline.setText(now.split(" ")[0]);
         customDatePicker = new CustomDatePicker(this, new CustomDatePicker.ResultHandler() {
             @Override
             public void handle(String time) { // 回调接口，获得选中的时间
@@ -177,7 +188,9 @@ public class AddAEDActivity extends BaseActivity implements View.OnClickListener
                 break;
             case R.id.submit:
                 if(isEmpty())
-                    commit();
+                {
+                    upload=openLoadView("提交中");
+                    commit();}
                 else{
 
                 }
@@ -270,6 +283,7 @@ public class AddAEDActivity extends BaseActivity implements View.OnClickListener
         HttpProxy.obtain().post(PlatformContans.AedController.sAddAed, token, data, new ICallBack() {
             @Override
             public void OnSuccess(String result) {
+                closeLoadView(upload);
                 JSONObject jsonObject = null;
                 try {
                     jsonObject = new JSONObject(result);
@@ -303,7 +317,7 @@ public class AddAEDActivity extends BaseActivity implements View.OnClickListener
 
     private String returnJson(int type) {
         Map<String, Object> params = new HashMap<>();
-        params.put("address", consignSite.getText().toString());
+        params.put("address", addressName+consignSite.getText().toString());
         params.put("brank", AEDBrand.getText().toString());
         params.put("expiryDate", deadline.getText().toString());
         params.put("addressPoint",note.getEditableText().toString());
@@ -319,7 +333,7 @@ public class AddAEDActivity extends BaseActivity implements View.OnClickListener
 
     private String longitude;
     private String latitude;
-
+    String addressName;
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -334,15 +348,16 @@ public class AddAEDActivity extends BaseActivity implements View.OnClickListener
         if (data != null) {
             if (requestCode == RQUEST_ADDRESS_CODE) {
                 AddressBean address = (AddressBean) data.getSerializableExtra("address");
+                addressName=address.getName();
+                Log.e("name",address.getName());
                 if (address != null) {
                     String addressStr = address.getAddress();
                     double lon = address.getLon();
                     double lat = address.getLat();
                     longitude = lon + "";
                     latitude = lat + "";
-                   // Log.d("onActivityResult", "onActivityResult: 经度：" + lon + ",维度:" + lat);
                     if (!TextUtils.isEmpty(addressStr)) {
-                        consignSite.setText(addressStr);
+                        consignSite.setText(addressName+addressStr);
                     }
                 }
 

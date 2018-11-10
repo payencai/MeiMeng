@@ -52,6 +52,7 @@ import com.example.meimeng.http.HttpProxy;
 import com.example.meimeng.http.ICallBack;
 import com.example.meimeng.manager.ActivityManager;
 import com.example.meimeng.service.LoginInfoService;
+import com.example.meimeng.util.CommomDialog;
 import com.example.meimeng.util.CustomPopWindow;
 import com.example.meimeng.util.LoginSharedUilt;
 import com.example.meimeng.util.ToaskUtil;
@@ -452,7 +453,26 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
 
     }
+    private void showCertDialog(){
+        CommomDialog dialog = new CommomDialog(this, R.style.dialog, "你还没有实名认证，去认证？", new CommomDialog.OnCloseListener() {
+            @Override
+            public void onClick(Dialog dialog, boolean confirm) {
+                if (confirm) {
+                    dialog.dismiss();
+                    startActivity(new Intent(dialog.getContext(),CertActivity.class));
+                } else {
+                    dialog.dismiss();
+                }
+            }
+        });
 
+        dialog.setTitle("切换身份").show();
+        WindowManager windowManager = getWindowManager();
+        Display display = windowManager.getDefaultDisplay();
+        WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
+        lp.width = (int) (display.getWidth()); //设置宽度
+        dialog.getWindow().setAttributes(lp);
+    }
     private void showSoSDialog() {
         final Dialog dialog = new Dialog(this, R.style.dialog);
         View dialogView = LayoutInflater.from(this).inflate(R.layout.popup_call_help, null);
@@ -466,7 +486,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         //获得window窗口的属性
         android.view.WindowManager.LayoutParams lp = window.getAttributes();
         //设置窗口宽度为充满全屏
-        lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+        Display display = getWindowManager().getDefaultDisplay();
+        //设置窗口宽度为充满全屏
+        lp.width = (int) (display.getWidth() * 0.9);
         //设置窗口高度为包裹内容
         lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
         //将设置好的属性set回去
@@ -479,7 +501,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 if (dialog != null) {
                     dialog.dismiss();
                 }
-                startActivity(new Intent(MainActivity.this, WaitSoSActivity.class));
+                if(TextUtils.isEmpty(APP.getInstance().getUserInfo().getIdNumber())||TextUtils.equals("null",APP.getInstance().getUserInfo().getIdNumber())){
+                    //ToaskUtil.showToast(dialog.getContext(),"你还没有实名认证,不能呼救！");
+                    dialog.dismiss();
+                    showCertDialog();
+                    return;
+                }
+               startActivity(new Intent(MainActivity.this, WaitSoSActivity.class));
             }
         });
         dialog.findViewById(R.id.call120).setOnClickListener(new View.OnClickListener() {
@@ -543,20 +571,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     private void handlerView(View view, final CustomPopWindow customPopWindow) {
 
-//        case R.id.callFirstAidImg:
-//
-////                if (!TextUtils.isEmpty(groupId)) {
-////                } else {
-////                    ToaskUtil.showToast(this, "数据加载中...");
-////                }
-//        break;
-//        case R.id.call120:
-////                ToaskUtil.showToast(this, "打120");
-//
-//        break;
-//        case R.id.callEmergencyContact:
-//
-//        break;
+
 
         view.findViewById(R.id.callFirstAidImg).setOnClickListener(new View.OnClickListener() {
             @Override

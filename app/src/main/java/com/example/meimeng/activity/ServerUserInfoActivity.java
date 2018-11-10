@@ -99,7 +99,12 @@ public class ServerUserInfoActivity extends BaseActivity implements View.OnClick
                     int code = jsonObject.getInt("resultCode");
                     if (code == 0) {
                         JSONObject object = jsonObject.getJSONObject("data");
-                        tv_name.setText(object.getString("nickname"));
+                        String nickname=object.getString("nickname");
+                        if(!TextUtils.isEmpty(nickname)&&!TextUtils.equals("null",nickname))
+                           tv_name.setText(nickname);
+                        else{
+                            tv_name.setText("用户"+APP.getInstance().getServerUserInfo().getAccount().substring(7,11));
+                        }
                         tv_work.setText(object.getString("workAddress"));
                         tv_home.setText(object.getString("homeAddress"));
                         tv_time.setText(object.getString("workTime"));

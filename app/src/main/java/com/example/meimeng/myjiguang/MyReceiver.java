@@ -64,29 +64,18 @@ public class MyReceiver extends BroadcastReceiver {
             if (isFirst) {
                 if (APP.sUserType == 1) {
                     notificationManager.notify(1, notification);
-                    //isFirst = false;
+
                 }
             }
 
             Log.d(TAG, "收到了自定义消息。消息内容是：" + bundle.getString(JPushInterface.EXTRA_MESSAGE));
-//            Timer timer = new Timer();
-//            timer.schedule(new TimerTask() {
-//                @Override
-//                public void run() {
-//                    isFirst = true;
-//                }
-//            }, 5000); //指定启动定时器5s之后运行定时器任务run方法，并且只运行一次
 
-            // 自定义消息不会展示在通知栏，完全要开发者写代码去处理
         } else if (JPushInterface.ACTION_NOTIFICATION_RECEIVED.equals(intent.getAction())) {
             Log.d(TAG, "收到了通知");
-            // 在这里可以做些统计，或者做些其他工作
+
         } else if (JPushInterface.ACTION_NOTIFICATION_OPENED.equals(intent.getAction())) {
             Log.d(TAG, "用户点击打开了通知");
-            // 在这里可以自己写代码去定义用户点击后的行为
-//            Intent i = new Intent(context, TestActivity.class);  //自定义打开的界面
-//            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//            context.startActivity(i);
+
         } else {
             Log.d(TAG, "Unhandled intent - " + intent.getAction());
         }

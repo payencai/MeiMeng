@@ -37,7 +37,13 @@ public class PictureAdapter extends BaseAdapter {
         mList.addAll(list);
         notifyDataSetChanged();
     }
-
+    OnItemDelListener mOnItemDelListener;
+    public interface OnItemDelListener{
+        void onClick(int position,View view);
+    }
+    public void setOnItemDelListener(OnItemDelListener onItemDelListener){
+        this.mOnItemDelListener=onItemDelListener;
+    }
     @Override
     public Object getItem(int position) {
         return mList.get(position);
@@ -49,16 +55,23 @@ public class PictureAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder;
+    public View getView(final int position, View convertView, ViewGroup parent) {
+        final ViewHolder holder;
         if (convertView == null) {
             convertView = mInflater.inflate(R.layout.grid_picture_item_layout, parent, false);
             holder = new ViewHolder();
             holder.mImageView = convertView.findViewById(R.id.pictureLoad);
+            holder.mImageDel=convertView.findViewById(R.id.delete);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
+        holder.mImageDel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mOnItemDelListener.onClick(position,holder.mImageView);
+            }
+        });
         String url = mList.get(position);
         Glide.with(mContext).load(url).into(holder.mImageView);
         return convertView;
@@ -66,6 +79,7 @@ public class PictureAdapter extends BaseAdapter {
 
     class ViewHolder {
         ImageView mImageView;
+        ImageView mImageDel;
     }
 
 }

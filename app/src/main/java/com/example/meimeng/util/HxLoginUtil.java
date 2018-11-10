@@ -1,6 +1,5 @@
 package com.example.meimeng.util;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
@@ -8,15 +7,11 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.example.meimeng.APP;
-import com.example.meimeng.R;
-import com.example.meimeng.activity.ChatActivity;
 import com.example.meimeng.bean.LoginAccount.ServerUserInfo;
 import com.example.meimeng.bean.LoginAccount.UserInfo;
 import com.example.meimeng.manager.ActivityManager;
 import com.hyphenate.EMCallBack;
 import com.hyphenate.chat.EMClient;
-
-import java.lang.ref.WeakReference;
 
 /**
  * 作者：凌涛 on 2018/7/2 18:02

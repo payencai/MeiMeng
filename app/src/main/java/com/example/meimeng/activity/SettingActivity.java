@@ -102,6 +102,7 @@ public class SettingActivity extends BaseActivity {
         Intent intent =new Intent(this, LoginActivity.class);
         Bundle bundle=new Bundle();
         bundle.putString("phone",APP.getInstance().getUserInfo().getAccount());
+        bundle.putString("pwd",APP.getInstance().getUserInfo().getPassword());
         intent.putExtras(bundle);
         startActivity(intent);
     }

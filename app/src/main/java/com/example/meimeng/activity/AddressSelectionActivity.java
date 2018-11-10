@@ -123,21 +123,15 @@ public class AddressSelectionActivity extends BaseActivity implements View.OnCli
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (data != null) {
+            Log.e("res",requestCode+"");
             if (requestCode == 0) {
                 AddressBean addressBean = (AddressBean) data.getSerializableExtra("addressBean");
                 lat = addressBean.getLat();
                 lon = addressBean.getLon();
+                Log.e("latlng",lat+","+lon);
                 LatLng point = new LatLng(lat, lon);
-                CoordinateConverter converter = new CoordinateConverter();
-                converter.from(CoordinateConverter.CoordType.COMMON);
-// sourceLatLng待转换坐标
-                converter.coord(point);
-                point = converter.convert();
-                lat=point.latitude;
-                lon=point.longitude;
-                setCircle();
-                LatLng latLng = new LatLng(lat, lon);
-                reverseGeoCode(latLng);
+                reverseGeoCode(point);
+                setCenter(lat,lon);
             }
         }
     }
@@ -305,7 +299,18 @@ public class AddressSelectionActivity extends BaseActivity implements View.OnCli
         //在地图上添加Marker，并显示
         mBaiduMap.addOverlay(option);
     }
-
+    private void setCenter(double lat,double lon){
+        LatLng cenpt = new LatLng(lat, lon);
+        //定义地图状态
+        MapStatus mMapStatus = new MapStatus.Builder()
+                .target(cenpt)
+                .zoom(18)
+                .build();
+        //定义MapStatusUpdate对象，以便描述地图状态将要发生的变化
+        MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
+        //改变地图状态
+        mBaiduMap.setMapStatus(mMapStatusUpdate);
+    }
     /**
      * 设置中心点
      */
@@ -339,22 +344,7 @@ public class AddressSelectionActivity extends BaseActivity implements View.OnCli
         public void onReceiveLocation(BDLocation location) {
             location(location);
             locationService.setLocationOption(locationService.getSingleLocationClientOption());
-//            List<AddressBean> list = new ArrayList<>();
-//            if (null != location && location.getLocType() != BDLocation.TypeServerError) {
-//                String addr = location.getAddrStr();    //获取详细地址信息
-//                String street = location.getStreet();    //获取街道信息
-//                AddressBean addressBean = new AddressBean(street, addr);
-//                list.add(addressBean);
-//                if (location.getPoiList() != null && !location.getPoiList().isEmpty()) {
-//                    for (int i = 0; i < location.getPoiList().size(); i++) {
-//                        Poi poi = (Poi) location.getPoiList().get(i);
-//                        String name = poi.getName();
-//                        AddressBean bean = new AddressBean(name, addr);
-//                        list.add(bean);
-//                    }
-//                }
-//                mAdapter.reset(list);
-//            }
+
 
             double latitude = location.getLatitude();//纬度
             double longitude = location.getLongitude();//经度

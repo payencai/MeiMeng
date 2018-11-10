@@ -51,6 +51,7 @@ public class UserInfoActivity extends BaseActivity {
     TextView title;
     TextView save;
     TextView tv_back;
+    TextView tv_next;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,9 +65,9 @@ public class UserInfoActivity extends BaseActivity {
 
     @Override
     protected void initView() {
+        tv_next=findViewById(R.id.saveText);
         bloodLayout=findViewById(R.id.ll_blood_layout);
         title=findViewById(R.id.title);
-
         etPhone=findViewById(R.id.et_user_phone);
         etFixPhone=findViewById(R.id.et_user_fixphone);
         etAddress=findViewById(R.id.et_user_address);
@@ -83,8 +84,11 @@ public class UserInfoActivity extends BaseActivity {
         contact2=findViewById(R.id.et_user_lianxi2);
         contact3=findViewById(R.id.et_user_lianxi3);
         save=findViewById(R.id.btn_user_save);
+        save.setVisibility(View.GONE);
         tuichu=findViewById(R.id.comeBackText);
         tuichu.setVisibility(View.VISIBLE);
+        tv_next.setText("下一步");
+        tv_next.setVisibility(View.VISIBLE);
         tuichu.setText("退出");
         title.setText("个人资料");
         etPhone.setText(APP.getInstance().getUserInfo().getTelephone());
@@ -130,7 +134,7 @@ public class UserInfoActivity extends BaseActivity {
         });
 
         mSpinerPopWindow = new SpinerPopWindow<String>(this, list, itemClickListener);
-        save.setOnClickListener(new View.OnClickListener() {
+        tv_next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String address = etAddress.getText().toString();
@@ -248,8 +252,9 @@ public class UserInfoActivity extends BaseActivity {
                     jsonObject = new JSONObject(result);
                     int code = jsonObject.getInt("resultCode");
                     if (code == 0) {
-                        //Toast.makeText(ClientUserInfoActivity.this, "更新成功", Toast.LENGTH_LONG).show();
-                        startActivity(new Intent(UserInfoActivity.this,MainActivity.class));
+                        Intent intent=new Intent(UserInfoActivity.this,CertActivity.class);
+                        intent.putExtra("type",1);
+                        startActivity(intent);
                         finish();
                     }
                     if (code == 9999) {
@@ -288,7 +293,7 @@ public class UserInfoActivity extends BaseActivity {
                     contact1.setText("");
                     return;
                 }
-                String showString = name + ": " + tel;
+                String showString = name + "：" + tel;
                 contact1.setText(showString);
             } else if (requestCode == 2) {
                 String name = data.getStringExtra("name");
@@ -297,7 +302,7 @@ public class UserInfoActivity extends BaseActivity {
                     contact2.setText("");
                     return;
                 }
-                String showString = name + ": " + tel;
+                String showString = name + "：" + tel;
                 contact2.setText(showString);
 
             } else if (requestCode == 3) {
@@ -307,7 +312,7 @@ public class UserInfoActivity extends BaseActivity {
                     contact3.setText("");
                     return;
                 }
-                String showString = name + ": " + tel;
+                String showString = name + "：" + tel;
                 contact3.setText(showString);
             }
         }

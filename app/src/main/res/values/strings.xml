@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">美盟</string>
+    <string name="app_name">美盟全民救援</string>
     <string name="error_message">网络错误,请稍后重试</string>
     <string name="empty_message">暂时还没有数据</string>
     <string name="aed_img_explain">3张AED现场图片，1张显示AED全景图，2张显示AED所在位置图需要带周围标志性物体（比如：电梯口、灭火器、洗手间附近等）</string>

@@ -19,12 +19,13 @@
         android:clickable="true"></com.baidu.mapapi.map.MapView>
 
     <ImageView
+        android:layout_alignParentRight="true"
         android:id="@+id/calUAV"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
         android:layout_above="@id/bottomLayout"
         android:layout_marginBottom="24dp"
-        android:layout_marginLeft="24dp"
+        android:layout_marginRight="@dimen/margin_20dp"
         android:src="@mipmap/ic_call_uav" />
 
     <LinearLayout

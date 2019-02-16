@@ -146,6 +146,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == MY_PERMISSIONS_REQUEST_CALL_PHONE) {
+            if(grantResults.length>0)
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 callPhone();
             } else {
@@ -454,17 +455,17 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     }
     private void showCertDialog(){
-        CommomDialog dialog = new CommomDialog(this, R.style.dialog, "你还没有实名认证，去认证？", new CommomDialog.OnCloseListener() {
-            @Override
-            public void onClick(Dialog dialog, boolean confirm) {
-                if (confirm) {
-                    dialog.dismiss();
-                    startActivity(new Intent(dialog.getContext(),CertActivity.class));
-                } else {
-                    dialog.dismiss();
+            CommomDialog dialog = new CommomDialog(this, R.style.dialog, "你还没有实名认证，去认证？", new CommomDialog.OnCloseListener() {
+                @Override
+                public void onClick(Dialog dialog, boolean confirm) {
+                    if (confirm) {
+                        dialog.dismiss();
+                        startActivity(new Intent(dialog.getContext(),CertActivity.class));
+                    } else {
+                        dialog.dismiss();
+                    }
                 }
-            }
-        });
+            });
 
         dialog.setTitle("切换身份").show();
         WindowManager windowManager = getWindowManager();
@@ -473,6 +474,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         lp.width = (int) (display.getWidth()); //设置宽度
         dialog.getWindow().setAttributes(lp);
     }
+
+
+
     private void showSoSDialog() {
         final Dialog dialog = new Dialog(this, R.style.dialog);
         View dialogView = LayoutInflater.from(this).inflate(R.layout.popup_call_help, null);
@@ -516,7 +520,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 if (dialog != null) {
                     dialog.dismiss();
                 }
-                curCallTel = "10086";
+                curCallTel = "120";
                 checkPower();
             }
         });
@@ -526,7 +530,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 if (dialog != null) {
                     dialog.dismiss();
                 }
-                curCallTel = "10010";
+                curCallTel = "120";
                 //checkPower();
                 showDialog();
             }
@@ -588,7 +592,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 if (customPopWindow != null) {
                     customPopWindow.dissmiss();
                 }
-                curCallTel = "10086";
+                curCallTel = "120";
                 checkPower();
             }
         });
@@ -598,7 +602,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 if (customPopWindow != null) {
                     customPopWindow.dissmiss();
                 }
-                curCallTel = "10010";
+                curCallTel = "120";
                 //checkPower();
                 showDialog();
             }
@@ -620,7 +624,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             password = serverUserInfo.getHxPwd();
         }
         if (TextUtils.isEmpty(userName) || TextUtils.isEmpty(userName)) {
-            ToaskUtil.showToast(this, "数据获取失败");
+            //ToaskUtil.showToast(this, "数据获取失败");
             ActivityManager.getInstance().finishAllActivity();
             return;
         }
@@ -700,7 +704,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        ToaskUtil.showToast(MainActivity.this, "创建失败," + s);
+                        //ToaskUtil.showToast(MainActivity.this, "创建失败," + s);
                     }
                 });
                 Log.d("asyncCreateGroup", "onSuccess: 创建失败," + Thread.currentThread().getName() + "," + s);
@@ -754,7 +758,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 case LOGIN_HX:
                     requstLoginCount++;
                     if (requstLoginCount > REQUE_LOGINHX_MAX_COUNT) {
-                        ToaskUtil.showToast(activity, "无法连接服务器,请检查网络");
+                        //ToaskUtil.showToast(activity, "无法连接服务器,请检查网络");
                         requstLoginCount = 0;
                         return;
                     }

@@ -1,63 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.example.meimeng">
+    package="com.example.meimeng">
 
     <!-- Required -->
     <permission
         android:name="com.example.meimeng.permission.JPUSH_MESSAGE"
-        android:protectionLevel="signature"/>
+        android:protectionLevel="signature" />
 
-    <uses-permission android:name="android.permission.VIBRATE"/>
-    <uses-permission android:name="android.permission.CALL_PHONE"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-    <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS"/>
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS" />
     <!-- 获取wifi状态 -->
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
-    <uses-permission android:name="android.permission.GET_TASKS"/>
-    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <!-- 这个权限用于进行网络定位 -->
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <!-- 这个权限用于访问GPS定位 -->
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <!-- 这个权限用于获取wifi的获取权限，wifi信息会用来进行网络定位 -->
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <!-- SD卡读取权限，用户写入离线定位数据 -->
-    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"/>
-    <uses-permission android:name="android.permission.READ_LOGS"/>
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+    <uses-permission android:name="android.permission.READ_LOGS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <!-- 写sd卡 -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.ACCESS_GPS"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_GPS" />
     <!-- 获取精确gps位置 -->
     <!-- 允许程序访问额外的定位提供者指令获取模拟定位信息 -->
-    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS"/>
+    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
 
     <!-- 环信 Required -->
-    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
-    <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION"/>
-    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <!-- Required  一些系统要求的权限，如访问网络等 -->
-    <uses-permission android:name="com.example.meimeng.permission.JPUSH_MESSAGE"/>
-    <uses-permission android:name="android.permission.RECEIVE_USER_PRESENT"/>
+    <uses-permission android:name="com.example.meimeng.permission.JPUSH_MESSAGE" />
+    <uses-permission android:name="android.permission.RECEIVE_USER_PRESENT" />
 
     <!-- Optional for location -->
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/> <!-- 用于开启 debug 版本的应用在6.0 系统上 层叠窗口权限 -->
-    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" /> <!-- 用于开启 debug 版本的应用在6.0 系统上 层叠窗口权限 -->
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
 
     <application
         android:name=".APP"
         android:allowBackup="true"
         android:icon="@mipmap/logo"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <provider
@@ -67,84 +67,94 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/filepaths"/>
+                android:resource="@xml/filepaths" />
         </provider>
 
+        <service android:name="com.amap.api.location.APSService" />
+
+        <meta-data
+            android:name="com.amap.api.v2.apikey"
+            android:value="f97c5a69e7a0ced0c0008288f1eb93e8">
+            //开发者申请的key
+        </meta-data>
         <!-- 环信 -->
         <!-- 设置环信应用的AppKey -->
         <meta-data
             android:name="EASEMOB_APPKEY"
-            android:value="1131180503177119#memen"/>
+            android:value="1131180503177119#memen" />
         <!-- 声明SDK所需的service SDK核心功能 -->
         <service
             android:name="com.hyphenate.chat.EMChatService"
-            android:exported="true"/>
+            android:exported="true" />
         <service
             android:name="com.hyphenate.chat.EMJobService"
             android:exported="true"
-            android:permission="android.permission.BIND_JOB_SERVICE"/>
+            android:permission="android.permission.BIND_JOB_SERVICE" />
         <!-- 声明SDK所需的receiver -->
         <receiver android:name="com.hyphenate.chat.EMMonitorReceiver">
             <intent-filter>
-                <action android:name="android.intent.action.PACKAGE_REMOVED"/>
+                <action android:name="android.intent.action.PACKAGE_REMOVED" />
 
-                <data android:scheme="package"/>
+                <data android:scheme="package" />
             </intent-filter>
             <!-- 可选filter -->
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
-                <action android:name="android.intent.action.USER_PRESENT"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.USER_PRESENT" />
             </intent-filter>
         </receiver>
 
+        <!--<meta-data-->
+        <!--android:name="com.baidu.lbsapi.API_KEY"-->
+        <!--android:value="ljlX9oSuUeIxGcd8GTy81Xp9XvQDOmc2" />-->
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
-            android:value="ljlX9oSuUeIxGcd8GTy81Xp9XvQDOmc2"/>
+            android:value="6wypXz4W6aBEEalkgjRNTcoz4skeDj3S" />
 
-        <activity android:name=".test.BMapTestActivity"/>
+        <activity android:name=".test.BMapTestActivity" />
         <activity
             android:name=".activity.MainActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity android:name=".activity.LoginActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".chat.LongConnectActivity"/>
-        <activity android:name=".activity.WaitSoSActivity"/>
-        <activity android:name=".activity.TestActivity"/>
+        <activity android:name=".chat.LongConnectActivity" />
+        <activity android:name=".activity.WaitSoSActivity" />
+        <activity android:name=".activity.TestActivity" />
         <activity
             android:name=".activity.WaitSalvationActivity"
-            android:launchMode="singleTask"/>
+            android:launchMode="singleTask" />
         <activity
             android:name=".activity.CityPickerActivity"
-            android:theme="@style/DefaultCityPickerTheme"/>
-        <activity android:name=".activity.SystemMsgActivity"/>
-        <activity android:name=".common.rv.absRv.AbsBaseActivity"/>
-        <activity android:name=".activity.AddAEDActivity"/>
-        <activity android:name=".activity.RegisterActivity"/>
-        <activity android:name=".test.TestLocationActivity"/>
-        <activity android:name=".test.ForegroundActivity"/>
-        <activity android:name=".activity.SettingActivity"/>
-        <activity android:name=".activity.SystemMsgDetailedActivity"/>
-        <activity android:name=".activity.SearchActivity"/>
-        <activity android:name=".activity.AddressSelectionActivity"/>
-        <activity android:name=".activity.ClientRecordActivity"/>
-        <activity android:name=".activity.ClientUserInfoActivity"/>
-        <activity android:name=".activity.RebackActivity"/>
-        <activity android:name=".activity.CertActivity"/>
-        <activity android:name=".activity.VolunteerActivity"/>
-        <activity android:name=".activity.MedicineActivity"/>
-        <activity android:name=".activity.CPROptionActivity"/>
-        <activity android:name=".activity.AboutActivity"/>
-        <activity android:name=".activity.ShengjiActivity"/>
-        <activity android:name=".activity.ServerUserInfoActivity"/>
-        <activity android:name=".activity.ServerRecordActivity"/>
-        <activity android:name=".activity.AddGaojiActivity"/>
-        <activity android:name=".activity.QRCodeActivity"/>
+            android:theme="@style/DefaultCityPickerTheme" />
+        <activity android:name=".activity.SystemMsgActivity" />
+        <activity android:name=".common.rv.absRv.AbsBaseActivity" />
+        <activity android:name=".activity.AddAEDActivity" />
+        <activity android:name=".activity.RegisterActivity" />
+        <activity android:name=".test.TestLocationActivity" />
+        <activity android:name=".test.ForegroundActivity" />
+        <activity android:name=".activity.SettingActivity" />
+        <activity android:name=".activity.SystemMsgDetailedActivity" />
+        <activity android:name=".activity.SearchActivity" />
+        <activity android:name=".activity.AddressSelectionActivity" />
+        <activity android:name=".activity.ClientRecordActivity" />
+        <activity android:name=".activity.ClientUserInfoActivity" />
+        <activity android:name=".activity.RebackActivity" />
+        <activity android:name=".activity.CertActivity" />
+        <activity android:name=".activity.VolunteerActivity" />
+        <activity android:name=".activity.MedicineActivity" />
+        <activity android:name=".activity.CPROptionActivity" />
+        <activity android:name=".activity.AboutActivity" />
+        <activity android:name=".activity.ShengjiActivity" />
+        <activity android:name=".activity.ServerUserInfoActivity" />
+        <activity android:name=".activity.ServerRecordActivity" />
+        <activity android:name=".activity.AddGaojiActivity" />
+        <activity android:name=".activity.QRCodeActivity" />
         <!-- 图片框架地址：https://github.com/donkingliang/ImageSelector -->
         <!-- 图片选择Activity -->
         <!-- 去掉Activity的ActionBar。 -->
@@ -154,34 +164,34 @@
         <activity
             android:name="com.donkingliang.imageselector.ImageSelectorActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <!-- 图片预览Activity -->
         <activity
             android:name="com.donkingliang.imageselector.PreviewActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 
         <!-- 图片剪切Activity -->
         <activity
             android:name="com.donkingliang.imageselector.ClipImageActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
-        <activity android:name=".activity.SelectAddressActivity"/>
-        <activity android:name=".activity.AskVolunteerActivity"/>
-        <activity android:name=".activity.AskProxyActivity"/>
-        <activity android:name=".activity.UpdateNameActivity"/>
-        <activity android:name=".activity.FirstAidDetailsWebActivity"/>
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+        <activity android:name=".activity.SelectAddressActivity" />
+        <activity android:name=".activity.AskVolunteerActivity" />
+        <activity android:name=".activity.AskProxyActivity" />
+        <activity android:name=".activity.UpdateNameActivity" />
+        <activity android:name=".activity.FirstAidDetailsWebActivity" />
 
         <service
             android:name="com.baidu.location.f"
             android:enabled="true"
             android:process=":remote">
-            <intent-filter>
-                <action android:name="com.baidu.location.service_v2.2"/>
-            </intent-filter>
+            <!--<intent-filter>-->
+                <!--<action android:name="com.baidu.location.service_v2.2" />-->
+            <!--</intent-filter>-->
         </service>
 
-        <activity android:name=".test.LocationOption"/>
-        <activity android:name=".test.LocationActivity"/>
+        <activity android:name=".test.LocationOption" />
+        <activity android:name=".test.LocationActivity" />
         <activity android:name=".test.NotifyActivity">
 
             <!-- <intent-filter> -->
@@ -193,34 +203,34 @@
         </activity>
         <activity
             android:name=".activity.SearchPOIActivity"
-            android:theme="@style/TranslucentTheme"/>
-        <activity android:name=".activity.PathPlanActivity"/>
-        <activity android:name=".activity.WNaviGuideActivity"/>
-        <activity android:name=".activity.ServerMainActivity"/>
-        <activity android:name=".activity.ServerCenterActivity"/>
-        <activity android:name=".activity.HelpMsgActivity"/>
-        <activity android:name=".activity.MakeContactsActivity"/>
-        <activity android:name=".test.BNaviGuideActivity"/>
-        <activity android:name=".test.TestWNaviGuideActivity"/>
+            android:theme="@style/TranslucentTheme" />
+        <activity android:name=".activity.PathPlanActivity" />
+        <activity android:name=".activity.WNaviGuideActivity" />
+        <activity android:name=".activity.ServerMainActivity" />
+        <activity android:name=".activity.ServerCenterActivity" />
+        <activity android:name=".activity.HelpMsgActivity" />
+        <activity android:name=".activity.MakeContactsActivity" />
+        <activity android:name=".test.BNaviGuideActivity" />
+        <activity android:name=".test.TestWNaviGuideActivity" />
         <activity
             android:name=".test.RoutePlanDemo"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/demo_name_route"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
 
-        <service android:name=".chat.BackService"/>
+        <service android:name=".chat.BackService" />
 
         <!-- <receiver android:name=".mywebsocket.NetStatusReceiver" /> -->
 
-        <activity android:name=".activity.RescueActivity"/>
-        <activity android:name=".activity.ChatActivity"/>
-        <activity android:name=".activity.EaseBaiduMapActivity"/>
-        <activity android:name=".activity.EaseBaiduMapActivity2"/>
-        <activity android:name=".activity.ShowAEDActivity"/>
-        <activity android:name=".activity.SplashActivity"/>
-        <activity android:name=".activity.MedSearchActivity"/>
+        <activity android:name=".activity.RescueActivity" />
+        <activity android:name=".activity.ChatActivity" />
+        <activity android:name=".activity.EaseBaiduMapActivity" />
+        <activity android:name=".activity.EaseBaiduMapActivity2" />
+        <activity android:name=".activity.ShowAEDActivity" />
+        <activity android:name=".activity.SplashActivity" />
+        <activity android:name=".activity.MedSearchActivity" />
 
-        <service android:name=".service.LoginInfoService"/>
+        <service android:name=".service.LoginInfoService" />
 
         <!-- 极光推送 -->
 
@@ -232,10 +242,10 @@
             android:exported="false"
             android:theme="@android:style/Theme.NoTitleBar">
             <intent-filter>
-                <action android:name="cn.jpush.android.ui.PushActivity"/>
+                <action android:name="cn.jpush.android.ui.PushActivity" />
 
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="com.example.meimeng"/>
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="com.example.meimeng" />
             </intent-filter>
         </activity>
 
@@ -246,15 +256,15 @@
             android:exported="false"
             android:theme="@style/MyDialogStyle">
             <intent-filter>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="com.example.meimeng"/>
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="com.example.meimeng" />
             </intent-filter>
         </activity>
         <!-- Required SDK核心功能 -->
         <service
             android:name="cn.jpush.android.service.DownloadService"
             android:enabled="true"
-            android:exported="false"/>
+            android:exported="false" />
 
         <!-- Required SDK 核心功能 -->
         <!-- 可配置android:process参数将PushService放在其他进程中 -->
@@ -263,10 +273,10 @@
             android:exported="false"
             android:process=":mult">
             <intent-filter>
-                <action android:name="cn.jpush.android.intent.REGISTER"/>
-                <action android:name="cn.jpush.android.intent.REPORT"/>
-                <action android:name="cn.jpush.android.intent.PushService"/>
-                <action android:name="cn.jpush.android.intent.PUSH_TIME"/>
+                <action android:name="cn.jpush.android.intent.REGISTER" />
+                <action android:name="cn.jpush.android.intent.REPORT" />
+                <action android:name="cn.jpush.android.intent.PushService" />
+                <action android:name="cn.jpush.android.intent.PUSH_TIME" />
             </intent-filter>
         </service>
 
@@ -274,37 +284,37 @@
         <provider
             android:name="cn.jpush.android.service.DataProvider"
             android:authorities="com.example.meimeng.DataProvider"
-            android:exported="false"/>
+            android:exported="false" />
         <!-- since 3.1.0 Required SDK 核心功能 -->
         <provider
             android:name="cn.jpush.android.service.DownloadProvider"
             android:authorities="com.example.meimeng.DownloadProvider"
-            android:exported="true"/>
+            android:exported="true" />
         <!-- Required SDK核心功能 -->
         <receiver
             android:name="cn.jpush.android.service.PushReceiver"
             android:enabled="true"
             android:exported="false">
             <intent-filter android:priority="1000">
-                <action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED_PROXY"/> <!-- Required  显示通知栏 -->
-                <category android:name="com.example.meimeng"/>
+                <action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED_PROXY" /> <!-- Required  显示通知栏 -->
+                <category android:name="com.example.meimeng" />
             </intent-filter>
             <intent-filter>
-                <action android:name="android.intent.action.USER_PRESENT"/>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
+                <action android:name="android.intent.action.USER_PRESENT" />
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
             <!-- Optional -->
             <intent-filter>
-                <action android:name="android.intent.action.PACKAGE_ADDED"/>
-                <action android:name="android.intent.action.PACKAGE_REMOVED"/>
+                <action android:name="android.intent.action.PACKAGE_ADDED" />
+                <action android:name="android.intent.action.PACKAGE_REMOVED" />
 
-                <data android:scheme="package"/>
+                <data android:scheme="package" />
             </intent-filter>
         </receiver>
         <!-- Required SDK核心功能 -->
         <receiver
             android:name="cn.jpush.android.service.AlarmReceiver"
-            android:exported="false"/>
+            android:exported="false" />
 
         <!-- Required since 3.0.7 -->
         <!-- 新的tag/alias接口结果返回需要开发者配置一个自定的广播 -->
@@ -313,9 +323,9 @@
             android:name=".myjiguang.MyJPushMessageReceiver"
             android:enabled="true">
             <intent-filter>
-                <action android:name="cn.jpush.android.intent.RECEIVE_MESSAGE"/>
+                <action android:name="cn.jpush.android.intent.RECEIVE_MESSAGE" />
 
-                <category android:name="com.example.meimeng"/>
+                <category android:name="com.example.meimeng" />
             </intent-filter>
         </receiver>
 
@@ -326,43 +336,43 @@
             android:name=".myjiguang.JiGuangTestActivity"
             android:exported="false">
             <intent-filter>
-                <action android:name="jpush.testAction"/>
+                <action android:name="jpush.testAction" />
 
-                <category android:name="jpush.testCategory"/>
+                <category android:name="jpush.testCategory" />
             </intent-filter>
         </activity>
+        <activity android:name=".activity.ChooseAddressWebActivity" />
 
         <receiver
             android:name=".myjiguang.MyReceiver"
             android:enabled="true"
             android:exported="false">
             <intent-filter>
-                <action android:name="cn.jpush.android.intent.REGISTRATION"/> <!-- Required  用户注册SDK的intent -->
-                <action android:name="cn.jpush.android.intent.MESSAGE_RECEIVED"/> <!-- Required  用户接收SDK消息的intent -->
-                <action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED"/> <!-- Required  用户接收SDK通知栏信息的intent -->
-                <action android:name="cn.jpush.android.intent.NOTIFICATION_OPENED"/> <!-- Required  用户打开自定义通知栏的intent -->
-                <action android:name="cn.jpush.android.intent.CONNECTION"/> <!-- 接收网络变化 连接/断开 since 1.6.3 -->
-                <category android:name="com.example.meimeng"/>
+                <action android:name="cn.jpush.android.intent.REGISTRATION" /> <!-- Required  用户注册SDK的intent -->
+                <action android:name="cn.jpush.android.intent.MESSAGE_RECEIVED" /> <!-- Required  用户接收SDK消息的intent -->
+                <action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED" /> <!-- Required  用户接收SDK通知栏信息的intent -->
+                <action android:name="cn.jpush.android.intent.NOTIFICATION_OPENED" /> <!-- Required  用户打开自定义通知栏的intent -->
+                <action android:name="cn.jpush.android.intent.CONNECTION" /> <!-- 接收网络变化 连接/断开 since 1.6.3 -->
+                <category android:name="com.example.meimeng" />
             </intent-filter>
         </receiver>
 
         <meta-data
             android:name="JPUSH_CHANNEL"
-            android:value="developer-default"/>
+            android:value="developer-default" />
         <meta-data
             android:name="JPUSH_APPKEY"
-            android:value="acab05447f9100856bf470a3"/> <!-- </>值来自开发者平台取得的AppKey -->
+            android:value="acab05447f9100856bf470a3" /> <!-- </>值来自开发者平台取得的AppKey -->
         <!-- acab05447f9100856bf470a3 -->
-        <activity android:name=".activity.UserInfoActivity">
-        </activity>
-        <activity android:name=".activity.ProxyActivity">
-        </activity>
+        <activity android:name=".activity.UserInfoActivity"></activity>
+        <activity android:name=".activity.ProxyActivity"></activity>
 
         <service
             android:name=".service.X5NetService"
             android:enabled="true"
-            android:exported="true">
-        </service>
+            android:exported="true"></service>
+
+        <activity android:name=".activity.MapViewActivity"></activity>
     </application>
 
 </manifest>

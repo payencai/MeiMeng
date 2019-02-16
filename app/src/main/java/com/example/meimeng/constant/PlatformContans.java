@@ -42,6 +42,7 @@ public class PlatformContans {
         public static final String sAddServerUserByUseUser = sHead + "addServerUserByUseUser";
         public static final String sGetServerUser = sHead + "getServerUser";
         public static final String sPostAddress=sHead+"updateLoginAddress";
+        public static final String updateIsOpenById=sHead+"updateIsOpenById";
     }
 
     public static class AidKnowController {

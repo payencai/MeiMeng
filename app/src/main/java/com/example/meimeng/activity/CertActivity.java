@@ -29,6 +29,7 @@ import com.example.meimeng.http.HttpProxy;
 import com.example.meimeng.http.ICallBack;
 import com.example.meimeng.util.MLog;
 import com.example.meimeng.util.ToaskUtil;
+import com.example.meimeng.util.UserInfoSharedPre;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -46,7 +47,9 @@ public class CertActivity extends BaseActivity {
     RadioButton rb_man;
     RadioButton rb_nv;
     TextView title;
-    int type=0;
+    int type = 0;
+    TextView saveText;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,9 +57,9 @@ public class CertActivity extends BaseActivity {
 
     @Override
     protected void initView() {
-        type=getIntent().getIntExtra("type",0);
-
-        String id=APP.getInstance().getUserInfo().getIdNumber();
+        type = getIntent().getIntExtra("type", 0);
+        saveText = findViewById(R.id.saveText);
+        String id = APP.getInstance().getUserInfo().getIdNumber();
         title = findViewById(R.id.title);
         et_name = findViewById(R.id.et_realname);
         et_number = findViewById(R.id.et_certnumber);
@@ -64,16 +67,26 @@ public class CertActivity extends BaseActivity {
         rb_nv = findViewById(R.id.rb_nv);
         rg_sex = findViewById(R.id.rg_sex);
         title.setText("实名认证");
-
-        Drawable drawable= getResources().getDrawable(R.drawable.sex_selector);
-        drawable.setBounds(0,0,30,30);//将drawable设置为宽100 高100固定大小
-        rb_man.setCompoundDrawables(drawable,null,null,null);
-        Drawable drawable2= getResources().getDrawable(R.drawable.sex_selector);
-        drawable2.setBounds(0,0,30,30);//将drawable设置为宽100 高100固定大小
-        rb_nv.setCompoundDrawables(drawable2,null,null,null);
+        if (type != 0) {
+            saveText.setVisibility(View.VISIBLE);
+            saveText.setText("跳过");
+            saveText.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivity(new Intent(CertActivity.this, MainActivity.class));
+                    finish();
+                }
+            });
+        }
+        Drawable drawable = getResources().getDrawable(R.drawable.sex_selector);
+        drawable.setBounds(0, 0, 30, 30);//将drawable设置为宽100 高100固定大小
+        rb_man.setCompoundDrawables(drawable, null, null, null);
+        Drawable drawable2 = getResources().getDrawable(R.drawable.sex_selector);
+        drawable2.setBounds(0, 0, 30, 30);//将drawable设置为宽100 高100固定大小
+        rb_nv.setCompoundDrawables(drawable2, null, null, null);
         rb_nv.setChecked(true);
         ImageView back;
-        back=findViewById(R.id.back);
+        back = findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -90,12 +103,12 @@ public class CertActivity extends BaseActivity {
                 String sex = "女";
                 String name = et_name.getEditableText().toString();
                 String number = et_number.getEditableText().toString();
-                if(TextUtils.isEmpty(name)){
-                    ToaskUtil.showToast(CertActivity.this,"姓名不能为空");
+                if (TextUtils.isEmpty(name)) {
+                    ToaskUtil.showToast(CertActivity.this, "姓名不能为空");
                     return;
                 }
-                if(TextUtils.isEmpty(number)){
-                    ToaskUtil.showToast(CertActivity.this,"号码不能为空");
+                if (TextUtils.isEmpty(number)) {
+                    ToaskUtil.showToast(CertActivity.this, "号码不能为空");
                     return;
                 }
                 if (rb_man.isChecked()) {
@@ -106,6 +119,7 @@ public class CertActivity extends BaseActivity {
             }
         });
     }
+
     private void showAskDialog(String value) {
         //isAskServerUser();
         //Log.e("val",val);
@@ -143,7 +157,7 @@ public class CertActivity extends BaseActivity {
         dialog.show();
     }
 
-    private void summitRenzhen(String name, String number, String sex) {
+    private void summitRenzhen(String name, final String number, String sex) {
         Map<String, String> p = new HashMap<>();
         p.put("idNumber", number);
         p.put("name", name);
@@ -154,21 +168,22 @@ public class CertActivity extends BaseActivity {
             @Override
             public void OnSuccess(String result) {
                 try {
-                   // Log.e("post",result);
-                    JSONObject jsonObject=new JSONObject(result);
-                    int code=jsonObject.getInt("resultCode");
-                    String msg=jsonObject.getString("message");
-                    if(code==0){
-                        Toast.makeText(CertActivity.this,"认证成功",Toast.LENGTH_LONG).show();
-                        if(type==0)
-                          finish();
-                        else{
-                          startActivity(new Intent(CertActivity.this,MainActivity.class));
-                          finish();
+                    // Log.e("post",result);
+                    JSONObject jsonObject = new JSONObject(result);
+                    int code = jsonObject.getInt("resultCode");
+                    String msg = jsonObject.getString("message");
+                    if (code == 0) {
+                        APP.getInstance().getUserInfo().setIdNumber(number);
+                        Toast.makeText(CertActivity.this, "认证成功", Toast.LENGTH_LONG).show();
+                        if (type == 0) {
+                            finish();
+                        } else {
+                            startActivity(new Intent(CertActivity.this, MainActivity.class));
+                            finish();
                         }
                     }
-                    if(code==9999){
-                        Toast.makeText(CertActivity.this,msg,Toast.LENGTH_LONG).show();
+                    if (code == 9999) {
+                        Toast.makeText(CertActivity.this, msg, Toast.LENGTH_LONG).show();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -183,39 +198,38 @@ public class CertActivity extends BaseActivity {
         });
     }
 
-    private void getUserInfo(){
+    private void getUserInfo() {
         HttpProxy.obtain().get(PlatformContans.UseUser.sGetUseUser, APP.getInstance().getUserInfo().getToken(), new ICallBack() {
             @Override
             public void OnSuccess(String result) {
-                Log.e("result",result);
+                Log.e("result", result);
                 JSONObject jsonObject = null;
                 try {
                     jsonObject = new JSONObject(result);
                     int code = jsonObject.getInt("resultCode");
                     if (code == 0) {
                         JSONObject object = jsonObject.getJSONObject("data");
-                         String id=object.getString("idNumber");
-                         String name=object.getString("name");
-                        if(!TextUtils.isEmpty(id)&&!"null".equals(id)){
+                        String id = object.getString("idNumber");
+                        String name = object.getString("name");
+                        if (!TextUtils.isEmpty(id) && !"null".equals(id)) {
                             summit.setVisibility(View.GONE);
                             et_name.setText(name);
                             et_number.setText(id);
                             et_number.setEnabled(false);
                             et_name.setEnabled(false);
-                            String sex=object.getString("sex");
-                            if (TextUtils.equals(sex,"男")) {
+                            String sex = object.getString("sex");
+                            if (TextUtils.equals(sex, "男")) {
                                 rb_man.setChecked(true);
                                 rb_nv.setChecked(false);
                                 rb_nv.setEnabled(false);
                             }
                             showAskDialog("你已经实名认证过了");
-                        }else {
-                            if("null".equals(id)){
+                        } else {
+                            if ("null".equals(id)) {
                                 et_name.setText("");
                                 et_number.setText("");
                             }
                         }
-
 
 
                     }
@@ -235,6 +249,7 @@ public class CertActivity extends BaseActivity {
             }
         });
     }
+
     @Override
     protected int getContentId() {
         return R.layout.show_certification_content;

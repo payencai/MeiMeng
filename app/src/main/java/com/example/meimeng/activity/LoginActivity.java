@@ -123,21 +123,25 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             return true;
         }
     }
-    private boolean isFirst=false;
+
+    private boolean isFirst = false;
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode==3){
-            isFirst=true;
+        if (requestCode == 3) {
+            isFirst = true;
         }
     }
-    private void fillPhone(){
-        Bundle bundle=getIntent().getExtras();
-        if(bundle!=null){
+
+    private void fillPhone() {
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {
             userNumberEdit.setText(bundle.getString("phone"));
             verificationEdit.setText(bundle.getString("pwd"));
         }
     }
+
     @Override
     protected void initView() {
 
@@ -166,7 +170,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         autoLogin();
 
     }
-    private void autoLogin(){
+
+    private void autoLogin() {
         Intent intent = getIntent();
         boolean resetLogin = intent.getBooleanExtra("resetLogin", false);
         if (resetLogin) {
@@ -190,10 +195,11 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         }
         if (!TextUtils.isEmpty(tel) && !TextUtils.isEmpty(psw)) {
             mLoginLoadView = openLoadView("");
-            if(!isFirst)
+            if (!isFirst)
                 requestLogin(url, tel, psw);
         }
     }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -329,11 +335,13 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         // TODO Auto-generated method stub
+
         if (requestCode == SDK_PERMISSION_REQUEST) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            } else {
-                finish();
-            }
+            if (grantResults.length > 0)
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                } else {
+                    finish();
+                }
             return;
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -399,7 +407,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
             private void userLogin(String result) {
                 try {
-                    Log.e("res",result);
+                    Log.e("res", result);
                     JSONObject object = new JSONObject(result);
                     int resultCode = object.getInt("resultCode");
                     String message = object.getString("message");
@@ -408,17 +416,17 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                         JSONObject data = object.getJSONObject("data");
                         UserInfo userInfo = new Gson().fromJson(data.toString(), UserInfo.class);
                         userInfo.setPassword(psw);
-                        JPushInterface.setAlias(getApplicationContext(),0,userInfo.getPushAlias());
-                        Set<String> set=new HashSet<>();
+                        JPushInterface.setAlias(getApplicationContext(), 0, userInfo.getPushAlias());
+                        Set<String> set = new HashSet<>();
                         set.add(userInfo.getPushAlias());
-                        JPushInterface.setTags(getApplicationContext(),0,set);
+                        JPushInterface.setTags(getApplicationContext(), 0, set);
                         UserInfoSharedPre intance = UserInfoSharedPre.getIntance(LoginActivity.this);
                         intance.saveUserInfo(userInfo, true);
-                        String address=data.getString("address");
-                        if(address.equals("null")||TextUtils.isEmpty(address)){
-                            startActivityForResult(new Intent(LoginActivity.this,UserInfoActivity.class),3);
+                        String address = data.getString("address");
+                        if (address.equals("null") || TextUtils.isEmpty(address)) {
+                            startActivityForResult(new Intent(LoginActivity.this, UserInfoActivity.class), 3);
                             //finish();
-                        }else{
+                        } else {
                             startActivity(new Intent(LoginActivity.this, MainActivity.class));
                             finish();
                         }
@@ -456,7 +464,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
             @Override
             public void onFailure(String error) {
-                ToaskUtil.showToast(LoginActivity.this, "请检查网络");
+                //ToaskUtil.showToast(LoginActivity.this, "请检查网络");
                 submit.setEnabled(true);
                 if (mLoginLoadView != null) {
                     mLoginLoadView.dismiss();

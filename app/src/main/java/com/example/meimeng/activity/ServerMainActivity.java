@@ -27,6 +27,7 @@ import android.widget.Toast;
 
 import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
+import com.baidu.location.LocationClientOption;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.meimeng.APP;
@@ -140,6 +141,8 @@ public class ServerMainActivity extends BaseActivity {
         time.setText(userInfo.getOnlineTime() + "");
         count.setText(userInfo.getHelpNum() + "");
         distance.setText(userInfo.getHelpDistance() + "");
+        mLocationClientOption=locationService.getSingleLocationClientOption();
+        locationService.setLocationOption(mLocationClientOption);
         locationService.start();
         Log.e("kele",userInfo.getOnlineTime()+"");
         RequestOptions requestOptions = new RequestOptions()
@@ -255,7 +258,7 @@ public class ServerMainActivity extends BaseActivity {
     }
     private LoginInfoService mDeviceService;
     private ServiceConnection conn;
-
+    LocationClientOption mLocationClientOption;
     private void startLoginServiceInfo() {
 //        Intent service = new Intent(this, LoginInfoService.class);
 //        startService(service);
@@ -347,7 +350,7 @@ public class ServerMainActivity extends BaseActivity {
     private BDAbstractLocationListener myListener = new BDAbstractLocationListener() {
         @Override
         public void onReceiveLocation(BDLocation location) {
-
+            Log.e("lat",location.getLatitude()+"");
              mCurLat = location.getLatitude();
              mCurLon = location.getLongitude();
             LoginSharedUilt intance = LoginSharedUilt.getIntance(ServerMainActivity.this);

@@ -45,7 +45,7 @@
                     android:layout_marginRight="@dimen/margin_20dp"
                     android:background="@color/color_white_100"
                     android:gravity="end"
-                    android:hint="null"
+                    android:hint=""
                     android:maxLength="6"
                     android:textSize="@dimen/text_size_14sp" />
             </LinearLayout>
@@ -118,7 +118,7 @@
                     android:layout_marginRight="@dimen/margin_20dp"
                     android:background="@color/color_white_100"
                     android:gravity="right|center_vertical"
-                    android:hint="02045124512"
+                    android:hint="请输入固定电话"
                     android:inputType="number"
                     android:maxLength="14"
                     android:textSize="@dimen/text_size_14sp" />
@@ -137,6 +137,8 @@
                 android:orientation="horizontal">
 
                 <TextView
+
+                    android:id="@+id/tv_addr"
                     android:layout_marginRight="@dimen/margin_20dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -148,9 +150,13 @@
                     android:textSize="@dimen/text_size_14sp"/>
 
                 <TextView
+                    android:gravity="right"
+                    android:paddingLeft="30dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_toRightOf="@+id/tv_addr"
                     android:ellipsize="end"
                     android:id="@+id/et_user_address"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"

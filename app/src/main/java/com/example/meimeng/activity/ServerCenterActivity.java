@@ -101,10 +101,12 @@ public class ServerCenterActivity extends BaseActivity {
     LinearLayout mServerReback;
     @BindView(R.id.record_server_layout)
     LinearLayout mServerRecord;
+    @BindView(R.id.iv_switch)
+    ImageView iv_switch;
     private ImageSelectPopWindow mImageSelectPopWindow;
     String name;
     String image;
-
+    int isOpen;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -224,6 +226,13 @@ public class ServerCenterActivity extends BaseActivity {
                         JSONObject object = jsonObject.getJSONObject("data");
                         name = object.getString("nickname");
                         image = object.getString("image");
+                        isOpen=object.getInt("isOpen");
+                        id=object.getString("id");
+                        if(isOpen==2){
+                            iv_switch.setImageResource(R.mipmap.open);
+                        }else{
+                            iv_switch.setImageResource(R.mipmap.close);
+                        }
                         if (!TextUtils.equals("null",name)&&!TextUtils.isEmpty(name)) {
                             mServerUsername.setText(name + " 你好");
                             Log.e("ggg",image+name);
@@ -259,9 +268,41 @@ public class ServerCenterActivity extends BaseActivity {
             }
         });
     }
+    String id;
+    private void setIsReceive(final int state){
+        Map<String,Object> params=new HashMap<>();
+        params.put("id",id);
+        params.put("isOpen",state);
+        HttpProxy.obtain().get(PlatformContans.Serveruser.updateIsOpenById, params, new ICallBack() {
+            @Override
+            public void OnSuccess(String result) {
+                 Log.e("result",result);
+                 if(state==2){
+                     isOpen=2;
+                 }else{
+                     isOpen=1;
+                 }
+            }
 
+            @Override
+            public void onFailure(String error) {
+
+            }
+        });
+    }
     private void serverInitView() {
-
+        iv_switch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(isOpen==1){
+                    iv_switch.setImageResource(R.mipmap.open);
+                    setIsReceive(2);
+                }else if(isOpen==2){
+                    iv_switch.setImageResource(R.mipmap.close);
+                    setIsReceive(1);
+                }
+            }
+        });
         getServerUser();
     }
 

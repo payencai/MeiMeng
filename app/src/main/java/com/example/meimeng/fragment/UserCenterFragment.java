@@ -157,12 +157,7 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
             type=APP.getInstance().getUserInfo().getServerType()+"";
         }
 
-        if (type.equals("3")){
-            //Log.e("type",APP.getInstance().getUserInfo().getServerType());
-            mSwitch.setVisibility(View.VISIBLE);}
-        else{
-            mSwitch.setVisibility(View.GONE);
-        }
+
         //UserInfo userInfo = APP.getInstance().getUserInfo();
         getUserInfo();
         //mAdapter = new PictureAdapter(getActivity(), client_selected);
@@ -188,6 +183,13 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
                             mClientUsername.setText(name + " 您好");
                         } else {
                             mClientUsername.setText("您好");
+                        }
+                        String type=object.getString("serverType");
+                        if (type.equals("3")){
+                            //Log.e("type",APP.getInstance().getUserInfo().getServerType());
+                            mSwitch.setVisibility(View.VISIBLE);}
+                        else{
+                            mSwitch.setVisibility(View.GONE);
                         }
                         RequestOptions requestOptions = new RequestOptions()
                                 .placeholder(R.mipmap.ic_me_head) //加载中图片

@@ -68,20 +68,22 @@ public class APP extends Application {
         mServerUserInfo = serverUserInfo;
     }
     private void initX5WebView() {
-        //搜集本地tbs内核信息并上报服务器，服务器返回结果决定使用哪个内核。
         QbSdk.PreInitCallback cb = new QbSdk.PreInitCallback() {
+
             @Override
             public void onViewInitFinished(boolean arg0) {
+                // TODO Auto-generated method stub
                 //x5內核初始化完成的回调，为true表示x5内核加载成功，否则表示x5内核加载失败，会自动切换到系统内核。
                 Log.d("app", " onViewInitFinished is " + arg0);
             }
 
             @Override
             public void onCoreInitFinished() {
+                // TODO Auto-generated method stub
             }
         };
         //x5内核初始化接口
-        QbSdk.initX5Environment(getApplicationContext(), cb);
+        QbSdk.initX5Environment(getApplicationContext(),  cb);
     }
     private void preInitX5Core() {
         //预加载x5内核
@@ -96,11 +98,12 @@ public class APP extends Application {
         super.onCreate();
         sInstance = this;
         // SHA1 c01bdf21e1652917fdf29c91898aec5b80fe44db
+        //debug B0:BA:85:7D:FA:FB:1A:0C:3C:72:41:4E:42:6D:67:05:B5:21:37:66
         // SHA256 3f2a849d046f5948eeae6e243163b051afc940a500bf6db7b07b20c8e489cbd6
         // SHA256 3f2a849d046f5948eeae6e243163b051afc940a500bf6db7b07b20c8e489cbd6
         //初始化百度地图
         initX5WebView();
-        preInitX5Core();
+        //preInitX5Core();
         locationService = new LocationService(this);
         mVibrator = (Vibrator) getApplicationContext().getSystemService(Service.VIBRATOR_SERVICE);
         //初始化定位sdk，建议在Application中创建

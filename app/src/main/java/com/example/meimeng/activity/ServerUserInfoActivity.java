@@ -176,13 +176,13 @@ public class ServerUserInfoActivity extends BaseActivity implements View.OnClick
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.server_home:
-                SelectAddressActivity.startSelectAddressActivity(this, "address", 1, tv_home.getText().toString());
+                SelectAddressActivity.startSelectAddressActivity(this, "address", 1, tv_home.getText().toString(),null);
                 break;
             case R.id.server_updatemname:
                startActivityForResult(new Intent(ServerUserInfoActivity.this,UpdateNameActivity.class),2);
                 break;
             case R.id.server_work:
-                SelectAddressActivity.startSelectAddressActivity(this, "address", 3, tv_work.getText().toString());
+                SelectAddressActivity.startSelectAddressActivity(this, "address", 3, tv_work.getText().toString(),null);
                 break;
             case R.id.server_time:
                 final Window window=this.getWindow();

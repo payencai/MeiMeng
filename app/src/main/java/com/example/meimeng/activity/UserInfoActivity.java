@@ -171,7 +171,7 @@ public class UserInfoActivity extends BaseActivity {
         etAddress.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SelectAddressActivity.startSelectAddressActivity(UserInfoActivity.this, "address", 0, etAddress.getText().toString() + "");
+                SelectAddressActivity.startSelectAddressActivity(UserInfoActivity.this, "address", 0, etAddress.getText().toString() + "",null);
             }
         });
     }

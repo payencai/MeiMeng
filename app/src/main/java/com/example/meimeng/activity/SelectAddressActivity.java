@@ -28,13 +28,14 @@ public class SelectAddressActivity extends BaseActivity implements View.OnClickL
     private String consignSite;
     private int responseCode;
     public static final int REQUEST_CODE_FROM_SELECTADDRESSACTIVITY = 1 << 8;
-    private AddressBean mAddress;
+     AddressBean mAddress;
 
-    public static void startSelectAddressActivity(Activity activity, String tag, int responseCode, String consignSite) {
+    public static void startSelectAddressActivity(Activity activity, String tag, int responseCode, String consignSite,AddressBean address) {
         Intent intent = new Intent(activity, SelectAddressActivity.class);
         intent.putExtra("tag", tag);
         intent.putExtra("responseCode", responseCode);
         intent.putExtra("consignSite", consignSite);
+        intent.putExtra("address",address);
         activity.startActivityForResult(intent, responseCode);
     }
 
@@ -43,7 +44,7 @@ public class SelectAddressActivity extends BaseActivity implements View.OnClickL
         Intent intent = getIntent();
         mTag = intent.getStringExtra("tag");
         consignSite = intent.getStringExtra("consignSite");
-
+        mAddress= (AddressBean) intent.getSerializableExtra("address");
         responseCode = intent.getIntExtra("responseCode", -1);
         if (TextUtils.isEmpty(mTag)) {
             ToaskUtil.showToast(this, "tag 为空");
@@ -58,7 +59,8 @@ public class SelectAddressActivity extends BaseActivity implements View.OnClickL
         title.setText("选择地址");
         save.setVisibility(View.VISIBLE);
         if (!TextUtils.isEmpty(consignSite)) {
-            et_input_address.setText(consignSite);
+            //tv_name.setText(consignSite.split("-")[0]);
+            //et_input_address.setText(consignSite.split("-")[1]);
         }
 
         findViewById(R.id.back).setOnClickListener(this);
@@ -76,24 +78,22 @@ public class SelectAddressActivity extends BaseActivity implements View.OnClickL
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.back:
-                Intent intent2 = new Intent();
-                intent2.putExtra(mTag, mAddress);
-                setResult(responseCode, intent2);
                 finish();
                 break;
             case R.id.select_address_layout:
-                AddressSelectionActivity.startAddressSelectionActivity(this, REQUEST_CODE_FROM_SELECTADDRESSACTIVITY);
+                startActivityForResult(new Intent(SelectAddressActivity.this,ChooseAddressWebActivity.class),REQUEST_CODE_FROM_SELECTADDRESSACTIVITY);
+                //AddressSelectionActivity.startAddressSelectionActivity(this, REQUEST_CODE_FROM_SELECTADDRESSACTIVITY);
                 break;
             case R.id.saveText:
                 if(mAddress==null){
                     Toast.makeText(this,"请选择地址！",Toast.LENGTH_LONG).show();
-                    return;
+                }else{
+                    Intent intent = new Intent();
+                    mAddress.setAddress(et_input_address.getEditableText().toString());
+                    intent.putExtra(mTag, mAddress);
+                    setResult(responseCode, intent);
+                    finish();
                 }
-                Intent intent = new Intent();
-                mAddress.setAddress(et_input_address.getEditableText().toString());
-                intent.putExtra(mTag, mAddress);
-                setResult(responseCode, intent);
-                finish();
                 break;
         }
     }
@@ -105,7 +105,6 @@ public class SelectAddressActivity extends BaseActivity implements View.OnClickL
             et_input_address.setEnabled(true);
             if (requestCode == REQUEST_CODE_FROM_SELECTADDRESSACTIVITY) {
                 et_input_address.setEnabled(true);
-//                String address = data.getStringExtra("address");
                 mAddress = (AddressBean) data.getSerializableExtra("address");
                 tv_name.setText(mAddress.getName());
                 String addressString = mAddress.getAddress();

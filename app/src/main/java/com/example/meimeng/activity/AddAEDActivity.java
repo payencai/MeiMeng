@@ -78,6 +78,7 @@ public class AddAEDActivity extends BaseActivity implements View.OnClickListener
     private Notepad note;
     @Override
     protected void initView() {
+        start=getDate();
         ImageView back;
         back = findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {
@@ -143,19 +144,27 @@ public class AddAEDActivity extends BaseActivity implements View.OnClickListener
 //            }
 //        });
     }
-
+    private String getDate(){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
+        Date date = new Date();
+        start = sdf.format(date);
+        return start;
+    }
+    String start;
     //弹出选择时间
     private void initDatePicker() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.CHINA);
         Date date = new Date();
         String now = sdf.format(date);
-        deadline.setText(now.split(" ")[0]);
+        deadline.setText("请选择AED电池有效期");
         customDatePicker = new CustomDatePicker(this, new CustomDatePicker.ResultHandler() {
             @Override
             public void handle(String time) { // 回调接口，获得选中的时间
+                start=time.substring(0,10);
                 deadline.setText(time.substring(0,10));
             }
-        }, now, "2099-01-01 00:00"); // 初始化日期格式请用：yyyy-MM-dd HH:mm，否则不能正常运行
+        }, now.substring(0,16), "2099-01-01 00:00"); // 初始化日期格式请用：yyyy-MM-dd HH:mm，否则不能正常运行
+        //deadline.setText("请选择AED有效期");
         customDatePicker.showSpecificTime(false); // 显示时和分
         customDatePicker.setIsLoop(true); // 允许循环滚动
 
@@ -177,10 +186,11 @@ public class AddAEDActivity extends BaseActivity implements View.OnClickListener
                 showPwBrandSelector(v);
                 break;
             case R.id.option2://选择时间
-                customDatePicker.show(deadline.getText().toString());
+                customDatePicker.show(start);
                 break;
             case R.id.option3://存放地址
-                SelectAddressActivity.startSelectAddressActivity(this, "address", RQUEST_ADDRESS_CODE, consignSite.getText().toString());
+                //startActivityForResult(new Intent(AddAEDActivity.this,ChooseAddressWebActivity.class),3);
+                SelectAddressActivity.startSelectAddressActivity(this, "address", RQUEST_ADDRESS_CODE, consignSite.getText().toString(),null);
                 break;
             case R.id.pictureSelector://图片选择器
                 //限数量的多选(比喻最多9张)
@@ -280,6 +290,7 @@ public class AddAEDActivity extends BaseActivity implements View.OnClickListener
             token = APP.getInstance().getServerUserInfo().getToken();
             data = returnJson(1);
         }
+        Log.e("param",data);
         HttpProxy.obtain().post(PlatformContans.AedController.sAddAed, token, data, new ICallBack() {
             @Override
             public void OnSuccess(String result) {
@@ -317,7 +328,7 @@ public class AddAEDActivity extends BaseActivity implements View.OnClickListener
 
     private String returnJson(int type) {
         Map<String, Object> params = new HashMap<>();
-        params.put("address", addressName+consignSite.getText().toString());
+        params.put("address", addressName+"("+address.getAddress()+")");
         params.put("brank", AEDBrand.getText().toString());
         params.put("expiryDate", deadline.getText().toString());
         params.put("addressPoint",note.getEditableText().toString());
@@ -330,7 +341,7 @@ public class AddAEDActivity extends BaseActivity implements View.OnClickListener
         Gson gson = new GsonBuilder().enableComplexMapKeySerialization().create();
         return gson.toJson(params);
     }
-
+    AddressBean address;
     private String longitude;
     private String latitude;
     String addressName;
@@ -347,19 +358,22 @@ public class AddAEDActivity extends BaseActivity implements View.OnClickListener
         }
         if (data != null) {
             if (requestCode == RQUEST_ADDRESS_CODE) {
-                AddressBean address = (AddressBean) data.getSerializableExtra("address");
-                addressName=address.getName();
-                Log.e("name",address.getName());
-                if (address != null) {
-                    String addressStr = address.getAddress();
-                    double lon = address.getLon();
-                    double lat = address.getLat();
-                    longitude = lon + "";
-                    latitude = lat + "";
-                    if (!TextUtils.isEmpty(addressStr)) {
-                        consignSite.setText(addressName+addressStr);
+                 address = (AddressBean) data.getSerializableExtra("address");
+                if(address!=null){
+                    addressName=address.getName();
+                    Log.e("name",address.getName());
+                    if (address != null) {
+                        String addressStr = address.getAddress();
+                        double lon = address.getLon();
+                        double lat = address.getLat();
+                        longitude = lon + "";
+                        latitude = lat + "";
+                        if (!TextUtils.isEmpty(addressStr)) {
+                            consignSite.setText(addressName+addressStr);
+                        }
                     }
                 }
+
 
             }
         }

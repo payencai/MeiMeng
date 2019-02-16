@@ -39,6 +39,7 @@ import com.example.meimeng.constant.PlatformContans;
 import com.example.meimeng.custom.KyLoadingBuilder;
 import com.example.meimeng.http.HttpProxy;
 import com.example.meimeng.http.ICallBack;
+import com.example.meimeng.util.CommomDialog;
 import com.example.meimeng.util.TimeSelectPopWindow;
 import com.example.meimeng.util.ToaskUtil;
 import com.google.gson.Gson;
@@ -113,6 +114,29 @@ public class AskVolunteerActivity extends BaseActivity {
 
     Dialog dialog;
 
+    private void showCertDialog() {
+        CommomDialog dialog = new CommomDialog(this, R.style.dialog, "你还没有实名认证，去认证？", new CommomDialog.OnCloseListener() {
+            @Override
+            public void onClick(Dialog dialog, boolean confirm) {
+                if (confirm) {
+                    dialog.dismiss();
+                    startActivity(new Intent(dialog.getContext(), CertActivity.class));
+                    finish();
+                } else {
+                    dialog.dismiss();
+                    finish();
+                }
+            }
+        });
+
+        dialog.setTitle("切换身份").show();
+        WindowManager windowManager = getWindowManager();
+        Display display = windowManager.getDefaultDisplay();
+        WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
+        lp.width = (int) (display.getWidth()); //设置宽度
+        dialog.getWindow().setAttributes(lp);
+    }
+
     private void showAskDialog(String value) {
         //isAskServerUser();
         //Log.e("val",val);
@@ -152,42 +176,42 @@ public class AskVolunteerActivity extends BaseActivity {
     }
 
 
-    private void showCertDialog() {
-        //isAskServerUser();
-        //Log.e("val",val);
-        dialog = new Dialog(this, R.style.dialog);
-        dialog.setCanceledOnTouchOutside(false);
-        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_tishi, null);
-        //获得dialog的window窗口
-        Window window = dialog.getWindow();
-        //设置dialog在屏幕底部
-        window.setGravity(Gravity.CENTER);
-        //设置dialog弹出时的动画效果，从屏幕底部向上弹出
-        //window.setWindowAnimations(R.style.mypopwindow_anim_style);
-        window.getDecorView().setPadding(0, 0, 0, 0);
-        //获得window窗口的属性
-        WindowManager.LayoutParams lp = window.getAttributes();
-        Display display = getWindowManager().getDefaultDisplay();
-        //android.view.WindowManager.LayoutParams lp = window.getAttributes();
-        //设置窗口宽度为充满全屏
-        lp.width = (int) (display.getWidth() * 0.7);
-
-        //将设置好的属性set回去
-        window.setAttributes(lp);
-        //将自定义布局加载到dialog上
-        dialog.setContentView(dialogView);
-        TextView textView = (TextView) dialog.findViewById(R.id.dialog_value);
-        textView.setText("请先去实名认证");
-        dialog.findViewById(R.id.dialog_iknow).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialog.dismiss();
-                finish();
-            }
-        });
-
-        dialog.show();
-    }
+//    private void showCertDialog() {
+//        //isAskServerUser();
+//        //Log.e("val",val);
+//        dialog = new Dialog(this, R.style.dialog);
+//        dialog.setCanceledOnTouchOutside(false);
+//        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_tishi, null);
+//        //获得dialog的window窗口
+//        Window window = dialog.getWindow();
+//        //设置dialog在屏幕底部
+//        window.setGravity(Gravity.CENTER);
+//        //设置dialog弹出时的动画效果，从屏幕底部向上弹出
+//        //window.setWindowAnimations(R.style.mypopwindow_anim_style);
+//        window.getDecorView().setPadding(0, 0, 0, 0);
+//        //获得window窗口的属性
+//        WindowManager.LayoutParams lp = window.getAttributes();
+//        Display display = getWindowManager().getDefaultDisplay();
+//        //android.view.WindowManager.LayoutParams lp = window.getAttributes();
+//        //设置窗口宽度为充满全屏
+//        lp.width = (int) (display.getWidth() * 0.7);
+//
+//        //将设置好的属性set回去
+//        window.setAttributes(lp);
+//        //将自定义布局加载到dialog上
+//        dialog.setContentView(dialogView);
+//        TextView textView = (TextView) dialog.findViewById(R.id.dialog_value);
+//        textView.setText("请先去实名认证");
+//        dialog.findViewById(R.id.dialog_iknow).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                dialog.dismiss();
+//                finish();
+//            }
+//        });
+//
+//        dialog.show();
+//    }
 
 
 //    private void getServerUserinfo() {
@@ -242,7 +266,6 @@ public class AskVolunteerActivity extends BaseActivity {
         HttpProxy.obtain().get(PlatformContans.UseUser.sGetUseUser, APP.getInstance().getUserInfo().getToken(), new ICallBack() {
             @Override
             public void OnSuccess(String result) {
-                Log.e("data", result);
                 JSONObject jsonObject = null;
                 try {
                     jsonObject = new JSONObject(result);
@@ -250,18 +273,27 @@ public class AskVolunteerActivity extends BaseActivity {
                     if (code == 0) {
                         JSONObject object = jsonObject.getJSONObject("data");
                         String name = object.getString("name");
+                        Log.e("data", result);
                         String idNumber = object.getString("idNumber");
                         String sex = object.getString("sex");
+                        String address = object.getString("address");
+                        detailhome.setText(address);
+                        homelat = object.getDouble("latitude")  + "";
+                        homelon = object.getDouble("longitude") + "";
                         tv_name.setText(name);
                         number.setText(idNumber);
-                        JSONObject server = object.getJSONObject("serverUser");
                         if (sex.equals("男")) {
                             man.setChecked(true);
                             nv.setChecked(false);
+                        } else {
+                            man.setChecked(false);
+                            nv.setChecked(true);
                         }
-                        if (TextUtils.isEmpty(idNumber)) {
-                            showAskDialog("请先去实名认证！");
+                        if (TextUtils.isEmpty(idNumber) || TextUtils.equals("null", idNumber)) {
+                            //showAskDialog("请先去实名认证！");
+                            showCertDialog();
                         }
+                        JSONObject server = object.getJSONObject("serverUser");
                         Log.e("idNumber", idNumber);
                         if (server != null) {
                             String wordaddr = server.getString("workAddress");
@@ -271,10 +303,10 @@ public class AskVolunteerActivity extends BaseActivity {
                             int isCertificate = server.getInt("isCertificate");
                             detailhome.setText(homeaddr);
                             detailwork.setText(wordaddr);
-                            homelat=server.getString("homeLatitude");
-                            homelon=server.getString("homeLongitude");
-                            worklat=server.getString("workLatitude");
-                            worklon=server.getString("workLongitude");
+                            homelat = server.getString("homeLatitude");
+                            homelon = server.getString("homeLongitude");
+                            worklat = server.getString("workLatitude");
+                            worklon = server.getString("workLongitude");
                             if (TextUtils.isEmpty(worktime)) {
                                 detailtime.setText("单休");
                             } else
@@ -424,7 +456,6 @@ public class AskVolunteerActivity extends BaseActivity {
     String urls = "";
 
     private void upImage(String url, String filePath) {
-        // Log.e("tag",url+filePath);
         OkHttpClient mOkHttpClent = new OkHttpClient();
         File file = new File(filePath);
         MultipartBody.Builder builder = new MultipartBody.Builder()
@@ -483,11 +514,11 @@ public class AskVolunteerActivity extends BaseActivity {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.et_volunteer_home:
-                SelectAddressActivity.startSelectAddressActivity(this, "address", 4, "");
+                SelectAddressActivity.startSelectAddressActivity(this, "address", 4, "", null);
                 //startActivityForResult(new Intent(AskVolunteerActivity.this,SelectAddressActivity.class),4);
                 break;
             case R.id.et_volunteer_work:
-                SelectAddressActivity.startSelectAddressActivity(this, "address", 5, "");
+                SelectAddressActivity.startSelectAddressActivity(this, "address", 5, "", null);
                 // startActivityForResult(new Intent(AskVolunteerActivity.this,SelectAddressActivity.class),5);
                 break;
             case R.id.et_volunteer_time:
@@ -559,14 +590,10 @@ public class AskVolunteerActivity extends BaseActivity {
     }
 
     private void commitImage() {
-        if (selected.size() != 0) {
             for (String filepath : selected) {
                 Log.e("aaa", "aaa");
                 upImage(PlatformContans.Image.sUpdateImage, filepath);
             }
-        }
-
-
     }
 
     private void commitAll() {

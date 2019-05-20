@@ -218,6 +218,7 @@ public class ServerCenterActivity extends BaseActivity {
         HttpProxy.obtain().get(PlatformContans.Serveruser.sGetServerUser, APP.getInstance().getServerUserInfo().getToken(), new ICallBack() {
             @Override
             public void OnSuccess(String result) {
+                Log.e("sGetServerUser",result);
                 JSONObject jsonObject = null;
                 try {
                     jsonObject = new JSONObject(result);

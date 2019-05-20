@@ -63,7 +63,7 @@ public class ServerUser {
     private String bloodType;
     private String certificateImages;
     private String createTime;
-    private int distance;
+    private double distance;
     private String equipmentIp;
     private String examineReason;
     private String fixedLineTelephone;
@@ -162,11 +162,11 @@ public class ServerUser {
         this.createTime = createTime;
     }
 
-    public int getDistance() {
+    public double getDistance() {
         return distance;
     }
 
-    public void setDistance(int distance) {
+    public void setDistance(double distance) {
         this.distance = distance;
     }
 

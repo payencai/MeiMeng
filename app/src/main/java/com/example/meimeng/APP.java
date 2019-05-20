@@ -21,6 +21,7 @@ import com.example.meimeng.service.X5NetService;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMOptions;
 import com.hyphenate.easeui.EaseUI;
+import com.tencent.bugly.crashreport.CrashReport;
 import com.tencent.smtt.sdk.QbSdk;
 
 import java.util.Iterator;
@@ -111,7 +112,7 @@ public class APP extends Application {
         //初始化网络请求
         HttpProxy.init(new OkHttpProcessor());
 
-
+        CrashReport.initCrashReport(getApplicationContext(), "a78c5124ea", true);
         initECChat();
 //        initAppStatusListener();
         //init demo helper
@@ -122,6 +123,7 @@ public class APP extends Application {
         //极光推送
         JPushInterface.setDebugMode(true);
         JPushInterface.init(this);
+       // CrashReport.testJavaCrash();
     }
 
     //获取processAppName

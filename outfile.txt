@@ -1,0 +1,8 @@
+请将F:\project\MeiMeng\app\src\main\java\com\example\meimeng\activity\FirstAidDetailsWebActivity.java中 第12行 android.webkit.SslErrorHandler 替换成 com.tencent.smtt.export.external.interfaces.SslErrorHandler 
+请将F:\project\MeiMeng\app\src\main\java\com\example\meimeng\activity\FirstAidDetailsWebActivity.java中 第13行 android.webkit.WebChromeClient 替换成 com.tencent.smtt.sdk.WebChromeClient 
+请将F:\project\MeiMeng\app\src\main\java\com\example\meimeng\activity\FirstAidDetailsWebActivity.java中 第14行 android.webkit.WebSettings 替换成 com.tencent.smtt.sdk.WebSettings 
+请将F:\project\MeiMeng\app\src\main\java\com\example\meimeng\activity\ProxyActivity.java中 第6行 android.webkit.WebSettings 替换成 com.tencent.smtt.sdk.WebSettings 
+请将F:\project\MeiMeng\app\src\main\res\layout\activity_proxy.xml中16行 标签写法 <Webview 替换成 <com.tencent.smtt.sdk.WebView 
+请将F:\project\MeiMeng\app\src\main\res\layout\jpush_popwin_layout.xml中10行 标签写法 <Webview 替换成 <com.tencent.smtt.sdk.WebView 
+请将F:\project\MeiMeng\app\src\main\res\layout\jpush_webview_layout.xml中53行 标签写法 <Webview 替换成 <com.tencent.smtt.sdk.WebView 
+扫描完成！

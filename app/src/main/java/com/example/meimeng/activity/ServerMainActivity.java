@@ -141,6 +141,10 @@ public class ServerMainActivity extends BaseActivity {
         time.setText(userInfo.getOnlineTime() + "");
         count.setText(userInfo.getHelpNum() + "");
         distance.setText(userInfo.getHelpDistance() + "");
+        if(userInfo.getLevel()==5){
+            juli_date.setText("恭喜您，已达到顶级了");
+            or_help.setVisibility(View.GONE);
+        }
         mLocationClientOption=locationService.getSingleLocationClientOption();
         locationService.setLocationOption(mLocationClientOption);
         locationService.start();
@@ -443,6 +447,7 @@ public class ServerMainActivity extends BaseActivity {
                             currentHelpInfo.setCreateTime(object.getString("createTime"));
                             currentHelpInfo.setUseUserName(object.getString("useUserName"));
                             currentHelpInfo.setUserAddress(object.getString("userAddress"));
+                            currentHelpInfo.setRemark(object.getString("remark"));
                             list.add(currentHelpInfo);
                         }
                         adapter.reset(list);

@@ -12,7 +12,7 @@ import retrofit2.http.GET;
  */
 
 public class PlatformContans {
-    //public static String rootUrl="http://192.168.3.5:9999/memen/";
+    //public static String root="http://192.168.3.6:8080/";
     //public static String root = "http://192.168.3.6:8090/";//诗安测试地址
     public static String root = "http://47.106.164.34/";//正式地址
     public static String rootUrl = root + "memen/";//
@@ -20,6 +20,7 @@ public class PlatformContans {
 //    public static String rootUrl = root + "memen/";//
 
     public static class UseUser {
+
         public static final String sHead = rootUrl + "useuser/";
         public static final String sGetVerificationCode = sHead + "getVerificationCode";//获取验证码
         public static final String sUseUserRegister = sHead + "useUserRegister";//注册
@@ -31,7 +32,7 @@ public class PlatformContans {
         public static final String sGetServerUserByUser = sHead + "getServerUserByUser";//获取附近救援人员信息。
         public static final String sEquipment = sHead + "equipment";//获取设备信息。
         public static final String sIsRegister=sHead+"getUserByTelephone";
-
+        public static final String sFindCode=sHead+"getRetrievePasswordCode";
     }
 
     public static class Serveruser {

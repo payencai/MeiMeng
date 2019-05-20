@@ -6,59 +6,7 @@
 
     <include layout="@layout/toobar_head_layout" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="44dp"
-        android:orientation="horizontal">
 
-        <RelativeLayout
-            android:id="@+id/deviceLayout"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
-
-            <TextView
-                android:id="@+id/deviceText"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:text="培训信息"
-                android:textColor="@drawable/bottom_bar_deal_text" />
-
-            <View
-                android:id="@+id/view1"
-                android:layout_width="90dp"
-                android:layout_height="3dp"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
-                android:background="@color/color_red" />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/firstAidLayout"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
-
-            <TextView
-                android:id="@+id/firstAidText"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:text="急救用户排名"
-                android:textColor="@drawable/bottom_bar_deal_text" />
-
-            <View
-                android:id="@+id/view2"
-                android:layout_width="90dp"
-                android:layout_height="3dp"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
-                android:background="@color/color_red"
-                android:visibility="gone" />
-        </RelativeLayout>
-
-    </LinearLayout>
 
     <View
         android:layout_width="match_parent"

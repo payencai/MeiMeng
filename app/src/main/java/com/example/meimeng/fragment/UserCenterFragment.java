@@ -104,7 +104,7 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
     private LinearLayout mClientReback;
     private LinearLayout mClientAboutus;
     private LinearLayout mClientQrcode;
-    private ImageView mSwitch;
+    private LinearLayout mSwitch;
     private CircleImageView client_head;
 
     private ArrayList<String> client_selected = new ArrayList<>();
@@ -150,7 +150,7 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
         mClientRecord = view.findViewById(R.id.record_client_layout);
         mClientReback = view.findViewById(R.id.reback_client_layout);
         mClientAboutus = view.findViewById(R.id.aboutus_client_layout);
-        mSwitch = view.findViewById(R.id.iv_switch_account);
+        mSwitch = view.findViewById(R.id.ll_switch);
         String type="";
         if(APP.getInstance().getUserInfo()!=null)
         {
@@ -525,7 +525,7 @@ public class UserCenterFragment extends BaseFragment implements View.OnClickList
             case R.id.layout_qrcode:
                 startActivity(new Intent(getActivity(), QRCodeActivity.class));
                 break;
-            case R.id.iv_switch_account:
+            case R.id.ll_switch:
                 Log.e("onclick", "click");
                 CommomDialog dialog = new CommomDialog(getContext(), R.style.dialog, "是否切换到志愿者？", new CommomDialog.OnCloseListener() {
                     @Override

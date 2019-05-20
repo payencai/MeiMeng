@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -103,6 +104,8 @@ public class AskVolunteerActivity extends BaseActivity {
     TextView detailtime;
     @BindView(R.id.btn_vol_commit)
     Button btn_vol_commit;
+    @BindView(R.id.check)
+    CheckBox  check;
     int count = 0;
     String value = "";
     boolean isFinish = true;
@@ -510,9 +513,12 @@ public class AskVolunteerActivity extends BaseActivity {
         });
     }
 
-    @OnClick({R.id.et_volunteer_work, R.id.et_volunteer_home, R.id.et_volunteer_time, R.id.btn_vol_commit})
+    @OnClick({R.id.et_volunteer_work, R.id.et_volunteer_home, R.id.et_volunteer_time, R.id.btn_vol_commit,R.id.tv_xieyi})
     public void onClick(View view) {
         switch (view.getId()) {
+            case R.id.tv_xieyi:
+                startActivity(new Intent(AskVolunteerActivity.this,ProxyActivity.class));
+                break;
             case R.id.et_volunteer_home:
                 SelectAddressActivity.startSelectAddressActivity(this, "address", 4, "", null);
                 //startActivityForResult(new Intent(AskVolunteerActivity.this,SelectAddressActivity.class),4);
@@ -564,7 +570,10 @@ public class AskVolunteerActivity extends BaseActivity {
                 });
                 break;
             case R.id.btn_vol_commit:
-
+                if(!check.isChecked()){
+                    Toast.makeText(AskVolunteerActivity.this, "必须同意协议", Toast.LENGTH_LONG).show();
+                    return;
+                }
                 if (TextUtils.isEmpty(APP.getInstance().getUserInfo().getServerType())) {
                     if (!isInputEmpty()) {
                         mKyLoadingBuilder = openLoadView("提交中");

@@ -149,6 +149,8 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
     TextView mUnreadMsgNumber;
     @BindView(R.id.messageText)
     TextView msg;
+    @BindView(R.id.tv_remark)
+    TextView tv_remark;
     private TextureMapView mMapView = null;
     private BaiduMap mBaiduMap;
     private CurrentHelpInfo mCurrentHelpInfo;
@@ -525,6 +527,10 @@ public class RescueActivity extends BaseActivity implements OnGetRoutePlanResult
         distance = (int) mCurrentHelpInfo.getDistance();
         helperDistance.setText("与您" + distance + "米范围内");
         helperTime.setText(mCurrentHelpInfo.getCreateTime());
+        if(!TextUtils.isEmpty(mCurrentHelpInfo.getRemark())){
+            tv_remark.setVisibility(View.VISIBLE);
+            tv_remark.setText("备注信息："+mCurrentHelpInfo.getRemark());
+        }
         int helpNum = mCurrentHelpInfo.getHelpNum();
         if (helpNum > 0)
             workerNumber.setText("已有" + helpNum + "人前往");

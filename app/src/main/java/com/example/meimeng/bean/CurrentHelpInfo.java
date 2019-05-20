@@ -43,6 +43,15 @@ public class CurrentHelpInfo extends RVBaseCell implements Serializable {
      * useUserName : 蔡华清
      * useUserTelephone : 13202908144
      */
+    private String remark;
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
 
     private String id;
     private String useUserId;

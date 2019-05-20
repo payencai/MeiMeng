@@ -19,6 +19,7 @@ import com.example.meimeng.http.ICallBack;
 import com.example.meimeng.util.MLog;
 import com.example.meimeng.util.TimerCount;
 import com.example.meimeng.util.ToaskUtil;
+import com.google.gson.Gson;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -75,34 +76,36 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
         findViewById(R.id.tv_xieyi).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(RegisterActivity.this,ProxyActivity.class));
+                startActivity(new Intent(RegisterActivity.this, ProxyActivity.class));
             }
         });
         findViewById(R.id.back).setOnClickListener(this);
         obtainCodeBtn.setOnClickListener(this);
         register.setOnClickListener(this);
     }
-    private void checkIsRegister(final String tel){
+
+    private void checkIsRegister(final String tel) {
         Map<String, Object> params = new HashMap<>();
         params.put("telephone", tel);
         HttpProxy.obtain().get(PlatformContans.UseUser.sIsRegister, params, new ICallBack() {
             @Override
             public void OnSuccess(String result) {
                 obtainCodeBtn.setEnabled(true);
-                MLog.log("getAuthCode", result);
+                MLog.log("checkIsRegister", result);
                 //{"resultCode":0,"message":"验证码已发送！"}
                 try {
                     JSONObject object = new JSONObject(result);
                     int resultCode = object.getInt("resultCode");
                     String message = object.getString("message");
-                    if(resultCode==6003){
+                    if (resultCode == 6003) {
                         ToaskUtil.showToast(RegisterActivity.this, message);
                     }
-                    if(resultCode==0){
+                    if (resultCode == 0) {
                         TimerCount timer = new TimerCount(60000, 1000, obtainCodeBtn);
                         timer.start();
-                        // obtainCodeBtn.setEnabled(false);
-                        getAuthCode(tel);
+
+                        getAuthCode(tel, PlatformContans.UseUser.sGetVerificationCode);
+
                     }
 
                 } catch (JSONException e) {
@@ -114,10 +117,11 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
             @Override
             public void onFailure(String error) {
                 obtainCodeBtn.setEnabled(true);
-                ToaskUtil.showToast(RegisterActivity.this,"请检查网络");
+                ToaskUtil.showToast(RegisterActivity.this, "请检查网络");
             }
         });
     }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -127,27 +131,28 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
             case R.id.obtainCodeBtn:
                 String number = userNumberEdit.getEditableText().toString();
                 if (checkFormObtainCode(number)) {
-                    if(mIntoType==0)
+                    if (mIntoType == 0)
                         checkIsRegister(number);
-                    else{
+                    else {
                         TimerCount timer = new TimerCount(60000, 1000, obtainCodeBtn);
                         timer.start();
                         // obtainCodeBtn.setEnabled(false);
-                        getAuthCode(number);
+                        getAuthCode(number, PlatformContans.UseUser.sFindCode);
+
                     }
                 }
                 break;
             case R.id.register:
                 String numberSubmit = userNumberEdit.getEditableText().toString();
-                String auth = verificationEdit.getEditableText().toString().replace(" ", "");
+                String code = verificationEdit.getEditableText().toString().replace(" ", "");
                 String password = passwordEdit.getEditableText().toString().replace(" ", "");
-                if (checkForm(numberSubmit, auth, password)) {
+                if (checkForm(numberSubmit, code, password)) {
                     register.setEnabled(false);
                     mLoadView = openLoadView("");
                     if (mIntoType == 0) {
-                        registerSubmit(PlatformContans.UseUser.sUseUserRegister, numberSubmit, auth, password);
+                        registerSubmit(PlatformContans.UseUser.sUseUserRegister, numberSubmit, code, password);
                     } else {
-                        registerSubmit(PlatformContans.UseUser.sUpdateUserpwd, numberSubmit, auth, password);
+                        resetPwdSubmit(PlatformContans.UseUser.sUpdateUserpwd, numberSubmit, code, password);
                     }
                     break;
                 }
@@ -195,11 +200,11 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
      *
      * @param tel
      */
-    private void getAuthCode(String tel) {
+    private void getAuthCode(String tel, String url) {
         Map<String, Object> params = new HashMap<>();
         params.put("telephone", tel);
         params.put("type", 1);
-        HttpProxy.obtain().get(PlatformContans.UseUser.sGetVerificationCode, params, new ICallBack() {
+        HttpProxy.obtain().get(url, params, new ICallBack() {
             @Override
             public void OnSuccess(String result) {
                 obtainCodeBtn.setEnabled(true);
@@ -219,7 +224,46 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
             @Override
             public void onFailure(String error) {
                 obtainCodeBtn.setEnabled(true);
-                ToaskUtil.showToast(RegisterActivity.this,"请检查网络");
+                ToaskUtil.showToast(RegisterActivity.this, "请检查网络");
+            }
+        });
+    }
+
+    private void resetPwdSubmit(String url, String numberSubmit, String auth, String password) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("account", numberSubmit);
+        params.put("password", password);
+        params.put("vcode", auth);
+        String json = new Gson().toJson(params);
+        MLog.log("resetPwdSubmit", json + "");
+        HttpProxy.obtain().post(url, "", json, new ICallBack() {
+            @Override
+            public void OnSuccess(String result) {
+                if (mLoadView != null) {
+                    mLoadView.dismiss();
+                }
+                register.setEnabled(true);
+
+                try {
+                    JSONObject object = new JSONObject(result);
+                    int resultCode = object.getInt("resultCode");
+                    String message = object.getString("message");
+                    ToaskUtil.showToast(RegisterActivity.this, message);
+                    if (resultCode == 0) {
+                        finish();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(String error) {
+                ToaskUtil.showToast(RegisterActivity.this, "请检查网络");
+                if (mLoadView != null) {
+                    mLoadView.dismiss();
+                }
+                register.setEnabled(true);
             }
         });
     }
@@ -253,7 +297,7 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
 
             @Override
             public void onFailure(String error) {
-                ToaskUtil.showToast(RegisterActivity.this,"请检查网络");
+                ToaskUtil.showToast(RegisterActivity.this, "请检查网络");
                 if (mLoadView != null) {
                     mLoadView.dismiss();
                 }

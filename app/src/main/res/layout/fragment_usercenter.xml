@@ -35,16 +35,29 @@
                 android:src="@mipmap/ic_me_head"
                 app:civ_border_color="@color/color_red"/>
 
-            <ImageView
+            <LinearLayout
                 android:visibility="gone"
-                android:id="@+id/iv_switch_account"
-                android:layout_width="21dp"
-                android:layout_height="21dp"
+                android:gravity="center_horizontal"
+                android:id="@+id/ll_switch"
+                android:orientation="vertical"
                 android:layout_alignParentEnd="true"
                 android:layout_alignTop="@+id/iv_client_settings"
                 android:layout_gravity="right"
                 android:layout_marginEnd="19dp"
-                android:src="@mipmap/ic_switchaccount"/>
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:id="@+id/iv_switch_account"
+                    android:layout_width="21dp"
+                    android:layout_height="21dp"
+                    android:src="@mipmap/ic_switchaccount"/>
+                <TextView
+                    android:textSize="10sp"
+                    android:textColor="@color/white"
+                    android:text="切换志愿者"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
         </RelativeLayout>
 
 
